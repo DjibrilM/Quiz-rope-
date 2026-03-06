@@ -6,6 +6,7 @@ import Svg, { Path } from "react-native-svg";
 import { usePortrait } from "../src/hooks/useOrientation";
 import { useGameStore } from "../src/stores/gameStore";
 import { socketService } from "../src/services/socket";
+import { apiService } from "../src/services/api";
 import { ScreenHeader } from "../src/components/common";
 import { DifficultySelector, RoundsSelector } from "../src/components/match";
 import { MatchStatus } from "@shared/types/match.types";
@@ -34,38 +35,39 @@ export default function SoloMatchScreen() {
   const handleStart = async () => {
     try {
       hapticsService.medium();
-      socketService.connect();
 
-      const match = {
-        id: "match-" + Date.now(),
-        hostParentId: "mock-parent",
+      const teams = [
+        { name: "Red Team", color: "#EF4444", side: "LEFT" },
+        { name: "Blue Team", color: "#3B82F6", side: "RIGHT" },
+      ];
+
+      const created = await apiService.createMatch({
         subject: subject!,
         difficulty,
         maxRounds,
+        teams,
+      });
+
+      const match = {
+        ...(created as any),
+        id: (created as any)._id || (created as any).id,
         gameMode: "solo" as const,
-        teams: [
-          {
-            id: "team-red",
-            name: "Red Team",
-            color: "#EF4444",
-            side: "LEFT" as const,
-            players: [],
-          },
-          {
-            id: "team-blue",
-            name: "Blue Team",
-            color: "#3B82F6",
-            side: "RIGHT" as const,
-            players: [],
-          },
-        ],
-        ropePosition: 0,
-        currentQuestionIndex: 0,
+        teams: ((created as any).teams || teams).map((t: any, i: number) => ({
+          id: t._id || t.id || `team-${i}`,
+          name: t.name,
+          color: t.color,
+          side: t.side,
+          players: t.players || [],
+        })),
+        ropePosition: (created as any).ropePosition || 0,
+        currentQuestionIndex: (created as any).currentQuestionIndex || 0,
         status: MatchStatus.IN_PROGRESS,
-        rounds: 0,
-        createdAt: new Date(),
+        rounds: (created as any).rounds || 0,
+        maxRounds,
+        createdAt: (created as any).createdAt || new Date(),
       };
 
+      socketService.connect();
       setCurrentMatch(match);
       router.replace({ pathname: "/game", params: { matchId: match.id } });
     } catch (error) {

@@ -2,14 +2,26 @@ import { View, ScrollView, Text, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import Svg, { Path, Circle, Rect, Defs, LinearGradient, Stop } from "react-native-svg";
+import Svg, {
+  Path,
+  Circle,
+  Rect,
+  Defs,
+  LinearGradient,
+  Stop,
+} from "react-native-svg";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTranslation } from "react-i18next";
 import { usePortrait } from "../src/hooks/useOrientation";
 import { apiService } from "../src/services/api";
 import { useGameStore } from "../src/stores/gameStore";
 import { AppTitle } from "../src/components/auth";
-import { ActionCard, StaggeredList, LanguageSelector, FlashingGlobeButton } from "../src/components/common";
+import {
+  ActionCard,
+  StaggeredList,
+  LanguageSelector,
+  FlashingGlobeButton,
+} from "../src/components/common";
 
 function ParentIcon() {
   return (
@@ -57,10 +69,7 @@ function StudentIcon() {
             <Stop offset="1" stopColor="#FFFFFF" />
           </LinearGradient>
         </Defs>
-        <Path
-          d="M12 3L2 8l10 5 10-5-10-5Z"
-          fill="url(#studentGrad)"
-        />
+        <Path d="M12 3L2 8l10 5 10-5-10-5Z" fill="url(#studentGrad)" />
         <Path
           d="M6 10.5v4.5c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.5"
           stroke="url(#studentGrad)"
@@ -147,8 +156,15 @@ export default function RoleSelectScreen() {
     try {
       const result = await apiService.login("mock-token");
       apiService.setToken(result.token || "mock-token");
-      const user = (result.user || result) as unknown as Record<string, unknown>;
-      setAuth({ ...result.user, ...user } as any, true, result.token || "mock-token");
+      const user = (result.user || result) as unknown as Record<
+        string,
+        unknown
+      >;
+      setAuth(
+        { ...result.user, ...user } as any,
+        true,
+        result.token || "mock-token",
+      );
       router.replace("/home");
     } catch {
       setAuth(
@@ -171,10 +187,14 @@ export default function RoleSelectScreen() {
   return (
     <SafeAreaView className="flex-1 bg-game-bg">
       <View style={{ position: "absolute", top: 52, right: 20, zIndex: 10 }}>
-        <FlashingGlobeButton onPress={() => langSheetRef.current?.present()} size={44} />
+        <FlashingGlobeButton
+          onPress={() => langSheetRef.current?.present()}
+          size={44}
+        />
       </View>
 
       <ScrollView
+        className="flex-1"
         contentContainerStyle={{
           flexGrow: 1,
           alignItems: "center",

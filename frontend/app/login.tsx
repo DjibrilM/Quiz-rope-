@@ -17,7 +17,7 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const { setAuth, setSubscriptionStatus } = useGameStore();
+  const { setAuth } = useGameStore();
   usePortrait();
 
   const validate = (): boolean => {
@@ -42,15 +42,7 @@ export default function LoginScreen() {
     const user = result.user as unknown as Record<string, unknown>;
     setAuth({ ...result.user, ...user }, result.mockMode ?? false, result.token);
 
-    try {
-      const sub = await apiService.getSubscriptionStatus();
-      setSubscriptionStatus(
-        sub.status as any,
-        sub.expiresAt ?? null,
-      );
-    } catch {
-      // Non-critical
-    }
+    // Subscription disabled — app is free for now
 
     router.replace("/home");
   };
@@ -122,22 +114,8 @@ export default function LoginScreen() {
     }
   };
 
-  const handleForgotPassword = async () => {
-    const trimmedEmail = email.trim();
-    if (!trimmedEmail) {
-      setError(t("auth:login.forgotPasswordInstruction"));
-      return;
-    }
-    setLoading(true);
-    setError("");
-    try {
-      await apiService.requestPasswordReset(trimmedEmail);
-      setError(t("auth:login.resetEmailSent"));
-    } catch (err: any) {
-      setError(err.message || t("auth:login.resetEmailFailed"));
-    } finally {
-      setLoading(false);
-    }
+  const handleForgotPassword = () => {
+    router.push("/forgot-password" as any);
   };
 
   return (

@@ -7,12 +7,28 @@ import { firebaseAuthService } from "../src/services/firebase";
 import { apiService } from "../src/services/api";
 import { hapticsService } from "../src/services/haptics";
 import { MatchStatus } from "@shared/types/match.types";
-import Svg, { Path, Circle, Rect, Defs, LinearGradient, Stop } from "react-native-svg";
+import Svg, {
+  Path,
+  Circle,
+  Rect,
+  Defs,
+  LinearGradient,
+  Stop,
+} from "react-native-svg";
 import React, { useRef, useCallback, useEffect } from "react";
-import { BottomSheetModal, BottomSheetView, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
+import {
+  BottomSheetModal,
+  BottomSheetView,
+  BottomSheetBackdrop,
+} from "@gorhom/bottom-sheet";
 import type { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
 import { useTranslation } from "react-i18next";
-import { BouncePress, StaggeredList, LanguageSelector, FlashingGlobeButton } from "../src/components/common";
+import {
+  BouncePress,
+  StaggeredList,
+  LanguageSelector,
+  FlashingGlobeButton,
+} from "../src/components/common";
 import { FONTS } from "../src/constants/theme";
 
 function IconQuickPlay() {
@@ -54,9 +70,23 @@ function IconConnectDevice() {
           <Stop offset="1" stopColor="#C44D66" />
         </LinearGradient>
       </Defs>
-      <Rect x="4" y="3" width="16" height="18" rx="3" stroke="url(#dev)" strokeWidth="2" fill="none" />
+      <Rect
+        x="4"
+        y="3"
+        width="16"
+        height="18"
+        rx="3"
+        stroke="url(#dev)"
+        strokeWidth="2"
+        fill="none"
+      />
       <Circle cx="12" cy="17" r="1.5" fill="#E85D75" />
-      <Path d="M9 8h6M9 11h6" stroke="#E85D75" strokeWidth="1.5" strokeLinecap="round" />
+      <Path
+        d="M9 8h6M9 11h6"
+        stroke="#E85D75"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
     </Svg>
   );
 }
@@ -71,9 +101,21 @@ function IconChildren() {
         </LinearGradient>
       </Defs>
       <Circle cx="9" cy="7" r="3" fill="url(#kid)" />
-      <Path d="M3 19c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="url(#kid)" strokeWidth="2" strokeLinecap="round" fill="none" />
+      <Path
+        d="M3 19c0-3.3 2.7-6 6-6s6 2.7 6 6"
+        stroke="url(#kid)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        fill="none"
+      />
       <Circle cx="17" cy="9" r="2.5" fill="#6EE7B7" />
-      <Path d="M13 19c0-2.5 1.8-4.5 4-4.5s4 2 4 4.5" stroke="#6EE7B7" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+      <Path
+        d="M13 19c0-2.5 1.8-4.5 4-4.5s4 2 4 4.5"
+        stroke="#6EE7B7"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        fill="none"
+      />
     </Svg>
   );
 }
@@ -90,7 +132,13 @@ function IconMatchHistory() {
       <Rect x="3" y="14" width="4" height="7" rx="1" fill="#F9A8D4" />
       <Rect x="10" y="8" width="4" height="13" rx="1" fill="url(#chart)" />
       <Rect x="17" y="3" width="4" height="18" rx="1" fill="#9B59B6" />
-      <Path d="M3 3v18h18" stroke="#F9A8D4" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+      <Path
+        d="M3 3v18h18"
+        stroke="#F9A8D4"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        fill="none"
+      />
     </Svg>
   );
 }
@@ -105,8 +153,18 @@ function IconLeaderboard() {
         </LinearGradient>
       </Defs>
       <Path d="M6 3h12v6a6 6 0 01-12 0V3z" fill="url(#trophy)" />
-      <Path d="M6 5H3a1 1 0 00-1 1v1a4 4 0 004 4" stroke="#FFD93D" strokeWidth="1.5" fill="none" />
-      <Path d="M18 5h3a1 1 0 011 1v1a4 4 0 01-4 4" stroke="#FFD93D" strokeWidth="1.5" fill="none" />
+      <Path
+        d="M6 5H3a1 1 0 00-1 1v1a4 4 0 004 4"
+        stroke="#FFD93D"
+        strokeWidth="1.5"
+        fill="none"
+      />
+      <Path
+        d="M18 5h3a1 1 0 011 1v1a4 4 0 01-4 4"
+        stroke="#FFD93D"
+        strokeWidth="1.5"
+        fill="none"
+      />
       <Rect x="10" y="15" width="4" height="4" rx="1" fill="#D97706" />
       <Rect x="7" y="19" width="10" height="2" rx="1" fill="#92400E" />
     </Svg>
@@ -121,7 +179,13 @@ interface MenuItemProps {
   highlight?: boolean;
 }
 
-function MenuItem({ icon, title, subtitle, onPress, highlight }: MenuItemProps) {
+function MenuItem({
+  icon,
+  title,
+  subtitle,
+  onPress,
+  highlight,
+}: MenuItemProps) {
   return (
     <BouncePress
       onPress={() => {
@@ -137,10 +201,24 @@ function MenuItem({ icon, title, subtitle, onPress, highlight }: MenuItemProps) 
         backgroundColor: highlight ? "#9B59B6" : "#1A1520",
       }}
     >
-      <View style={{ width: 40, height: 40, alignItems: "center", justifyContent: "center", marginRight: 16 }}>{icon}</View>
+      <View
+        style={{
+          width: 40,
+          height: 40,
+          alignItems: "center",
+          justifyContent: "center",
+          marginRight: 16,
+        }}
+      >
+        {icon}
+      </View>
       <View style={{ flex: 1 }}>
         <Text
-          style={{ fontSize: 16, color: "#FFFFFF", fontFamily: "Bungee_400Regular" }}
+          style={{
+            fontSize: 16,
+            color: "#FFFFFF",
+            fontFamily: "Bungee_400Regular",
+          }}
         >
           {title}
         </Text>
@@ -156,7 +234,13 @@ function MenuItem({ icon, title, subtitle, onPress, highlight }: MenuItemProps) 
         </Text>
       </View>
       <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
-        <Path d="M9 18l6-6-6-6" stroke={highlight ? "#E9D5FF" : "#5A4B6B"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <Path
+          d="M9 18l6-6-6-6"
+          stroke={highlight ? "#E9D5FF" : "#5A4B6B"}
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
       </Svg>
     </BouncePress>
   );
@@ -165,16 +249,28 @@ function MenuItem({ icon, title, subtitle, onPress, highlight }: MenuItemProps) 
 export default function HomeScreen() {
   usePortrait();
   const { t } = useTranslation(["home", "auth", "common"]);
-  const { parentUser, isMockMode, userRole, logout, subscriptionExpiresAt, setCurrentMatch, setChildren } = useGameStore();
+  const {
+    parentUser,
+    isMockMode,
+    userRole,
+    logout,
+    setCurrentMatch,
+    setChildren,
+  } = useGameStore();
   const logoutSheetRef = useRef<BottomSheetModal>(null);
   const languageSheetRef = useRef<BottomSheetModal>(null);
 
   useEffect(() => {
     if (userRole !== "child" && apiService.hasToken()) {
-      apiService.getChildren()
+      apiService
+        .getChildren()
         .then((data) => {
           if (Array.isArray(data)) {
-            setChildren(data.filter(Boolean).map((c: any) => ({ ...c, id: c._id || c.id })));
+            setChildren(
+              data
+                .filter(Boolean)
+                .map((c: any) => ({ ...c, id: c._id || c.id })),
+            );
           }
         })
         .catch(() => {});
@@ -198,7 +294,7 @@ export default function HomeScreen() {
         opacity={0.6}
       />
     ),
-    []
+    [],
   );
 
   const handleQuickPlay = () => {
@@ -209,8 +305,20 @@ export default function HomeScreen() {
       difficulty: "EASY",
       maxRounds: 10,
       teams: [
-        { id: "team-red", name: "Red Team", color: "#EF4444", side: "LEFT" as const, players: [] },
-        { id: "team-blue", name: "Blue Team", color: "#3B82F6", side: "RIGHT" as const, players: [] },
+        {
+          id: "team-red",
+          name: "Red Team",
+          color: "#EF4444",
+          side: "LEFT" as const,
+          players: [],
+        },
+        {
+          id: "team-blue",
+          name: "Blue Team",
+          color: "#3B82F6",
+          side: "RIGHT" as const,
+          players: [],
+        },
       ],
       ropePosition: 0,
       currentQuestionIndex: 0,
@@ -218,7 +326,7 @@ export default function HomeScreen() {
       rounds: 0,
       createdAt: new Date(),
     };
-    setCurrentMatch(match);
+    setCurrentMatch(match as any);
     router.push({ pathname: "/game", params: { matchId: match.id } });
   };
 
@@ -246,12 +354,23 @@ export default function HomeScreen() {
             >
               {t("home:appName")}
             </Text>
-            <Text style={{ fontSize: 14, color: "#B8A9C9", marginTop: 4, fontFamily: FONTS.body }}>
-              {t("home:greeting", { name: parentUser?.displayName || "Player" })}
+            <Text
+              style={{
+                fontSize: 14,
+                color: "#B8A9C9",
+                marginTop: 4,
+                fontFamily: FONTS.body,
+              }}
+            >
+              {t("home:greeting", {
+                name: parentUser?.displayName || "Player",
+              })}
             </Text>
           </View>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-            <FlashingGlobeButton onPress={() => languageSheetRef.current?.present()} />
+            <FlashingGlobeButton
+              onPress={() => languageSheetRef.current?.present()}
+            />
             <Pressable
               onPress={handleOpenLogout}
               style={{
@@ -261,21 +380,19 @@ export default function HomeScreen() {
                 borderRadius: 20,
               }}
             >
-              <Text style={{ color: "#7B6B8A", fontSize: 12, fontFamily: "Bungee_400Regular" }}>
+              <Text
+                style={{
+                  color: "#7B6B8A",
+                  fontSize: 12,
+                  fontFamily: "Bungee_400Regular",
+                }}
+              >
                 {t("auth:logout.button")}
               </Text>
             </Pressable>
           </View>
         </View>
 
-        {subscriptionExpiresAt && (
-          <View className="flex-row items-center mt-3">
-            <View className="w-2 h-2 rounded-full bg-green-500 mr-2" />
-            <Text style={{ color: "#7B6B8A", fontSize: 12, fontFamily: FONTS.body }}>
-              {t("home:activeUntil", { date: new Date(subscriptionExpiresAt).toLocaleDateString() })}
-            </Text>
-          </View>
-        )}
       </View>
 
       <ScrollView
@@ -352,13 +469,29 @@ export default function HomeScreen() {
           height: 4,
         }}
       >
-        <BottomSheetView style={{ flex: 1, paddingHorizontal: 24, paddingBottom: 20 }}>
+        <BottomSheetView
+          style={{ flex: 1, paddingHorizontal: 24, paddingBottom: 20 }}
+        >
           <Text
-            style={{ color: "#FFFFFF", fontSize: 18, textAlign: "center", marginBottom: 8, fontFamily: "Bungee_400Regular" }}
+            style={{
+              color: "#FFFFFF",
+              fontSize: 18,
+              textAlign: "center",
+              marginBottom: 8,
+              fontFamily: "Bungee_400Regular",
+            }}
           >
             {t("auth:logout.title")}
           </Text>
-          <Text style={{ color: "#B8A9C9", fontSize: 14, textAlign: "center", marginBottom: 24, fontFamily: FONTS.body }}>
+          <Text
+            style={{
+              color: "#B8A9C9",
+              fontSize: 14,
+              textAlign: "center",
+              marginBottom: 24,
+              fontFamily: FONTS.body,
+            }}
+          >
             {t("auth:logout.confirmation")}
           </Text>
           <View className="flex-row gap-3">
@@ -373,13 +506,29 @@ export default function HomeScreen() {
                 alignItems: "center",
               }}
             >
-              <Text style={{ color: "#B8A9C9", fontSize: 14, fontFamily: FONTS.bodySemiBold }}>{t("common:buttons.cancel")}</Text>
+              <Text
+                style={{
+                  color: "#B8A9C9",
+                  fontSize: 14,
+                  fontFamily: FONTS.bodySemiBold,
+                }}
+              >
+                {t("common:buttons.cancel")}
+              </Text>
             </Pressable>
             <Pressable
               onPress={handleLogout}
               className="flex-1 py-3.5 rounded-xl bg-red-500 items-center active:bg-red-600"
             >
-              <Text style={{ color: "#FFFFFF", fontSize: 14, fontFamily: FONTS.bodySemiBold }}>{t("auth:logout.button")}</Text>
+              <Text
+                style={{
+                  color: "#FFFFFF",
+                  fontSize: 14,
+                  fontFamily: FONTS.bodySemiBold,
+                }}
+              >
+                {t("auth:logout.button")}
+              </Text>
             </Pressable>
           </View>
         </BottomSheetView>

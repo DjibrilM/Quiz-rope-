@@ -92,10 +92,17 @@ class ApiService {
     return this.request('/auth/me');
   }
 
-  async requestPasswordReset(email: string): Promise<{ success: boolean; message: string }> {
-    return this.request('/auth/password-reset', {
+  async sendOtp(email: string): Promise<{ success: boolean; message: string }> {
+    return this.request('/auth/send-otp', {
       method: 'POST',
       data: { email },
+    });
+  }
+
+  async resetPassword(email: string, code: string, newPassword: string): Promise<{ success: boolean; message: string }> {
+    return this.request('/auth/reset-password', {
+      method: 'POST',
+      data: { email, code, newPassword },
     });
   }
 

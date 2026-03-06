@@ -101,24 +101,36 @@ export class AuthController {
     };
   }
 
-  @Post('password-reset')
-  async requestPasswordReset(@Body() body: { email: string }) {
+  @Post('send-otp')
+  async sendOtp(@Body() body: { email: string }) {
     if (!body.email) {
       throw new BadRequestException('Email is required');
     }
 
     try {
-      await this.authService.sendPasswordResetEmail(body.email);
-      return {
-        success: true,
-        message: 'If an account with that email exists, a reset link has been sent.',
-      };
-    } catch {
-      // Don't reveal whether the email exists
-      return {
-        success: true,
-        message: 'If an account with that email exists, a reset link has been sent.',
-      };
+      await this.authService.sendOtp(body.email);
+      return { success: true, message: 'OTP sent to your email.' };
+    } catch (error) {
+      if (error?.message === 'User not found') {
+        throw new BadRequestException('User not found');
+      }
+      throw error;
     }
+  }
+
+  @Post('reset-password')
+  async resetPassword(
+    @Body() body: { email: string; code: string; newPassword: string },
+  ) {
+    if (!body.email || !body.code || !body.newPassword) {
+      throw new BadRequestException('Email, code, and new password are required');
+    }
+
+    if (body.newPassword.length < 6) {
+      throw new BadRequestException('Password must be at least 6 characters');
+    }
+
+    await this.authService.resetPassword(body.email, body.code, body.newPassword);
+    return { success: true, message: 'Password has been reset successfully.' };
   }
 }
