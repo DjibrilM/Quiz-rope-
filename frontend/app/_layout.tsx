@@ -27,7 +27,7 @@ import { apiService } from "../src/services/api";
 
 SplashScreen.preventAutoHideAsync();
 
-const PUBLIC_ROUTES = ["index", "login", "signup", "child-join"];
+const PUBLIC_ROUTES = ["index", "login", "signup", "child-join", "forgot-password"];
 
 function useLocaleSync() {
   const { locale, _hasHydrated } = useGameStore();

@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { FirebaseAuthGuard } from './guards/firebase-auth.guard';
 import { Parent, ParentSchema } from './schemas/parent.schema';
+import { Otp, OtpSchema } from './schemas/otp.schema';
 import {
   DeviceSession,
   DeviceSessionSchema,
@@ -14,6 +15,7 @@ import { initializeFirebase } from '../config/firebase.config';
   imports: [
     MongooseModule.forFeature([
       { name: Parent.name, schema: ParentSchema },
+      { name: Otp.name, schema: OtpSchema },
       { name: DeviceSession.name, schema: DeviceSessionSchema },
     ]),
   ],

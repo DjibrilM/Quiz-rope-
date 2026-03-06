@@ -7,9 +7,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface BackButtonProps {
   absolute?: boolean;
+  onPress?: () => void;
 }
 
-export function BackButton({ absolute = false }: BackButtonProps) {
+export function BackButton({ absolute = false, onPress }: BackButtonProps) {
   const { t } = useTranslation("common");
   const insets = useSafeAreaInsets();
 
@@ -22,7 +23,7 @@ export function BackButton({ absolute = false }: BackButtonProps) {
       }
     >
       <Pressable
-        onPress={() => router.back()}
+        onPress={onPress || (() => router.back())}
         style={({ pressed }) => ({
           width: 40,
           height: 40,

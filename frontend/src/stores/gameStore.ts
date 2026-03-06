@@ -93,7 +93,7 @@ export const useGameStore = create<GameState>()(
       streak: 0,
       bestStreak: 0,
       children: [],
-      subscriptionStatus: 'checking',
+      subscriptionStatus: 'active',
       subscriptionExpiresAt: null,
       _hasHydrated: false,
 
@@ -104,8 +104,8 @@ export const useGameStore = create<GameState>()(
           authToken: token,
           isMockMode: mockMode,
           userRole: 'parent',
-          subscriptionStatus: (user as ParentUser & { subscriptionStatus?: string })?.subscriptionStatus as GameState['subscriptionStatus'] || 'none',
-          subscriptionExpiresAt: (user as ParentUser & { subscriptionExpiresAt?: string })?.subscriptionExpiresAt || null,
+          subscriptionStatus: 'active',
+          subscriptionExpiresAt: null,
         }),
       setChildSession: (session) =>
         set({ childSession: session, userRole: 'child', isAuthenticated: true, authToken: session.jwtToken }),
@@ -127,7 +127,7 @@ export const useGameStore = create<GameState>()(
           authToken: null,
           userRole: null,
           childSession: null,
-          subscriptionStatus: 'checking',
+          subscriptionStatus: 'active',
           subscriptionExpiresAt: null,
           isMockMode: false,
         }),
