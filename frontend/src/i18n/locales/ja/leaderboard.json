@@ -1,0 +1,10 @@
+{
+  "title": "ランキング",
+  "loadingMessage": "ランキングを読み込み中...",
+  "emptyTitle": "まだランキングがありません",
+  "emptySubtitle": "ゲームをプレイしてトップクイズプレイヤーを目指そう！",
+  "gamesPlayed_one": "{{count}}ゲームプレイ済み",
+  "gamesPlayed_other": "{{count}}ゲームプレイ済み",
+  "correct": "正解",
+  "accuracy": "正答率"
+}

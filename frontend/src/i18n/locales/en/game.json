@@ -1,0 +1,39 @@
+{
+  "roundLabel": "Round {{current}}/{{max}}",
+  "streak": "{{count}} in a row!",
+  "questionProgress": "Question {{current}} of {{max}}",
+  "quit": {
+    "title": "Quit Game?",
+    "message": "Are you sure you want to abandon this match? Your team will forfeit.",
+    "keepPlaying": "Keep Playing",
+    "quitButton": "Quit"
+  },
+  "result": {
+    "correct": "Correct!",
+    "wrong": "Wrong!",
+    "encouragement": ["Almost!", "Good try!", "Keep going!", "So close!", "Nice effort!"],
+    "ropeMovesLeft": "Rope moves ← left",
+    "ropeMovesRight": "Rope moves → right"
+  },
+  "end": {
+    "gameOver": "Game Over!",
+    "greatGame": "Great Game!",
+    "closeMatch": "What a close match!",
+    "wins": "Wins!",
+    "champions": "Champions!",
+    "bothAmazing": "Both teams played amazing!",
+    "finalRopePosition": "Final Rope Position",
+    "playerStats": "Player Stats",
+    "player": "Player",
+    "score": "Score",
+    "accuracy": "Accuracy",
+    "avgTime": "Avg Time",
+    "playAgain": "Play Again",
+    "backToHome": "Back to Home",
+    "wellDone": "Well Done!",
+    "finalScore": "Final Score: {{score}}"
+  },
+  "scoreboard": {
+    "score": "Score"
+  }
+}

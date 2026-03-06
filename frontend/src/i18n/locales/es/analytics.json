@@ -1,0 +1,33 @@
+{
+  "dashboard": {
+    "title": "Stats de {{name}}",
+    "totalMatches": "Partidas jugadas",
+    "totalQuestions": "Preguntas respondidas",
+    "overallAccuracy": "Precisión general",
+    "subjectBreakdown": "Por materia",
+    "bestSubject": "Punto fuerte",
+    "weakestSubject": "Necesita práctica",
+    "correct": "{{correct}}/{{total}} correctas",
+    "avgTime": "Prom. {{time}}s",
+    "viewHistory": "Ver historial",
+    "noData": "Sin partidas",
+    "noDataSubtitle": "¡Juega algunas partidas para ver las estadísticas aquí!"
+  },
+  "history": {
+    "title": "Historial de partidas",
+    "won": "Ganó",
+    "lost": "Perdió",
+    "accuracy": "{{accuracy}}% de precisión",
+    "noMatches": "No se encontraron partidas",
+    "noMatchesSubtitle": "Este jugador aún no ha completado ninguna partida."
+  },
+  "review": {
+    "title": "Revisión de la partida",
+    "summary": "{{correct}}/{{total}} correctas ({{accuracy}}%)",
+    "question": "Pregunta {{number}}",
+    "yourAnswer": "Tu respuesta",
+    "correctAnswer": "Respuesta correcta",
+    "responseTime": "{{time}}s",
+    "explanation": "Explicación"
+  }
+}

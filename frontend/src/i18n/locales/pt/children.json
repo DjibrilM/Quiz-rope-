@@ -1,0 +1,22 @@
+{
+  "title": "Meus Filhos",
+  "addButton": "Adicionar",
+  "addNewPlayer": "Adicionar Nova Crianca",
+  "chooseAvatar": "Escolher Avatar",
+  "ageGrade": "Idade {{age}} - Serie {{grade}}",
+  "ageGradeAccessibility": "{{name}}, idade {{age}}, serie {{grade}}",
+  "emptyTitle": "Nenhum jogador ainda!",
+  "emptySubtitle": "Adicione seu primeiro jovem quizzer para comecar a diversao",
+  "form": {
+    "namePlaceholder": "Nome da crianca",
+    "agePlaceholder": "Idade",
+    "gradePlaceholder": "Serie",
+    "savePlayer": "Adicionar Crianca"
+  },
+  "validation": {
+    "nameMinLength": "O nome deve ter pelo menos 2 caracteres",
+    "nameMaxLength": "O nome deve ter menos de 30 caracteres",
+    "ageRange": "A idade deve ser entre 3 e 18",
+    "gradeRequired": "A serie e obrigatoria"
+  }
+}

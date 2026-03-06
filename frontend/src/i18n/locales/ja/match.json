@@ -1,0 +1,42 @@
+{
+  "create": {
+    "title": "教科を選ぼう",
+    "subtitle": "今日は何を学ぶ？アリーナを選んでね！",
+    "modeLabel": "ゲームモード",
+    "solo": "ソロ",
+    "splitScreen": "画面分割"
+  },
+  "lobby": {
+    "codeLabel": "コード",
+    "matchInfo": "{{subject}} · {{difficulty}} · {{rounds}}ラウンド",
+    "startMatch": "マッチ開始！"
+  },
+  "solo": {
+    "title": "\u30bd\u30ed - {{subject}}",
+    "startButton": "\u30b2\u30fc\u30e0\u958b\u59cb"
+  },
+  "selectors": {
+    "subject": "教科",
+    "difficulty": "難易度",
+    "rounds": "ラウンド"
+  },
+  "history": {
+    "title": "対戦履歴",
+    "loadingMessage": "バトル履歴を読み込み中...",
+    "emptyTitle": "まだ対戦がありません",
+    "emptySubtitle": "ゲームを始めてバトル履歴を作ろう！",
+    "won": "勝利"
+  },
+  "detail": {
+    "title": "マッチ詳細",
+    "rounds": "ラウンド",
+    "ropePosition": "ロープの位置",
+    "status": "ステータス",
+    "winner": "勝者",
+    "center": "中央",
+    "playerStatistics": "プレイヤー統計",
+    "score": "スコア",
+    "accuracy": "正答率",
+    "avgTime": "平均時間"
+  }
+}

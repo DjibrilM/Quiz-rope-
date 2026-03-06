@@ -1,0 +1,34 @@
+{
+  "childJoin": {
+    "title": "একটি খেলায় যোগ দিন!",
+    "instruction": "আপনার অভিভাবককে এই কোডটি দেখান",
+    "waitingStatus": "অভিভাবকের স্ক্যানের জন্য অপেক্ষা করা হচ্ছে...",
+    "generateNewCode": "নতুন কোড তৈরি করুন",
+    "errorToken": "চাইল্ড টোকেন পেতে ব্যর্থ। পুনরায় চেষ্টা করতে নিচে ট্যাপ করুন।"
+  },
+  "connectDevice": {
+    "scanTitle": "সন্তানের কোড স্ক্যান করুন",
+    "scanInstruction": "সন্তানের ডিভাইসে QR কোডের দিকে ক্যামেরা তাক করুন",
+    "manualEntryDivider": "অথবা ম্যানুয়ালি কোড লিখুন",
+    "manualCodePlaceholder": "সেশন কোড লিখুন",
+    "loadingTitle": "লোড হচ্ছে...",
+    "loadingMessage": "খেলোয়াড়দের তথ্য আনা হচ্ছে...",
+    "selectChildTitle": "কে খেলছে?",
+    "selectChildInstruction": "এই ডিভাইসের জন্য একটি সন্তান নির্বাচন করুন",
+    "addNewChild": "+ নতুন সন্তান যোগ করুন",
+    "newPlayerTitle": "নতুন খেলোয়াড়",
+    "linkingTitle": "ডিভাইস সংযুক্ত হচ্ছে...",
+    "settingUpSession": "{{name}}-এর সেশন সেট আপ হচ্ছে",
+    "errorTitle": "কিছু একটা ভুল হয়েছে",
+    "successTitle": "ডিভাইস সংযুক্ত!",
+    "successStatus": "সংযুক্ত",
+    "successMessage": "{{name}}-এর ডিভাইস এখন সংযুক্ত"
+  },
+  "qrCode": {
+    "cameraPermission": "QR কোড স্ক্যান করতে ক্যামেরা অ্যাক্সেস প্রয়োজন",
+    "generating": "তৈরি হচ্ছে...",
+    "expired": "কোডের মেয়াদ শেষ",
+    "expiredMessage": "নিচে একটি নতুন কোড তৈরি করুন",
+    "linked": "সংযুক্ত!"
+  }
+}

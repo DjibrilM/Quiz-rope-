@@ -1,0 +1,42 @@
+{
+  "create": {
+    "title": "Escolha uma Materia",
+    "subtitle": "O que vamos aprender hoje? Escolha sua arena!",
+    "modeLabel": "Modo de jogo",
+    "solo": "Solo",
+    "splitScreen": "Tela dividida"
+  },
+  "lobby": {
+    "codeLabel": "CODIGO",
+    "matchInfo": "{{subject}} · {{difficulty}} · {{rounds}} rodadas",
+    "startMatch": "Iniciar Partida!"
+  },
+  "solo": {
+    "title": "Solo - {{subject}}",
+    "startButton": "Iniciar"
+  },
+  "selectors": {
+    "subject": "Materia",
+    "difficulty": "Dificuldade",
+    "rounds": "Rodadas"
+  },
+  "history": {
+    "title": "Historico de Partidas",
+    "loadingMessage": "Carregando seu historico de batalhas...",
+    "emptyTitle": "Nenhuma partida ainda",
+    "emptySubtitle": "Comece um jogo para ver seu historico de batalhas aqui!",
+    "won": "Venceu"
+  },
+  "detail": {
+    "title": "Detalhes da Partida",
+    "rounds": "Rodadas",
+    "ropePosition": "Posicao da Corda",
+    "status": "Status",
+    "winner": "Vencedor",
+    "center": "Centro",
+    "playerStatistics": "Estatisticas dos Jogadores",
+    "score": "Pontuacao",
+    "accuracy": "Precisao",
+    "avgTime": "Tempo Medio"
+  }
+}

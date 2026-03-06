@@ -1,0 +1,33 @@
+{
+  "dashboard": {
+    "title": "{{name}}の統計",
+    "totalMatches": "プレイ回数",
+    "totalQuestions": "回答した問題数",
+    "overallAccuracy": "総合正答率",
+    "subjectBreakdown": "科目別分析",
+    "bestSubject": "得意科目",
+    "weakestSubject": "要練習",
+    "correct": "{{correct}}/{{total}} 正解",
+    "avgTime": "平均 {{time}}秒",
+    "viewHistory": "対戦履歴を見る",
+    "noData": "対戦記録なし",
+    "noDataSubtitle": "ゲームをプレイすると統計が表示されます！"
+  },
+  "history": {
+    "title": "対戦履歴",
+    "won": "勝利",
+    "lost": "敗北",
+    "accuracy": "正答率 {{accuracy}}%",
+    "noMatches": "対戦が見つかりません",
+    "noMatchesSubtitle": "このプレイヤーはまだ対戦を完了していません。"
+  },
+  "review": {
+    "title": "対戦レビュー",
+    "summary": "{{correct}}/{{total}} 正解 ({{accuracy}}%)",
+    "question": "問題 {{number}}",
+    "yourAnswer": "あなたの回答",
+    "correctAnswer": "正解",
+    "responseTime": "{{time}}秒",
+    "explanation": "解説"
+  }
+}

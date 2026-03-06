@@ -1,0 +1,42 @@
+{
+  "create": {
+    "title": "Выберите предмет",
+    "subtitle": "Что будем изучать сегодня? Выберите арену!",
+    "modeLabel": "Режим игры",
+    "solo": "Одиночный",
+    "splitScreen": "Разделённый экран"
+  },
+  "lobby": {
+    "codeLabel": "КОД",
+    "matchInfo": "{{subject}} · {{difficulty}} · {{rounds}} раундов",
+    "startMatch": "Начать матч!"
+  },
+  "solo": {
+    "title": "\u041e\u0434\u0438\u043d\u043e\u0447\u043d\u044b\u0439 - {{subject}}",
+    "startButton": "\u041d\u0430\u0447\u0430\u0442\u044c \u0438\u0433\u0440\u0443"
+  },
+  "selectors": {
+    "subject": "Предмет",
+    "difficulty": "Сложность",
+    "rounds": "Раунды"
+  },
+  "history": {
+    "title": "История матчей",
+    "loadingMessage": "Загрузка истории битв...",
+    "emptyTitle": "Матчей пока нет",
+    "emptySubtitle": "Начните игру, чтобы увидеть историю битв здесь!",
+    "won": "Победа"
+  },
+  "detail": {
+    "title": "Детали матча",
+    "rounds": "Раунды",
+    "ropePosition": "Позиция каната",
+    "status": "Статус",
+    "winner": "Победитель",
+    "center": "Центр",
+    "playerStatistics": "Статистика игроков",
+    "score": "Счёт",
+    "accuracy": "Точность",
+    "avgTime": "Среднее время"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "roundLabel": "Раунд {{current}}/{{max}}",
+  "streak": "{{count}} подряд!",
+  "questionProgress": "Вопрос {{current}} из {{max}}",
+  "quit": {
+    "title": "Выйти из игры?",
+    "message": "Вы уверены, что хотите покинуть этот матч? Ваша команда проиграет.",
+    "keepPlaying": "Продолжить игру",
+    "quitButton": "Выйти"
+  },
+  "result": {
+    "correct": "Правильно!",
+    "wrong": "Неправильно!",
+    "encouragement": ["Почти!", "Хорошая попытка!", "Продолжай!", "Так близко!", "Отличное усилие!"],
+    "ropeMovesLeft": "Канат движется влево",
+    "ropeMovesRight": "Канат движется вправо"
+  },
+  "end": {
+    "gameOver": "Игра окончена!",
+    "greatGame": "Отличная игра!",
+    "closeMatch": "Какой напряжённый матч!",
+    "wins": "Победа!",
+    "champions": "Чемпионы!",
+    "bothAmazing": "Обе команды играли потрясающе!",
+    "finalRopePosition": "Финальная позиция каната",
+    "playerStats": "Статистика игроков",
+    "player": "Игрок",
+    "score": "Счёт",
+    "accuracy": "Точность",
+    "avgTime": "Среднее время",
+    "playAgain": "Играть снова",
+    "backToHome": "На главную",
+    "wellDone": "Отлично!",
+    "finalScore": "Итоговый счёт: {{score}}"
+  },
+  "scoreboard": {
+    "score": "Счёт"
+  }
+}

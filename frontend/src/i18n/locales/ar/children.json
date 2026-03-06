@@ -1,0 +1,22 @@
+{
+  "title": "أطفالي",
+  "addButton": "إضافة",
+  "addNewPlayer": "إضافة طفل جديد",
+  "chooseAvatar": "اختر أفاتار",
+  "ageGrade": "العمر {{age}} - الصف {{grade}}",
+  "ageGradeAccessibility": "{{name}}، العمر {{age}}، الصف {{grade}}",
+  "emptyTitle": "لا يوجد لاعبون بعد!",
+  "emptySubtitle": "أضف أول متسابق صغير لبدء المرح",
+  "form": {
+    "namePlaceholder": "اسم الطفل",
+    "agePlaceholder": "العمر",
+    "gradePlaceholder": "الصف",
+    "savePlayer": "إضافة طفل"
+  },
+  "validation": {
+    "nameMinLength": "يجب أن يتكون الاسم من حرفين على الأقل",
+    "nameMaxLength": "يجب أن يكون الاسم أقل من 30 حرفاً",
+    "ageRange": "يجب أن يكون العمر بين 3 و18",
+    "gradeRequired": "الصف مطلوب"
+  }
+}

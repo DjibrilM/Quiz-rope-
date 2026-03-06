@@ -1,0 +1,22 @@
+{
+  "title": "मेरे बच्चे",
+  "addButton": "जोड़ें",
+  "addNewPlayer": "नया बच्चा जोड़ें",
+  "chooseAvatar": "अवतार चुनें",
+  "ageGrade": "उम्र {{age}} - कक्षा {{grade}}",
+  "ageGradeAccessibility": "{{name}}, उम्र {{age}}, कक्षा {{grade}}",
+  "emptyTitle": "अभी कोई खिलाड़ी नहीं!",
+  "emptySubtitle": "मज़ा शुरू करने के लिए अपना पहला छोटा क्विज़र जोड़ें",
+  "form": {
+    "namePlaceholder": "बच्चे का नाम",
+    "agePlaceholder": "उम्र",
+    "gradePlaceholder": "कक्षा",
+    "savePlayer": "बच्चा जोड़ें"
+  },
+  "validation": {
+    "nameMinLength": "नाम कम से कम 2 अक्षर का होना चाहिए",
+    "nameMaxLength": "नाम 30 अक्षर से कम होना चाहिए",
+    "ageRange": "उम्र 3-18 के बीच होनी चाहिए",
+    "gradeRequired": "कक्षा आवश्यक है"
+  }
+}

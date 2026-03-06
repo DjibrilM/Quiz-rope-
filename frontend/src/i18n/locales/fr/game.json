@@ -1,0 +1,39 @@
+{
+  "roundLabel": "Manche {{current}}/{{max}}",
+  "streak": "{{count}} d'affilée !",
+  "questionProgress": "Question {{current}} sur {{max}}",
+  "quit": {
+    "title": "Quitter la partie ?",
+    "message": "Êtes-vous sûr de vouloir abandonner ce match ? Votre équipe déclarera forfait.",
+    "keepPlaying": "Continuer à jouer",
+    "quitButton": "Quitter"
+  },
+  "result": {
+    "correct": "Correct !",
+    "wrong": "Faux !",
+    "encouragement": ["Presque !", "Bien essayé !", "Continue !", "Pas loin !", "Bel effort !"],
+    "ropeMovesLeft": "La corde va ← à gauche",
+    "ropeMovesRight": "La corde va → à droite"
+  },
+  "end": {
+    "gameOver": "Fin de la partie !",
+    "greatGame": "Super partie !",
+    "closeMatch": "Quel match serré !",
+    "wins": "Victoire !",
+    "champions": "Champions !",
+    "bothAmazing": "Les deux équipes ont été incroyables !",
+    "finalRopePosition": "Position finale de la corde",
+    "playerStats": "Statistiques des joueurs",
+    "player": "Joueur",
+    "score": "Score",
+    "accuracy": "Précision",
+    "avgTime": "Temps moy.",
+    "playAgain": "Rejouer",
+    "backToHome": "Retour à l'accueil",
+    "wellDone": "Bien joué !",
+    "finalScore": "Score final : {{score}}"
+  },
+  "scoreboard": {
+    "score": "Score"
+  }
+}

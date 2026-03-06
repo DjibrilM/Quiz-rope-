@@ -1,0 +1,19 @@
+{
+  "greeting": "Ready to play, {{name}}?",
+  "appName": "QuizRope",
+  "activeUntil": "Active until {{date}}",
+  "menu": {
+    "quickPlay": "Quick Play",
+    "quickPlayDesc": "Jump straight into a test game",
+    "startNewGame": "Start New Game",
+    "startNewGameDesc": "Create a match and challenge players",
+    "connectDevice": "Connect Device",
+    "connectDeviceDesc": "Link a child's tablet via QR code",
+    "myChildren": "My Children",
+    "myChildrenDesc": "Add and manage player profiles",
+    "matchHistory": "Match History",
+    "matchHistoryDesc": "View past games and stats",
+    "leaderboard": "Leaderboard",
+    "leaderboardDesc": "See who's the top player"
+  }
+}

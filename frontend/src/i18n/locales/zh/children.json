@@ -1,0 +1,22 @@
+{
+  "title": "我的孩子",
+  "addButton": "添加",
+  "addNewPlayer": "添加新孩子",
+  "chooseAvatar": "选择头像",
+  "ageGrade": "{{age}}岁 - {{grade}}年级",
+  "ageGradeAccessibility": "{{name}}，{{age}}岁，{{grade}}年级",
+  "emptyTitle": "还没有玩家！",
+  "emptySubtitle": "添加您的第一个小问答高手，开始乐趣吧",
+  "form": {
+    "namePlaceholder": "孩子的名字",
+    "agePlaceholder": "年龄",
+    "gradePlaceholder": "年级",
+    "savePlayer": "添加孩子"
+  },
+  "validation": {
+    "nameMinLength": "名字至少需要2个字符",
+    "nameMaxLength": "名字不能超过30个字符",
+    "ageRange": "年龄须在3-18岁之间",
+    "gradeRequired": "年级为必填项"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "greeting": "{{name}}さん、準備はいい？",
+  "appName": "QuizRope",
+  "activeUntil": "{{date}}まで有効",
+  "menu": {
+    "quickPlay": "クイックプレイ",
+    "quickPlayDesc": "すぐにテストゲームを始めよう",
+    "startNewGame": "新しいゲーム",
+    "startNewGameDesc": "マッチを作成してプレイヤーに挑戦しよう",
+    "connectDevice": "デバイスを接続",
+    "connectDeviceDesc": "QRコードでお子様のタブレットをリンク",
+    "myChildren": "お子様一覧",
+    "myChildrenDesc": "プレイヤープロフィールの追加と管理",
+    "matchHistory": "対戦履歴",
+    "matchHistoryDesc": "過去のゲームと統計を確認",
+    "leaderboard": "ランキング",
+    "leaderboardDesc": "トッププレイヤーを確認しよう"
+  }
+}

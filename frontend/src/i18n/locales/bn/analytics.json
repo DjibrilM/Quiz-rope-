@@ -1,0 +1,33 @@
+{
+  "dashboard": {
+    "title": "{{name}}-এর পরিসংখ্যান",
+    "totalMatches": "খেলা ম্যাচ",
+    "totalQuestions": "উত্তর দেওয়া প্রশ্ন",
+    "overallAccuracy": "সামগ্রিক নির্ভুলতা",
+    "subjectBreakdown": "বিষয় বিশ্লেষণ",
+    "bestSubject": "সবচেয়ে শক্তিশালী",
+    "weakestSubject": "অনুশীলন প্রয়োজন",
+    "correct": "{{correct}}/{{total}} সঠিক",
+    "avgTime": "গড় {{time}}সে",
+    "viewHistory": "ম্যাচের ইতিহাস দেখুন",
+    "noData": "কোনো ম্যাচ নেই",
+    "noDataSubtitle": "এখানে পরিসংখ্যান দেখতে কিছু গেম খেলুন!"
+  },
+  "history": {
+    "title": "ম্যাচের ইতিহাস",
+    "won": "জিতেছে",
+    "lost": "হেরেছে",
+    "accuracy": "{{accuracy}}% নির্ভুলতা",
+    "noMatches": "কোনো ম্যাচ পাওয়া যায়নি",
+    "noMatchesSubtitle": "এই খেলোয়াড় এখনো কোনো ম্যাচ সম্পন্ন করেনি।"
+  },
+  "review": {
+    "title": "ম্যাচ পর্যালোচনা",
+    "summary": "{{correct}}/{{total}} সঠিক ({{accuracy}}%)",
+    "question": "প্রশ্ন {{number}}",
+    "yourAnswer": "তোমার উত্তর",
+    "correctAnswer": "সঠিক উত্তর",
+    "responseTime": "{{time}}সে",
+    "explanation": "ব্যাখ্যা"
+  }
+}

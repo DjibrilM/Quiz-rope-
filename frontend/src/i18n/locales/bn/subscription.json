@@ -1,0 +1,24 @@
+{
+  "subtitle": "সব ফিচার আনলক করতে সাবস্ক্রাইব করুন",
+  "price": "$4.80",
+  "pricePeriod": "/ প্রতি মাসে",
+  "features": {
+    "unlimitedGames": "সীমাহীন খেলা ও ম্যাচ",
+    "allSubjects": "সকল বিষয় ও কঠিনতার স্তর",
+    "multiDevice": "একাধিক ডিভাইস সাপোর্ট",
+    "progressTracking": "অগ্রগতি ট্র্যাকিং ও পরিসংখ্যান",
+    "manageChildren": "একাধিক সন্তান পরিচালনা"
+  },
+  "subscribeNow": "এখনই সাবস্ক্রাইব করুন",
+  "processing": "প্রক্রিয়াকরণ হচ্ছে...",
+  "mockActivate": "তাৎক্ষণিক সক্রিয়করণ (মক)",
+  "completePayment": "পেমেন্ট সম্পূর্ণ করুন",
+  "loadingPayment": "পেমেন্ট পৃষ্ঠা লোড হচ্ছে...",
+  "errors": {
+    "paymentStartFailed": "পেমেন্ট শুরু করতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।",
+    "paymentFailedTitle": "পেমেন্ট ব্যর্থ",
+    "paymentVerifyFailed": "আপনার পেমেন্ট যাচাই করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+    "paymentVerifyError": "পেমেন্ট যাচাই ব্যর্থ। অনুগ্রহ করে সাপোর্টে যোগাযোগ করুন।",
+    "mockActivationFailed": "মক সক্রিয়করণ ব্যর্থ।"
+  }
+}

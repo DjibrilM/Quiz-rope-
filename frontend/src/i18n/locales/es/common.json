@@ -1,0 +1,95 @@
+{
+  "buttons": {
+    "back": "Volver",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "continue": "Continuar",
+    "done": "Listo",
+    "ok": "OK",
+    "retry": "Reintentar",
+    "save": "Guardar",
+    "tryAgain": "Intentar de nuevo",
+    "close": "Cerrar",
+    "grantPermission": "Conceder permiso",
+    "link": "Vincular"
+  },
+  "labels": {
+    "or": "o",
+    "vs": "vs",
+    "loading": "Cargando...",
+    "connecting": "Conectando...",
+    "reconnecting": "Reconectando...",
+    "processing": "Procesando...",
+    "sessionCode": "CODIGO DE SESION",
+    "generating": "Generando...",
+    "codeExpired": "Codigo expirado",
+    "generateNewBelow": "Genera uno nuevo abajo",
+    "linked": "¡Vinculado!",
+    "loadingCamera": "Cargando cámara...",
+    "gameCode": "CODIGO DE JUEGO",
+    "waitingForPlayers": "Esperando jugadores..."
+  },
+  "status": {
+    "active": "Activo",
+    "completed": "Completado",
+    "cancelled": "Cancelado",
+    "expired": "Expirado"
+  },
+  "errors": {
+    "somethingWentWrong": "Algo salió mal",
+    "tryAgainLater": "Por favor, inténtalo más tarde",
+    "networkError": "Error de red. Por favor, verifica tu conexión.",
+    "unexpectedError": "Ocurrió un error inesperado",
+    "error": "Error"
+  },
+  "subjects": {
+    "MATH": "Matemáticas",
+    "SCIENCE": "Ciencias",
+    "ENGLISH": "Inglés",
+    "HISTORY": "Historia",
+    "GEOGRAPHY": "Geografía",
+    "question": "Pregunta"
+  },
+  "difficulties": {
+    "easy": "Fácil",
+    "easyDesc": "Edades 6-8",
+    "medium": "Medio",
+    "mediumDesc": "Edades 9-11",
+    "hard": "Difícil",
+    "hardDesc": "Edades 12-14"
+  },
+  "avatars": {
+    "lion": "León",
+    "fox": "Zorro",
+    "panda": "Panda",
+    "unicorn": "Unicornio",
+    "dragon": "Dragón",
+    "owl": "Búho",
+    "dolphin": "Delfín",
+    "rocket": "Cohete",
+    "star": "Estrella",
+    "dino": "Dino",
+    "cat": "Gato",
+    "dog": "Perro"
+  },
+  "accessibility": {
+    "goBack": "Volver",
+    "closeModal": "Cerrar modal",
+    "selectOption": "Seleccionar opción",
+    "secondsRemaining": "{{count}} segundos restantes",
+    "subjectLabel": "Asignatura {{subject}}",
+    "difficultyLabel": "Dificultad {{label}}, {{desc}}",
+    "roundsLabel": "{{count}} rondas",
+    "avatarLabel": "Avatar {{name}}"
+  },
+  "dev": {
+    "mockModeBanner": "Ejecutando en modo de desarrollo",
+    "developmentMode": "Modo de desarrollo — Firebase no configurado"
+  },
+  "teams": {
+    "red": "Rojo",
+    "blue": "Azul",
+    "redTeam": "Equipo Rojo",
+    "blueTeam": "Equipo Azul"
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "expo": {
+    "name": "QuizRope",
+    "slug": "quizrope",
+    "version": "1.0.0",
+    "orientation": "default",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "scheme": "quizrope",
+    "splash": {
+      "backgroundColor": "#0F172A"
+    },
+    "android": {
+      "package": "com.quizrope.app",
+      "googleServicesFile": "./google-services.json"
+    },
+    "ios": {
+      "bundleIdentifier": "com.quizrope.app",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "supportsTablet": true,
+      "requireFullScreen": true,
+      "infoPlist": {
+        "UISupportedInterfaceOrientations": [
+          "UIInterfaceOrientationPortrait",
+          "UIInterfaceOrientationLandscapeLeft",
+          "UIInterfaceOrientationLandscapeRight"
+        ],
+        "UISupportedInterfaceOrientations~ipad": [
+          "UIInterfaceOrientationPortrait",
+          "UIInterfaceOrientationPortraitUpsideDown",
+          "UIInterfaceOrientationLandscapeLeft",
+          "UIInterfaceOrientationLandscapeRight"
+        ]
+      }
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow QuizRope to scan QR codes"
+        }
+      ],
+      "expo-asset",
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
+      "@react-native-google-signin/google-signin",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static",
+            "buildReactNativeFromSource": true,
+            "forceStaticLinking": [
+              "RNFBApp",
+              "RNFBAuth",
+              "RNFBFirestore"
+            ]
+          }
+        }
+      ],
+      "expo-font",
+      [
+        "expo-screen-orientation",
+        {
+          "initialOrientation": "DEFAULT"
+        }
+      ],
+      "expo-localization"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

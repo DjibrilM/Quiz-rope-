@@ -1,0 +1,24 @@
+{
+  "subtitle": "Subscribe to unlock all features",
+  "price": "$4.80",
+  "pricePeriod": "/ per month",
+  "features": {
+    "unlimitedGames": "Unlimited games & matches",
+    "allSubjects": "All subjects & difficulty levels",
+    "multiDevice": "Multi-device support",
+    "progressTracking": "Progress tracking & stats",
+    "manageChildren": "Manage multiple children"
+  },
+  "subscribeNow": "Subscribe Now",
+  "processing": "Processing...",
+  "mockActivate": "Activate Instantly (Mock)",
+  "completePayment": "Complete Payment",
+  "loadingPayment": "Loading payment page...",
+  "errors": {
+    "paymentStartFailed": "Failed to start payment. Please try again.",
+    "paymentFailedTitle": "Payment Failed",
+    "paymentVerifyFailed": "Your payment could not be verified. Please try again.",
+    "paymentVerifyError": "Payment verification failed. Please contact support.",
+    "mockActivationFailed": "Mock activation failed."
+  }
+}

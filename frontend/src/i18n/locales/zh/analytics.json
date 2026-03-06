@@ -1,0 +1,33 @@
+{
+  "dashboard": {
+    "title": "{{name}}的统计",
+    "totalMatches": "比赛次数",
+    "totalQuestions": "回答问题数",
+    "overallAccuracy": "总准确率",
+    "subjectBreakdown": "学科分析",
+    "bestSubject": "最强科目",
+    "weakestSubject": "需要练习",
+    "correct": "{{correct}}/{{total}} 正确",
+    "avgTime": "平均 {{time}}秒",
+    "viewHistory": "查看比赛记录",
+    "noData": "暂无比赛",
+    "noDataSubtitle": "参加一些比赛后这里会显示统计数据！"
+  },
+  "history": {
+    "title": "比赛记录",
+    "won": "胜",
+    "lost": "负",
+    "accuracy": "准确率 {{accuracy}}%",
+    "noMatches": "没有找到比赛",
+    "noMatchesSubtitle": "该选手还没有完成任何比赛。"
+  },
+  "review": {
+    "title": "比赛回顾",
+    "summary": "{{correct}}/{{total}} 正确 ({{accuracy}}%)",
+    "question": "第 {{number}} 题",
+    "yourAnswer": "你的答案",
+    "correctAnswer": "正确答案",
+    "responseTime": "{{time}}秒",
+    "explanation": "解析"
+  }
+}

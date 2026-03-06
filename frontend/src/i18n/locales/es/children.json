@@ -1,0 +1,22 @@
+{
+  "title": "Mis hijos",
+  "addButton": "Agregar",
+  "addNewPlayer": "Agregar nuevo hijo",
+  "chooseAvatar": "Elegir avatar",
+  "ageGrade": "Edad {{age}} - Grado {{grade}}",
+  "ageGradeAccessibility": "{{name}}, edad {{age}}, grado {{grade}}",
+  "emptyTitle": "¡Aún no hay jugadores!",
+  "emptySubtitle": "Agrega a tu primer pequeño quizzer para empezar la diversión",
+  "form": {
+    "namePlaceholder": "Nombre del niño",
+    "agePlaceholder": "Edad",
+    "gradePlaceholder": "Grado",
+    "savePlayer": "Agregar hijo"
+  },
+  "validation": {
+    "nameMinLength": "El nombre debe tener al menos 2 caracteres",
+    "nameMaxLength": "El nombre debe tener menos de 30 caracteres",
+    "ageRange": "La edad debe ser entre 3 y 18",
+    "gradeRequired": "El grado es obligatorio"
+  }
+}

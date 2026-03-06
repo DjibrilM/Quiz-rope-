@@ -1,0 +1,33 @@
+{
+  "dashboard": {
+    "title": "{{name}} के आंकड़े",
+    "totalMatches": "खेले गए मैच",
+    "totalQuestions": "उत्तर दिए गए प्रश्न",
+    "overallAccuracy": "कुल सटीकता",
+    "subjectBreakdown": "विषय विश्लेषण",
+    "bestSubject": "सबसे मजबूत",
+    "weakestSubject": "अभ्यास करें",
+    "correct": "{{correct}}/{{total}} सही",
+    "avgTime": "औसत {{time}}s",
+    "viewHistory": "मैच इतिहास देखें",
+    "noData": "कोई मैच नहीं",
+    "noDataSubtitle": "आंकड़े देखने के लिए कुछ गेम खेलें!"
+  },
+  "history": {
+    "title": "मैच इतिहास",
+    "won": "जीता",
+    "lost": "हारा",
+    "accuracy": "{{accuracy}}% सटीकता",
+    "noMatches": "कोई मैच नहीं मिला",
+    "noMatchesSubtitle": "इस खिलाड़ी ने अभी तक कोई मैच पूरा नहीं किया है।"
+  },
+  "review": {
+    "title": "मैच समीक्षा",
+    "summary": "{{correct}}/{{total}} सही ({{accuracy}}%)",
+    "question": "प्रश्न {{number}}",
+    "yourAnswer": "आपका उत्तर",
+    "correctAnswer": "सही उत्तर",
+    "responseTime": "{{time}}s",
+    "explanation": "व्याख्या"
+  }
+}

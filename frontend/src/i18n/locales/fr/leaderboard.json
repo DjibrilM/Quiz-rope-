@@ -1,0 +1,10 @@
+{
+  "title": "Classement",
+  "loadingMessage": "Chargement du classement...",
+  "emptyTitle": "Pas encore de classement",
+  "emptySubtitle": "Jouez quelques parties pour voir qui est le meilleur quizzer !",
+  "gamesPlayed_one": "{{count}} partie jouée",
+  "gamesPlayed_other": "{{count}} parties jouées",
+  "correct": "Correct",
+  "accuracy": "Précision"
+}

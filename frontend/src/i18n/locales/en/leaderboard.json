@@ -1,0 +1,10 @@
+{
+  "title": "Leaderboard",
+  "loadingMessage": "Loading rankings...",
+  "emptyTitle": "No rankings yet",
+  "emptySubtitle": "Play some games to see who's the top quizzer!",
+  "gamesPlayed_one": "{{count}} game played",
+  "gamesPlayed_other": "{{count}} games played",
+  "correct": "Correct",
+  "accuracy": "Accuracy"
+}

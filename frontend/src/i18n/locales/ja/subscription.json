@@ -1,0 +1,24 @@
+{
+  "subtitle": "すべての機能をアンロックするには登録してください",
+  "price": "$4.80",
+  "pricePeriod": "/ 月額",
+  "features": {
+    "unlimitedGames": "ゲームとマッチが無制限",
+    "allSubjects": "すべての教科と難易度レベル",
+    "multiDevice": "マルチデバイス対応",
+    "progressTracking": "進捗管理と統計",
+    "manageChildren": "複数のお子様を管理"
+  },
+  "subscribeNow": "今すぐ登録",
+  "processing": "処理中...",
+  "mockActivate": "即時有効化（テスト）",
+  "completePayment": "支払いを完了",
+  "loadingPayment": "支払いページを読み込み中...",
+  "errors": {
+    "paymentStartFailed": "支払いの開始に失敗しました。もう一度お試しください。",
+    "paymentFailedTitle": "支払い失敗",
+    "paymentVerifyFailed": "支払いを確認できませんでした。もう一度お試しください。",
+    "paymentVerifyError": "支払い確認に失敗しました。サポートにお問い合わせください。",
+    "mockActivationFailed": "テスト有効化に失敗しました。"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "subtitle": "Assine para desbloquear todos os recursos",
+  "price": "$4.80",
+  "pricePeriod": "/ por mes",
+  "features": {
+    "unlimitedGames": "Jogos e partidas ilimitados",
+    "allSubjects": "Todas as materias e niveis de dificuldade",
+    "multiDevice": "Suporte a multiplos dispositivos",
+    "progressTracking": "Acompanhamento de progresso e estatisticas",
+    "manageChildren": "Gerenciar multiplas criancas"
+  },
+  "subscribeNow": "Assinar Agora",
+  "processing": "Processando...",
+  "mockActivate": "Ativar Instantaneamente (Simulacao)",
+  "completePayment": "Concluir Pagamento",
+  "loadingPayment": "Carregando pagina de pagamento...",
+  "errors": {
+    "paymentStartFailed": "Falha ao iniciar o pagamento. Por favor, tente novamente.",
+    "paymentFailedTitle": "Pagamento Falhou",
+    "paymentVerifyFailed": "Seu pagamento nao pode ser verificado. Por favor, tente novamente.",
+    "paymentVerifyError": "Falha na verificacao do pagamento. Entre em contato com o suporte.",
+    "mockActivationFailed": "Falha na ativacao simulada."
+  }
+}

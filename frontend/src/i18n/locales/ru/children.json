@@ -1,0 +1,22 @@
+{
+  "title": "Мои дети",
+  "addButton": "Добавить",
+  "addNewPlayer": "Добавить ребёнка",
+  "chooseAvatar": "Выбрать аватар",
+  "ageGrade": "Возраст {{age}} - Класс {{grade}}",
+  "ageGradeAccessibility": "{{name}}, возраст {{age}}, класс {{grade}}",
+  "emptyTitle": "Игроков пока нет!",
+  "emptySubtitle": "Добавьте первого юного знатока, чтобы начать веселье",
+  "form": {
+    "namePlaceholder": "Имя ребёнка",
+    "agePlaceholder": "Возраст",
+    "gradePlaceholder": "Класс",
+    "savePlayer": "Добавить ребёнка"
+  },
+  "validation": {
+    "nameMinLength": "Имя должно содержать не менее 2 символов",
+    "nameMaxLength": "Имя должно быть короче 30 символов",
+    "ageRange": "Возраст должен быть от 3 до 18",
+    "gradeRequired": "Укажите класс"
+  }
+}

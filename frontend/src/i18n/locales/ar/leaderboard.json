@@ -1,0 +1,10 @@
+{
+  "title": "لوحة المتصدرين",
+  "loadingMessage": "جارٍ تحميل التصنيفات...",
+  "emptyTitle": "لا توجد تصنيفات بعد",
+  "emptySubtitle": "العب بعض الألعاب لمعرفة من هو أفضل متسابق!",
+  "gamesPlayed_one": "{{count}} لعبة",
+  "gamesPlayed_other": "{{count}} ألعاب",
+  "correct": "صحيح",
+  "accuracy": "الدقة"
+}

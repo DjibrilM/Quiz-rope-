@@ -1,0 +1,31 @@
+{
+  "title": "My Children",
+  "addButton": "Add",
+  "addNewPlayer": "Add New Kid",
+  "chooseAvatar": "Choose Avatar",
+  "ageBadge": "Age {{age}}",
+  "ageGrade": "Age {{age}} - Grade {{grade}}",
+  "ageGradeAccessibility": "{{name}}, age {{age}}, grade {{grade}}",
+  "removeAccessibility": "Remove {{name}}",
+  "emptyTitle": "No players yet!",
+  "emptySubtitle": "Add your first young quizzer to start the fun",
+  "form": {
+    "namePlaceholder": "Child's name",
+    "agePlaceholder": "Age",
+    "gradePlaceholder": "Grade",
+    "savePlayer": "Add Kid"
+  },
+  "validation": {
+    "nameMinLength": "Name must be at least 2 characters",
+    "nameMaxLength": "Name must be under 30 characters",
+    "ageRange": "Age must be 3-18",
+    "gradeRequired": "Grade is required"
+  },
+  "remove": {
+    "title": "Remove Player?",
+    "message": "Are you sure you want to remove {{name}}? This can't be undone.",
+    "confirm": "Remove",
+    "cancel": "Keep",
+    "removing": "Removing..."
+  }
+}

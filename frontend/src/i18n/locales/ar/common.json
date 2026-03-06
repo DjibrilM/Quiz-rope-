@@ -1,0 +1,95 @@
+{
+  "buttons": {
+    "back": "رجوع",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد",
+    "continue": "متابعة",
+    "done": "تم",
+    "ok": "حسناً",
+    "retry": "إعادة المحاولة",
+    "save": "حفظ",
+    "tryAgain": "حاول مرة أخرى",
+    "close": "إغلاق",
+    "grantPermission": "منح الإذن",
+    "link": "ربط"
+  },
+  "labels": {
+    "or": "أو",
+    "vs": "ضد",
+    "loading": "جارٍ التحميل...",
+    "connecting": "جارٍ الاتصال...",
+    "reconnecting": "إعادة الاتصال...",
+    "processing": "جارٍ المعالجة...",
+    "sessionCode": "رمز الجلسة",
+    "generating": "جارٍ الإنشاء...",
+    "codeExpired": "انتهت صلاحية الرمز",
+    "generateNewBelow": "أنشئ رمزاً جديداً أدناه",
+    "linked": "تم الربط!",
+    "loadingCamera": "جارٍ تحميل الكاميرا...",
+    "gameCode": "رمز اللعبة",
+    "waitingForPlayers": "في انتظار اللاعبين..."
+  },
+  "status": {
+    "active": "نشط",
+    "completed": "مكتمل",
+    "cancelled": "ملغى",
+    "expired": "منتهي الصلاحية"
+  },
+  "errors": {
+    "somethingWentWrong": "حدث خطأ ما",
+    "tryAgainLater": "يرجى المحاولة مرة أخرى لاحقاً",
+    "networkError": "خطأ في الشبكة. يرجى التحقق من اتصالك.",
+    "unexpectedError": "حدث خطأ غير متوقع",
+    "error": "خطأ"
+  },
+  "subjects": {
+    "MATH": "الرياضيات",
+    "SCIENCE": "العلوم",
+    "ENGLISH": "الإنجليزية",
+    "HISTORY": "التاريخ",
+    "GEOGRAPHY": "الجغرافيا",
+    "question": "سؤال"
+  },
+  "difficulties": {
+    "easy": "سهل",
+    "easyDesc": "الأعمار 6-8",
+    "medium": "متوسط",
+    "mediumDesc": "الأعمار 9-11",
+    "hard": "صعب",
+    "hardDesc": "الأعمار 12-14"
+  },
+  "avatars": {
+    "lion": "أسد",
+    "fox": "ثعلب",
+    "panda": "باندا",
+    "unicorn": "يونيكورن",
+    "dragon": "تنين",
+    "owl": "بومة",
+    "dolphin": "دولفين",
+    "rocket": "صاروخ",
+    "star": "نجمة",
+    "dino": "ديناصور",
+    "cat": "قطة",
+    "dog": "كلب"
+  },
+  "accessibility": {
+    "goBack": "رجوع",
+    "closeModal": "إغلاق النافذة",
+    "selectOption": "اختيار خيار",
+    "secondsRemaining": "{{count}} ثوانٍ متبقية",
+    "subjectLabel": "مادة {{subject}}",
+    "difficultyLabel": "صعوبة {{label}}، {{desc}}",
+    "roundsLabel": "{{count}} جولات",
+    "avatarLabel": "أفاتار {{name}}"
+  },
+  "dev": {
+    "mockModeBanner": "يعمل في وضع التطوير",
+    "developmentMode": "وضع التطوير — Firebase غير مُهيأ"
+  },
+  "teams": {
+    "red": "أحمر",
+    "blue": "أزرق",
+    "redTeam": "الفريق الأحمر",
+    "blueTeam": "الفريق الأزرق"
+  }
+}

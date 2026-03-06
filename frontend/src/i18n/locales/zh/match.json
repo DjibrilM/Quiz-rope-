@@ -1,0 +1,42 @@
+{
+  "create": {
+    "title": "选择科目",
+    "subtitle": "今天学什么？选择你的竞技场！",
+    "modeLabel": "游戏模式",
+    "solo": "单人",
+    "splitScreen": "分屏对战"
+  },
+  "lobby": {
+    "codeLabel": "代码",
+    "matchInfo": "{{subject}} · {{difficulty}} · {{rounds}} 轮",
+    "startMatch": "开始比赛！"
+  },
+  "solo": {
+    "title": "\u5355\u4eba - {{subject}}",
+    "startButton": "\u5f00\u59cb\u6e38\u620f"
+  },
+  "selectors": {
+    "subject": "科目",
+    "difficulty": "难度",
+    "rounds": "轮数"
+  },
+  "history": {
+    "title": "比赛记录",
+    "loadingMessage": "正在加载比赛记录...",
+    "emptyTitle": "还没有比赛",
+    "emptySubtitle": "开始一场游戏，在这里查看你的比赛记录！",
+    "won": "胜利"
+  },
+  "detail": {
+    "title": "比赛详情",
+    "rounds": "轮数",
+    "ropePosition": "绳子位置",
+    "status": "状态",
+    "winner": "获胜者",
+    "center": "中心",
+    "playerStatistics": "玩家统计",
+    "score": "得分",
+    "accuracy": "正确率",
+    "avgTime": "平均时间"
+  }
+}

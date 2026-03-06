@@ -1,0 +1,39 @@
+{
+  "roundLabel": "राउंड {{current}}/{{max}}",
+  "streak": "लगातार {{count}} सही!",
+  "questionProgress": "प्रश्न {{current}} / {{max}}",
+  "quit": {
+    "title": "गेम छोड़ें?",
+    "message": "क्या आप वाकई इस मैच को छोड़ना चाहते हैं? आपकी टीम हार जाएगी।",
+    "keepPlaying": "खेलते रहें",
+    "quitButton": "छोड़ें"
+  },
+  "result": {
+    "correct": "सही!",
+    "wrong": "ग़लत!",
+    "encouragement": ["लगभग!", "अच्छा प्रयास!", "जारी रखो!", "बहुत करीब!", "बढ़िया कोशिश!"],
+    "ropeMovesLeft": "रस्सी ← बाएं जाती है",
+    "ropeMovesRight": "रस्सी → दाएं जाती है"
+  },
+  "end": {
+    "gameOver": "गेम ख़त्म!",
+    "greatGame": "शानदार खेल!",
+    "closeMatch": "क्या कड़ा मुकाबला!",
+    "wins": "जीता!",
+    "champions": "चैंपियन!",
+    "bothAmazing": "दोनों टीमों ने शानदार खेला!",
+    "finalRopePosition": "रस्सी की अंतिम स्थिति",
+    "playerStats": "खिलाड़ी के आंकड़े",
+    "player": "खिलाड़ी",
+    "score": "स्कोर",
+    "accuracy": "सटीकता",
+    "avgTime": "औसत समय",
+    "playAgain": "फिर से खेलें",
+    "backToHome": "होम पर वापस जाएं",
+    "wellDone": "शाबाश!",
+    "finalScore": "अंतिम स्कोर: {{score}}"
+  },
+  "scoreboard": {
+    "score": "स्कोर"
+  }
+}

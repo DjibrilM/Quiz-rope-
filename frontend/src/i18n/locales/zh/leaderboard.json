@@ -1,0 +1,10 @@
+{
+  "title": "排行榜",
+  "loadingMessage": "正在加载排名...",
+  "emptyTitle": "还没有排名",
+  "emptySubtitle": "玩几场游戏，看看谁是问答之王！",
+  "gamesPlayed_one": "已玩 {{count}} 场游戏",
+  "gamesPlayed_other": "已玩 {{count}} 场游戏",
+  "correct": "正确",
+  "accuracy": "正确率"
+}

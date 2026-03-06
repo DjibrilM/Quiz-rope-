@@ -1,0 +1,33 @@
+{
+  "dashboard": {
+    "title": "إحصائيات {{name}}",
+    "totalMatches": "المباريات الملعوبة",
+    "totalQuestions": "الأسئلة المُجابة",
+    "overallAccuracy": "الدقة الإجمالية",
+    "subjectBreakdown": "تحليل المواد",
+    "bestSubject": "الأقوى",
+    "weakestSubject": "يحتاج تمرين",
+    "correct": "{{correct}}/{{total}} صحيح",
+    "avgTime": "متوسط {{time}}ث",
+    "viewHistory": "عرض سجل المباريات",
+    "noData": "لا توجد مباريات",
+    "noDataSubtitle": "العب بعض المباريات لرؤية الإحصائيات هنا!"
+  },
+  "history": {
+    "title": "سجل المباريات",
+    "won": "فاز",
+    "lost": "خسر",
+    "accuracy": "دقة {{accuracy}}%",
+    "noMatches": "لم يتم العثور على مباريات",
+    "noMatchesSubtitle": "هذا اللاعب لم يكمل أي مباراة بعد."
+  },
+  "review": {
+    "title": "مراجعة المباراة",
+    "summary": "{{correct}}/{{total}} صحيح ({{accuracy}}%)",
+    "question": "السؤال {{number}}",
+    "yourAnswer": "إجابتك",
+    "correctAnswer": "الإجابة الصحيحة",
+    "responseTime": "{{time}}ث",
+    "explanation": "التفسير"
+  }
+}

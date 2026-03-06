@@ -1,0 +1,42 @@
+{
+  "create": {
+    "title": "विषय चुनें",
+    "subtitle": "आज क्या सीखना है? अपना अखाड़ा चुनें!",
+    "modeLabel": "गेम मोड",
+    "solo": "एकल",
+    "splitScreen": "स्प्लिट स्क्रीन"
+  },
+  "lobby": {
+    "codeLabel": "कोड",
+    "matchInfo": "{{subject}} · {{difficulty}} · {{rounds}} राउंड",
+    "startMatch": "मैच शुरू करें!"
+  },
+  "solo": {
+    "title": "\u090f\u0915\u0932 - {{subject}}",
+    "startButton": "\u0916\u0947\u0932 \u0936\u0941\u0930\u0942 \u0915\u0930\u0947\u0902"
+  },
+  "selectors": {
+    "subject": "विषय",
+    "difficulty": "कठिनाई",
+    "rounds": "राउंड"
+  },
+  "history": {
+    "title": "मैच इतिहास",
+    "loadingMessage": "आपका मैच इतिहास लोड हो रहा है...",
+    "emptyTitle": "अभी कोई मैच नहीं",
+    "emptySubtitle": "अपना मैच इतिहास यहां देखने के लिए एक गेम शुरू करें!",
+    "won": "जीता"
+  },
+  "detail": {
+    "title": "मैच विवरण",
+    "rounds": "राउंड",
+    "ropePosition": "रस्सी की स्थिति",
+    "status": "स्थिति",
+    "winner": "विजेता",
+    "center": "केंद्र",
+    "playerStatistics": "खिलाड़ी के आंकड़े",
+    "score": "स्कोर",
+    "accuracy": "सटीकता",
+    "avgTime": "औसत समय"
+  }
+}

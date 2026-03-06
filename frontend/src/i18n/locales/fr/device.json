@@ -1,0 +1,34 @@
+{
+  "childJoin": {
+    "title": "Rejoindre une partie !",
+    "instruction": "Montrez ce code à votre parent",
+    "waitingStatus": "En attente du scan par le parent...",
+    "generateNewCode": "Générer un nouveau code",
+    "errorToken": "Impossible d'obtenir le code enfant. Appuyez ci-dessous pour réessayer."
+  },
+  "connectDevice": {
+    "scanTitle": "Scanner le code de l'enfant",
+    "scanInstruction": "Pointez la caméra vers le QR code sur l'appareil de l'enfant",
+    "manualEntryDivider": "ou entrez le code manuellement",
+    "manualCodePlaceholder": "Entrer le code de session",
+    "loadingTitle": "Chargement...",
+    "loadingMessage": "Récupération des joueurs...",
+    "selectChildTitle": "Qui joue ?",
+    "selectChildInstruction": "Sélectionnez un enfant pour cet appareil",
+    "addNewChild": "+ Ajouter un enfant",
+    "newPlayerTitle": "Nouveau joueur",
+    "linkingTitle": "Association de l'appareil...",
+    "settingUpSession": "Configuration de la session de {{name}}",
+    "errorTitle": "Une erreur est survenue",
+    "successTitle": "Appareil associé !",
+    "successStatus": "Connecté",
+    "successMessage": "L'appareil de {{name}} est maintenant associé"
+  },
+  "qrCode": {
+    "cameraPermission": "L'accès à la caméra est nécessaire pour scanner les QR codes",
+    "generating": "Génération...",
+    "expired": "Code expiré",
+    "expiredMessage": "Générez-en un nouveau ci-dessous",
+    "linked": "Associé !"
+  }
+}

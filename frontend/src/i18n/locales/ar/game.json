@@ -1,0 +1,39 @@
+{
+  "roundLabel": "الجولة {{current}}/{{max}}",
+  "streak": "{{count}} على التوالي!",
+  "questionProgress": "السؤال {{current}} من {{max}}",
+  "quit": {
+    "title": "مغادرة اللعبة؟",
+    "message": "هل أنت متأكد أنك تريد ترك هذه المباراة؟ سيخسر فريقك بالانسحاب.",
+    "keepPlaying": "متابعة اللعب",
+    "quitButton": "مغادرة"
+  },
+  "result": {
+    "correct": "صحيح!",
+    "wrong": "خطأ!",
+    "encouragement": ["تقريباً!", "محاولة جيدة!", "استمر!", "قريب جداً!", "مجهود رائع!"],
+    "ropeMovesLeft": "الحبل يتحرك ← يساراً",
+    "ropeMovesRight": "الحبل يتحرك → يميناً"
+  },
+  "end": {
+    "gameOver": "انتهت اللعبة!",
+    "greatGame": "لعبة رائعة!",
+    "closeMatch": "يا لها من مباراة متقاربة!",
+    "wins": "فاز!",
+    "champions": "الأبطال!",
+    "bothAmazing": "كلا الفريقين لعبا بشكل مذهل!",
+    "finalRopePosition": "موضع الحبل النهائي",
+    "playerStats": "إحصائيات اللاعبين",
+    "player": "لاعب",
+    "score": "النتيجة",
+    "accuracy": "الدقة",
+    "avgTime": "متوسط الوقت",
+    "playAgain": "العب مجدداً",
+    "backToHome": "العودة للرئيسية",
+    "wellDone": "أحسنت!",
+    "finalScore": "النتيجة النهائية: {{score}}"
+  },
+  "scoreboard": {
+    "score": "النتيجة"
+  }
+}

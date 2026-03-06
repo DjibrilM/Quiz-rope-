@@ -1,0 +1,24 @@
+{
+  "subtitle": "Suscríbete para desbloquear todas las funciones",
+  "price": "$4.80",
+  "pricePeriod": "/ por mes",
+  "features": {
+    "unlimitedGames": "Juegos y partidas ilimitados",
+    "allSubjects": "Todas las asignaturas y niveles de dificultad",
+    "multiDevice": "Soporte para múltiples dispositivos",
+    "progressTracking": "Seguimiento de progreso y estadísticas",
+    "manageChildren": "Gestionar múltiples hijos"
+  },
+  "subscribeNow": "Suscribirse ahora",
+  "processing": "Procesando...",
+  "mockActivate": "Activar al instante (simulación)",
+  "completePayment": "Completar pago",
+  "loadingPayment": "Cargando página de pago...",
+  "errors": {
+    "paymentStartFailed": "Error al iniciar el pago. Por favor, inténtalo de nuevo.",
+    "paymentFailedTitle": "Pago fallido",
+    "paymentVerifyFailed": "No se pudo verificar tu pago. Por favor, inténtalo de nuevo.",
+    "paymentVerifyError": "La verificación del pago falló. Por favor, contacta a soporte.",
+    "mockActivationFailed": "La activación simulada falló."
+  }
+}

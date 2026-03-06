@@ -1,0 +1,50 @@
+{
+  "create": {
+    "title": "Pick a Subject",
+    "subtitle": "What are we learning today? Pick your arena!",
+    "modeLabel": "Game Mode",
+    "solo": "Solo",
+    "splitScreen": "Split Screen",
+    "startButton": "Play {{subject}}!",
+    "subjectHint": {
+      "MATH": "Numbers & puzzles",
+      "SCIENCE": "Experiments & discovery",
+      "ENGLISH": "Words & stories",
+      "HISTORY": "Past adventures",
+      "GEOGRAPHY": "Explore the world"
+    }
+  },
+  "lobby": {
+    "codeLabel": "CODE",
+    "matchInfo": "{{subject}} · {{difficulty}} · {{rounds}} rounds",
+    "startMatch": "Start Match!"
+  },
+  "solo": {
+    "title": "Solo - {{subject}}",
+    "startButton": "Start Game"
+  },
+  "selectors": {
+    "subject": "Subject",
+    "difficulty": "Difficulty",
+    "rounds": "Rounds"
+  },
+  "history": {
+    "title": "Match History",
+    "loadingMessage": "Loading your battle history...",
+    "emptyTitle": "No matches yet",
+    "emptySubtitle": "Start a game to see your battle history here!",
+    "won": "Won"
+  },
+  "detail": {
+    "title": "Match Details",
+    "rounds": "Rounds",
+    "ropePosition": "Rope Position",
+    "status": "Status",
+    "winner": "Winner",
+    "center": "Center",
+    "playerStatistics": "Player Statistics",
+    "score": "Score",
+    "accuracy": "Accuracy",
+    "avgTime": "Avg Time"
+  }
+}

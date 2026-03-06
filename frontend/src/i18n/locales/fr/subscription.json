@@ -1,0 +1,24 @@
+{
+  "subtitle": "Abonnez-vous pour débloquer toutes les fonctionnalités",
+  "price": "4,80 $",
+  "pricePeriod": "/ par mois",
+  "features": {
+    "unlimitedGames": "Jeux et matchs illimités",
+    "allSubjects": "Toutes les matières et niveaux de difficulté",
+    "multiDevice": "Support multi-appareils",
+    "progressTracking": "Suivi de progression et statistiques",
+    "manageChildren": "Gérer plusieurs enfants"
+  },
+  "subscribeNow": "S'abonner maintenant",
+  "processing": "Traitement...",
+  "mockActivate": "Activer instantanément (Simulation)",
+  "completePayment": "Finaliser le paiement",
+  "loadingPayment": "Chargement de la page de paiement...",
+  "errors": {
+    "paymentStartFailed": "Impossible de démarrer le paiement. Veuillez réessayer.",
+    "paymentFailedTitle": "Échec du paiement",
+    "paymentVerifyFailed": "Votre paiement n'a pas pu être vérifié. Veuillez réessayer.",
+    "paymentVerifyError": "La vérification du paiement a échoué. Veuillez contacter le support.",
+    "mockActivationFailed": "Échec de l'activation simulée."
+  }
+}

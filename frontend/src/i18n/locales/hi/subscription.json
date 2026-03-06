@@ -1,0 +1,24 @@
+{
+  "subtitle": "सभी सुविधाएं अनलॉक करने के लिए सब्सक्राइब करें",
+  "price": "$4.80",
+  "pricePeriod": "/ प्रति माह",
+  "features": {
+    "unlimitedGames": "असीमित गेम और मैच",
+    "allSubjects": "सभी विषय और कठिनाई स्तर",
+    "multiDevice": "मल्टी-डिवाइस सपोर्ट",
+    "progressTracking": "प्रगति ट्रैकिंग और आंकड़े",
+    "manageChildren": "कई बच्चों को प्रबंधित करें"
+  },
+  "subscribeNow": "अभी सब्सक्राइब करें",
+  "processing": "प्रोसेस हो रहा है...",
+  "mockActivate": "तुरंत सक्रिय करें (मॉक)",
+  "completePayment": "भुगतान पूरा करें",
+  "loadingPayment": "भुगतान पेज लोड हो रहा है...",
+  "errors": {
+    "paymentStartFailed": "भुगतान शुरू करने में विफल। कृपया पुनः प्रयास करें।",
+    "paymentFailedTitle": "भुगतान विफल",
+    "paymentVerifyFailed": "आपका भुगतान सत्यापित नहीं हो सका। कृपया पुनः प्रयास करें।",
+    "paymentVerifyError": "भुगतान सत्यापन विफल। कृपया सहायता से संपर्क करें।",
+    "mockActivationFailed": "मॉक सक्रियण विफल।"
+  }
+}

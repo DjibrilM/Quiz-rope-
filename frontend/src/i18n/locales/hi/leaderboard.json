@@ -1,0 +1,10 @@
+{
+  "title": "लीडरबोर्ड",
+  "loadingMessage": "रैंकिंग लोड हो रही है...",
+  "emptyTitle": "अभी कोई रैंकिंग नहीं",
+  "emptySubtitle": "कुछ गेम खेलें और देखें कि सबसे बड़ा क्विज़र कौन है!",
+  "gamesPlayed_one": "{{count}} गेम खेला गया",
+  "gamesPlayed_other": "{{count}} गेम खेले गए",
+  "correct": "सही",
+  "accuracy": "सटीकता"
+}

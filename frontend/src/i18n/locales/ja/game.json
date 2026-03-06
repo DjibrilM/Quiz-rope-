@@ -1,0 +1,39 @@
+{
+  "roundLabel": "ラウンド {{current}}/{{max}}",
+  "streak": "{{count}}連続正解！",
+  "questionProgress": "{{max}}問中 {{current}}問目",
+  "quit": {
+    "title": "ゲームを終了しますか？",
+    "message": "本当にこの対戦を放棄しますか？チームは不戦敗になります。",
+    "keepPlaying": "続ける",
+    "quitButton": "終了"
+  },
+  "result": {
+    "correct": "正解！",
+    "wrong": "不正解！",
+    "encouragement": ["おしい！", "いい線！", "その調子！", "あと少し！", "がんばった！"],
+    "ropeMovesLeft": "ロープが左に移動",
+    "ropeMovesRight": "ロープが右に移動"
+  },
+  "end": {
+    "gameOver": "ゲーム終了！",
+    "greatGame": "ナイスゲーム！",
+    "closeMatch": "大接戦！",
+    "wins": "の勝利！",
+    "champions": "チャンピオン！",
+    "bothAmazing": "両チームともすばらしかった！",
+    "finalRopePosition": "最終ロープ位置",
+    "playerStats": "プレイヤー統計",
+    "player": "プレイヤー",
+    "score": "スコア",
+    "accuracy": "正答率",
+    "avgTime": "平均時間",
+    "playAgain": "もう一度プレイ",
+    "backToHome": "ホームに戻る",
+    "wellDone": "よくできました！",
+    "finalScore": "最終スコア：{{score}}"
+  },
+  "scoreboard": {
+    "score": "スコア"
+  }
+}

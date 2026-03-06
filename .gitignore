@@ -1,0 +1,34 @@
+node_modules/
+dist/
+.env
+.env.local
+*.local
+
+# Firebase
+GoogleService-Info.plist
+google-services.json
+firebase-config.json
+
+# Expo
+.expo/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Build
+build/
+*.tsbuildinfo

@@ -1,0 +1,24 @@
+{
+  "subtitle": "订阅以解锁全部功能",
+  "price": "$4.80",
+  "pricePeriod": "/ 每月",
+  "features": {
+    "unlimitedGames": "无限游戏和比赛",
+    "allSubjects": "所有科目和难度等级",
+    "multiDevice": "多设备支持",
+    "progressTracking": "进度跟踪和统计",
+    "manageChildren": "管理多个孩子"
+  },
+  "subscribeNow": "立即订阅",
+  "processing": "处理中...",
+  "mockActivate": "立即激活（模拟）",
+  "completePayment": "完成支付",
+  "loadingPayment": "正在加载支付页面...",
+  "errors": {
+    "paymentStartFailed": "支付启动失败。请重试。",
+    "paymentFailedTitle": "支付失败",
+    "paymentVerifyFailed": "无法验证您的支付。请重试。",
+    "paymentVerifyError": "支付验证失败。请联系客服。",
+    "mockActivationFailed": "模拟激活失败。"
+  }
+}

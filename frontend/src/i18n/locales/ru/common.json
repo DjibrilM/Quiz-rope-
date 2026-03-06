@@ -1,0 +1,95 @@
+{
+  "buttons": {
+    "back": "Назад",
+    "cancel": "Отмена",
+    "confirm": "Подтвердить",
+    "continue": "Продолжить",
+    "done": "Готово",
+    "ok": "ОК",
+    "retry": "Повторить",
+    "save": "Сохранить",
+    "tryAgain": "Попробовать снова",
+    "close": "Закрыть",
+    "grantPermission": "Предоставить разрешение",
+    "link": "Привязать"
+  },
+  "labels": {
+    "or": "или",
+    "vs": "против",
+    "loading": "Загрузка...",
+    "connecting": "Подключение...",
+    "reconnecting": "Переподключение...",
+    "processing": "Обработка...",
+    "sessionCode": "КОД СЕССИИ",
+    "generating": "Генерация...",
+    "codeExpired": "Код истёк",
+    "generateNewBelow": "Сгенерируйте новый ниже",
+    "linked": "Привязано!",
+    "loadingCamera": "Загрузка камеры...",
+    "gameCode": "КОД ИГРЫ",
+    "waitingForPlayers": "Ожидание игроков..."
+  },
+  "status": {
+    "active": "Активен",
+    "completed": "Завершён",
+    "cancelled": "Отменён",
+    "expired": "Истёк"
+  },
+  "errors": {
+    "somethingWentWrong": "Что-то пошло не так",
+    "tryAgainLater": "Пожалуйста, попробуйте позже",
+    "networkError": "Ошибка сети. Проверьте подключение.",
+    "unexpectedError": "Произошла непредвиденная ошибка",
+    "error": "Ошибка"
+  },
+  "subjects": {
+    "MATH": "Математика",
+    "SCIENCE": "Наука",
+    "ENGLISH": "Английский",
+    "HISTORY": "История",
+    "GEOGRAPHY": "География",
+    "question": "Вопрос"
+  },
+  "difficulties": {
+    "easy": "Лёгкий",
+    "easyDesc": "Возраст 6-8",
+    "medium": "Средний",
+    "mediumDesc": "Возраст 9-11",
+    "hard": "Сложный",
+    "hardDesc": "Возраст 12-14"
+  },
+  "avatars": {
+    "lion": "Лев",
+    "fox": "Лиса",
+    "panda": "Панда",
+    "unicorn": "Единорог",
+    "dragon": "Дракон",
+    "owl": "Сова",
+    "dolphin": "Дельфин",
+    "rocket": "Ракета",
+    "star": "Звезда",
+    "dino": "Динозавр",
+    "cat": "Кот",
+    "dog": "Собака"
+  },
+  "accessibility": {
+    "goBack": "Назад",
+    "closeModal": "Закрыть окно",
+    "selectOption": "Выбрать вариант",
+    "secondsRemaining": "Осталось {{count}} секунд",
+    "subjectLabel": "Предмет: {{subject}}",
+    "difficultyLabel": "Сложность: {{label}}, {{desc}}",
+    "roundsLabel": "{{count}} раундов",
+    "avatarLabel": "Аватар {{name}}"
+  },
+  "dev": {
+    "mockModeBanner": "Работает в режиме разработки",
+    "developmentMode": "Режим разработки — Firebase не настроен"
+  },
+  "teams": {
+    "red": "Красный",
+    "blue": "Синий",
+    "redTeam": "Красная команда",
+    "blueTeam": "Синяя команда"
+  }
+}

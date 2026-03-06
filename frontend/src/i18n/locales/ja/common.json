@@ -1,0 +1,95 @@
+{
+  "buttons": {
+    "back": "戻る",
+    "cancel": "キャンセル",
+    "confirm": "確認",
+    "continue": "続ける",
+    "done": "完了",
+    "ok": "OK",
+    "retry": "再試行",
+    "save": "保存",
+    "tryAgain": "もう一度試す",
+    "close": "閉じる",
+    "grantPermission": "許可する",
+    "link": "リンク"
+  },
+  "labels": {
+    "or": "または",
+    "vs": "対",
+    "loading": "読み込み中...",
+    "connecting": "接続中...",
+    "reconnecting": "再接続中...",
+    "processing": "処理中...",
+    "sessionCode": "セッションコード",
+    "generating": "生成中...",
+    "codeExpired": "コード期限切れ",
+    "generateNewBelow": "下で新しいコードを生成してください",
+    "linked": "リンク済み！",
+    "loadingCamera": "カメラを読み込み中...",
+    "gameCode": "ゲームコード",
+    "waitingForPlayers": "プレイヤーを待っています..."
+  },
+  "status": {
+    "active": "アクティブ",
+    "completed": "完了",
+    "cancelled": "キャンセル済み",
+    "expired": "期限切れ"
+  },
+  "errors": {
+    "somethingWentWrong": "問題が発生しました",
+    "tryAgainLater": "後でもう一度お試しください",
+    "networkError": "ネットワークエラーです。接続を確認してください。",
+    "unexpectedError": "予期しないエラーが発生しました",
+    "error": "エラー"
+  },
+  "subjects": {
+    "MATH": "算数",
+    "SCIENCE": "理科",
+    "ENGLISH": "英語",
+    "HISTORY": "歴史",
+    "GEOGRAPHY": "地理",
+    "question": "問題"
+  },
+  "difficulties": {
+    "easy": "かんたん",
+    "easyDesc": "6〜8歳向け",
+    "medium": "ふつう",
+    "mediumDesc": "9〜11歳向け",
+    "hard": "むずかしい",
+    "hardDesc": "12〜14歳向け"
+  },
+  "avatars": {
+    "lion": "ライオン",
+    "fox": "キツネ",
+    "panda": "パンダ",
+    "unicorn": "ユニコーン",
+    "dragon": "ドラゴン",
+    "owl": "フクロウ",
+    "dolphin": "イルカ",
+    "rocket": "ロケット",
+    "star": "スター",
+    "dino": "恐竜",
+    "cat": "ネコ",
+    "dog": "イヌ"
+  },
+  "accessibility": {
+    "goBack": "戻る",
+    "closeModal": "モーダルを閉じる",
+    "selectOption": "オプションを選択",
+    "secondsRemaining": "残り{{count}}秒",
+    "subjectLabel": "教科：{{subject}}",
+    "difficultyLabel": "難易度：{{label}}、{{desc}}",
+    "roundsLabel": "{{count}}ラウンド",
+    "avatarLabel": "{{name}}アバター"
+  },
+  "dev": {
+    "mockModeBanner": "開発モードで実行中",
+    "developmentMode": "開発モード — Firebaseが設定されていません"
+  },
+  "teams": {
+    "red": "赤",
+    "blue": "青",
+    "redTeam": "赤チーム",
+    "blueTeam": "青チーム"
+  }
+}

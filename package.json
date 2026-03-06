@@ -1,0 +1,12 @@
+{
+  "name": "quizrope",
+  "version": "1.0.0",
+  "private": true,
+  "description": "QuizRope educational quiz game for kids - tablet-first multiplayer experience",
+  "scripts": {
+    "backend:dev": "cd backend && npm run start:dev",
+    "backend:start": "cd backend && npm run start",
+    "frontend:dev": "cd frontend && npx expo start",
+    "install:all": "cd backend && npm install && cd ../frontend && npm install"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "greeting": "खेलने के लिए तैयार, {{name}}?",
+  "appName": "QuizRope",
+  "activeUntil": "{{date}} तक सक्रिय",
+  "menu": {
+    "quickPlay": "क्विक प्ले",
+    "quickPlayDesc": "सीधे एक टेस्ट गेम में कूदें",
+    "startNewGame": "नया गेम शुरू करें",
+    "startNewGameDesc": "एक मैच बनाएं और खिलाड़ियों को चुनौती दें",
+    "connectDevice": "डिवाइस कनेक्ट करें",
+    "connectDeviceDesc": "QR कोड से बच्चे का टैबलेट लिंक करें",
+    "myChildren": "मेरे बच्चे",
+    "myChildrenDesc": "खिलाड़ी प्रोफ़ाइल जोड़ें और प्रबंधित करें",
+    "matchHistory": "मैच इतिहास",
+    "matchHistoryDesc": "पिछले खेल और आंकड़े देखें",
+    "leaderboard": "लीडरबोर्ड",
+    "leaderboardDesc": "देखें कि शीर्ष खिलाड़ी कौन है"
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "buttons": {
+    "back": "Back",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "continue": "Continue",
+    "done": "Done",
+    "ok": "OK",
+    "retry": "Retry",
+    "save": "Save",
+    "tryAgain": "Try Again",
+    "close": "Close",
+    "grantPermission": "Grant Permission",
+    "link": "Link"
+  },
+  "labels": {
+    "or": "or",
+    "vs": "vs",
+    "loading": "Loading...",
+    "connecting": "Connecting...",
+    "reconnecting": "Reconnecting...",
+    "processing": "Processing...",
+    "sessionCode": "SESSION CODE",
+    "generating": "Generating...",
+    "codeExpired": "Code Expired",
+    "generateNewBelow": "Generate a new one below",
+    "linked": "Linked!",
+    "loadingCamera": "Loading camera...",
+    "gameCode": "GAME CODE",
+    "waitingForPlayers": "Waiting for players..."
+  },
+  "status": {
+    "active": "Active",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "expired": "Expired"
+  },
+  "errors": {
+    "somethingWentWrong": "Something went wrong",
+    "tryAgainLater": "Please try again later",
+    "networkError": "Network error. Please check your connection.",
+    "unexpectedError": "An unexpected error occurred",
+    "error": "Error"
+  },
+  "subjects": {
+    "MATH": "Math",
+    "SCIENCE": "Science",
+    "ENGLISH": "English",
+    "HISTORY": "History",
+    "GEOGRAPHY": "Geography",
+    "question": "Question"
+  },
+  "difficulties": {
+    "easy": "Easy",
+    "easyDesc": "Ages 6-8",
+    "medium": "Medium",
+    "mediumDesc": "Ages 9-11",
+    "hard": "Hard",
+    "hardDesc": "Ages 12-14"
+  },
+  "avatars": {
+    "lion": "Lion",
+    "fox": "Fox",
+    "panda": "Panda",
+    "unicorn": "Unicorn",
+    "dragon": "Dragon",
+    "owl": "Owl",
+    "dolphin": "Dolphin",
+    "rocket": "Rocket",
+    "star": "Star",
+    "dino": "Dino",
+    "cat": "Cat",
+    "dog": "Dog"
+  },
+  "accessibility": {
+    "goBack": "Go back",
+    "closeModal": "Close modal",
+    "selectOption": "Select option",
+    "secondsRemaining": "{{count}} seconds remaining",
+    "subjectLabel": "{{subject}} subject",
+    "difficultyLabel": "{{label}} difficulty, {{desc}}",
+    "roundsLabel": "{{count}} rounds",
+    "avatarLabel": "{{name}} avatar"
+  },
+  "dev": {
+    "mockModeBanner": "Running in development mode",
+    "developmentMode": "Development Mode — Firebase not configured"
+  },
+  "teams": {
+    "red": "Red",
+    "blue": "Blue",
+    "redTeam": "Red Team",
+    "blueTeam": "Blue Team"
+  }
+}

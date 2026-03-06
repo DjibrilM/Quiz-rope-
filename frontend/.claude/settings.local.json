@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(npm install:*)",
+      "Bash(node:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx expo:*)",
+      "Bash(echo:*)",
+      "WebSearch",
+      "WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(git checkout:*)",
+      "Bash(git -C /Users/jibm/Desktop/projects/tug-of-war-for-your-brain/frontend rev-parse:*)"
+    ]
+  }
+}

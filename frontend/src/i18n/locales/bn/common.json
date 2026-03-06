@@ -1,0 +1,95 @@
+{
+  "buttons": {
+    "back": "পেছনে",
+    "cancel": "বাতিল",
+    "confirm": "নিশ্চিত করুন",
+    "continue": "চালিয়ে যান",
+    "done": "সম্পন্ন",
+    "ok": "ঠিক আছে",
+    "retry": "পুনরায় চেষ্টা",
+    "save": "সংরক্ষণ",
+    "tryAgain": "আবার চেষ্টা করুন",
+    "close": "বন্ধ করুন",
+    "grantPermission": "অনুমতি দিন",
+    "link": "সংযুক্ত করুন"
+  },
+  "labels": {
+    "or": "অথবা",
+    "vs": "বনাম",
+    "loading": "লোড হচ্ছে...",
+    "connecting": "সংযোগ হচ্ছে...",
+    "reconnecting": "পুনরায় সংযোগ হচ্ছে...",
+    "processing": "প্রক্রিয়াকরণ হচ্ছে...",
+    "sessionCode": "সেশন কোড",
+    "generating": "তৈরি হচ্ছে...",
+    "codeExpired": "কোডের মেয়াদ শেষ",
+    "generateNewBelow": "নিচে একটি নতুন কোড তৈরি করুন",
+    "linked": "সংযুক্ত!",
+    "loadingCamera": "ক্যামেরা লোড হচ্ছে...",
+    "gameCode": "গেম কোড",
+    "waitingForPlayers": "খেলোয়াড়দের জন্য অপেক্ষা করা হচ্ছে..."
+  },
+  "status": {
+    "active": "সক্রিয়",
+    "completed": "সম্পন্ন",
+    "cancelled": "বাতিল",
+    "expired": "মেয়াদোত্তীর্ণ"
+  },
+  "errors": {
+    "somethingWentWrong": "কিছু একটা ভুল হয়েছে",
+    "tryAgainLater": "অনুগ্রহ করে পরে আবার চেষ্টা করুন",
+    "networkError": "নেটওয়ার্ক ত্রুটি। অনুগ্রহ করে আপনার সংযোগ পরীক্ষা করুন।",
+    "unexpectedError": "একটি অপ্রত্যাশিত ত্রুটি ঘটেছে",
+    "error": "ত্রুটি"
+  },
+  "subjects": {
+    "MATH": "গণিত",
+    "SCIENCE": "বিজ্ঞান",
+    "ENGLISH": "ইংরেজি",
+    "HISTORY": "ইতিহাস",
+    "GEOGRAPHY": "ভূগোল",
+    "question": "প্রশ্ন"
+  },
+  "difficulties": {
+    "easy": "সহজ",
+    "easyDesc": "বয়স ৬-৮",
+    "medium": "মাঝারি",
+    "mediumDesc": "বয়স ৯-১১",
+    "hard": "কঠিন",
+    "hardDesc": "বয়স ১২-১৪"
+  },
+  "avatars": {
+    "lion": "সিংহ",
+    "fox": "শিয়াল",
+    "panda": "পান্ডা",
+    "unicorn": "ইউনিকর্ন",
+    "dragon": "ড্রাগন",
+    "owl": "পেঁচা",
+    "dolphin": "ডলফিন",
+    "rocket": "রকেট",
+    "star": "তারা",
+    "dino": "ডাইনো",
+    "cat": "বিড়াল",
+    "dog": "কুকুর"
+  },
+  "accessibility": {
+    "goBack": "পেছনে যান",
+    "closeModal": "উইন্ডো বন্ধ করুন",
+    "selectOption": "একটি বিকল্প নির্বাচন করুন",
+    "secondsRemaining": "{{count}} সেকেন্ড বাকি",
+    "subjectLabel": "{{subject}} বিষয়",
+    "difficultyLabel": "{{label}} কঠিনতা, {{desc}}",
+    "roundsLabel": "{{count}} রাউন্ড",
+    "avatarLabel": "{{name}} অবতার"
+  },
+  "dev": {
+    "mockModeBanner": "ডেভেলপমেন্ট মোডে চলছে",
+    "developmentMode": "ডেভেলপমেন্ট মোড — Firebase কনফিগার করা হয়নি"
+  },
+  "teams": {
+    "red": "লাল",
+    "blue": "নীল",
+    "redTeam": "লাল দল",
+    "blueTeam": "নীল দল"
+  }
+}

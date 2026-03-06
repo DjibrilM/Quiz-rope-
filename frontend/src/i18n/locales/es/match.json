@@ -1,0 +1,42 @@
+{
+  "create": {
+    "title": "Elige una asignatura",
+    "subtitle": "¿Qué aprendemos hoy? ¡Elige tu arena!",
+    "modeLabel": "Modo de juego",
+    "solo": "Solo",
+    "splitScreen": "Pantalla dividida"
+  },
+  "lobby": {
+    "codeLabel": "CODIGO",
+    "matchInfo": "{{subject}} · {{difficulty}} · {{rounds}} rondas",
+    "startMatch": "¡Iniciar partida!"
+  },
+  "solo": {
+    "title": "Solo - {{subject}}",
+    "startButton": "Empezar"
+  },
+  "selectors": {
+    "subject": "Asignatura",
+    "difficulty": "Dificultad",
+    "rounds": "Rondas"
+  },
+  "history": {
+    "title": "Historial de partidas",
+    "loadingMessage": "Cargando tu historial de batallas...",
+    "emptyTitle": "Aún no hay partidas",
+    "emptySubtitle": "¡Empieza un juego para ver tu historial de batallas aquí!",
+    "won": "Ganada"
+  },
+  "detail": {
+    "title": "Detalles de la partida",
+    "rounds": "Rondas",
+    "ropePosition": "Posición de la cuerda",
+    "status": "Estado",
+    "winner": "Ganador",
+    "center": "Centro",
+    "playerStatistics": "Estadísticas de jugadores",
+    "score": "Puntuación",
+    "accuracy": "Precisión",
+    "avgTime": "Tiempo promedio"
+  }
+}

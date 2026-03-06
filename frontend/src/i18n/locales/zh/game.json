@@ -1,0 +1,39 @@
+{
+  "roundLabel": "第 {{current}}/{{max}} 轮",
+  "streak": "连续 {{count}} 题正确！",
+  "questionProgress": "第 {{current}} 题，共 {{max}} 题",
+  "quit": {
+    "title": "退出游戏？",
+    "message": "您确定要放弃这场比赛吗？您的队伍将会被判负。",
+    "keepPlaying": "继续游戏",
+    "quitButton": "退出"
+  },
+  "result": {
+    "correct": "正确！",
+    "wrong": "错误！",
+    "encouragement": ["差一点！", "不错的尝试！", "继续加油！", "好接近！", "很棒的努力！"],
+    "ropeMovesLeft": "绳子向 ← 左移动",
+    "ropeMovesRight": "绳子向 → 右移动"
+  },
+  "end": {
+    "gameOver": "游戏结束！",
+    "greatGame": "精彩的比赛！",
+    "closeMatch": "势均力敌！",
+    "wins": "获胜！",
+    "champions": "冠军！",
+    "bothAmazing": "两队都表现得很棒！",
+    "finalRopePosition": "绳子最终位置",
+    "playerStats": "玩家统计",
+    "player": "玩家",
+    "score": "得分",
+    "accuracy": "正确率",
+    "avgTime": "平均时间",
+    "playAgain": "再玩一次",
+    "backToHome": "返回主页",
+    "wellDone": "做得好！",
+    "finalScore": "最终得分：{{score}}"
+  },
+  "scoreboard": {
+    "score": "得分"
+  }
+}

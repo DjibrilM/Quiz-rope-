@@ -1,0 +1,42 @@
+{
+  "create": {
+    "title": "একটি বিষয় বেছে নিন",
+    "subtitle": "আজ কী শিখছি? আপনার ময়দান বেছে নিন!",
+    "modeLabel": "গেম মোড",
+    "solo": "একক",
+    "splitScreen": "স্প্লিট স্ক্রিন"
+  },
+  "lobby": {
+    "codeLabel": "কোড",
+    "matchInfo": "{{subject}} · {{difficulty}} · {{rounds}} রাউন্ড",
+    "startMatch": "ম্যাচ শুরু করুন!"
+  },
+  "solo": {
+    "title": "\u098f\u0995\u0995 - {{subject}}",
+    "startButton": "\u0996\u09c7\u09b2\u09be \u09b6\u09c1\u09b0\u09c1 \u0995\u09b0\u09c1\u09a8"
+  },
+  "selectors": {
+    "subject": "বিষয়",
+    "difficulty": "কঠিনতা",
+    "rounds": "রাউন্ড"
+  },
+  "history": {
+    "title": "ম্যাচের ইতিহাস",
+    "loadingMessage": "আপনার যুদ্ধের ইতিহাস লোড হচ্ছে...",
+    "emptyTitle": "এখনো কোনো ম্যাচ নেই",
+    "emptySubtitle": "আপনার যুদ্ধের ইতিহাস দেখতে একটি খেলা শুরু করুন!",
+    "won": "জিতেছে"
+  },
+  "detail": {
+    "title": "ম্যাচের বিবরণ",
+    "rounds": "রাউন্ড",
+    "ropePosition": "দড়ির অবস্থান",
+    "status": "অবস্থা",
+    "winner": "বিজয়ী",
+    "center": "কেন্দ্র",
+    "playerStatistics": "খেলোয়াড়দের পরিসংখ্যান",
+    "score": "স্কোর",
+    "accuracy": "নির্ভুলতা",
+    "avgTime": "গড় সময়"
+  }
+}

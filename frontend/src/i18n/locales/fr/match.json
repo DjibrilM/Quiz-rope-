@@ -1,0 +1,42 @@
+{
+  "create": {
+    "title": "Choisissez une matière",
+    "subtitle": "Qu'apprenons-nous aujourd'hui ? Choisissez votre arène !",
+    "modeLabel": "Mode de jeu",
+    "solo": "Solo",
+    "splitScreen": "Écran partagé"
+  },
+  "lobby": {
+    "codeLabel": "CODE",
+    "matchInfo": "{{subject}} · {{difficulty}} · {{rounds}} manches",
+    "startMatch": "Lancer le match !"
+  },
+  "solo": {
+    "title": "Solo - {{subject}}",
+    "startButton": "Commencer"
+  },
+  "selectors": {
+    "subject": "Matière",
+    "difficulty": "Difficulté",
+    "rounds": "Manches"
+  },
+  "history": {
+    "title": "Historique des matchs",
+    "loadingMessage": "Chargement de votre historique de combats...",
+    "emptyTitle": "Aucun match pour le moment",
+    "emptySubtitle": "Lancez une partie pour voir votre historique ici !",
+    "won": "Gagné"
+  },
+  "detail": {
+    "title": "Détails du match",
+    "rounds": "Manches",
+    "ropePosition": "Position de la corde",
+    "status": "Statut",
+    "winner": "Vainqueur",
+    "center": "Centre",
+    "playerStatistics": "Statistiques des joueurs",
+    "score": "Score",
+    "accuracy": "Précision",
+    "avgTime": "Temps moy."
+  }
+}

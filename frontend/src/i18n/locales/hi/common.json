@@ -1,0 +1,95 @@
+{
+  "buttons": {
+    "back": "वापस",
+    "cancel": "रद्द करें",
+    "confirm": "पुष्टि करें",
+    "continue": "जारी रखें",
+    "done": "हो गया",
+    "ok": "ठीक है",
+    "retry": "पुनः प्रयास करें",
+    "save": "सहेजें",
+    "tryAgain": "फिर से कोशिश करें",
+    "close": "बंद करें",
+    "grantPermission": "अनुमति दें",
+    "link": "लिंक करें"
+  },
+  "labels": {
+    "or": "या",
+    "vs": "बनाम",
+    "loading": "लोड हो रहा है...",
+    "connecting": "कनेक्ट हो रहा है...",
+    "reconnecting": "फिर से कनेक्ट हो रहा है...",
+    "processing": "प्रोसेस हो रहा है...",
+    "sessionCode": "सत्र कोड",
+    "generating": "जनरेट हो रहा है...",
+    "codeExpired": "कोड समाप्त हो गया",
+    "generateNewBelow": "नीचे एक नया कोड जनरेट करें",
+    "linked": "लिंक हो गया!",
+    "loadingCamera": "कैमरा लोड हो रहा है...",
+    "gameCode": "गेम कोड",
+    "waitingForPlayers": "खिलाड़ियों का इंतज़ार हो रहा है..."
+  },
+  "status": {
+    "active": "सक्रिय",
+    "completed": "पूर्ण",
+    "cancelled": "रद्द",
+    "expired": "समाप्त"
+  },
+  "errors": {
+    "somethingWentWrong": "कुछ गलत हो गया",
+    "tryAgainLater": "कृपया बाद में पुनः प्रयास करें",
+    "networkError": "नेटवर्क त्रुटि। कृपया अपना कनेक्शन जाँचें।",
+    "unexpectedError": "एक अप्रत्याशित त्रुटि हुई",
+    "error": "त्रुटि"
+  },
+  "subjects": {
+    "MATH": "गणित",
+    "SCIENCE": "विज्ञान",
+    "ENGLISH": "अंग्रेज़ी",
+    "HISTORY": "इतिहास",
+    "GEOGRAPHY": "भूगोल",
+    "question": "सवाल"
+  },
+  "difficulties": {
+    "easy": "आसान",
+    "easyDesc": "उम्र 6-8",
+    "medium": "मध्यम",
+    "mediumDesc": "उम्र 9-11",
+    "hard": "कठिन",
+    "hardDesc": "उम्र 12-14"
+  },
+  "avatars": {
+    "lion": "शेर",
+    "fox": "लोमड़ी",
+    "panda": "पांडा",
+    "unicorn": "यूनिकॉर्न",
+    "dragon": "ड्रैगन",
+    "owl": "उल्लू",
+    "dolphin": "डॉल्फ़िन",
+    "rocket": "रॉकेट",
+    "star": "तारा",
+    "dino": "डायनो",
+    "cat": "बिल्ली",
+    "dog": "कुत्ता"
+  },
+  "accessibility": {
+    "goBack": "वापस जाएं",
+    "closeModal": "मोडल बंद करें",
+    "selectOption": "विकल्प चुनें",
+    "secondsRemaining": "{{count}} सेकंड शेष",
+    "subjectLabel": "{{subject}} विषय",
+    "difficultyLabel": "{{label}} कठिनाई, {{desc}}",
+    "roundsLabel": "{{count}} राउंड",
+    "avatarLabel": "{{name}} अवतार"
+  },
+  "dev": {
+    "mockModeBanner": "डेवलपमेंट मोड में चल रहा है",
+    "developmentMode": "डेवलपमेंट मोड — Firebase कॉन्फ़िगर नहीं है"
+  },
+  "teams": {
+    "red": "लाल",
+    "blue": "नीला",
+    "redTeam": "लाल टीम",
+    "blueTeam": "नीली टीम"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "roundLabel": "রাউন্ড {{current}}/{{max}}",
+  "streak": "পরপর {{count}} টি সঠিক!",
+  "questionProgress": "প্রশ্ন {{current}} / {{max}}",
+  "quit": {
+    "title": "খেলা ছাড়বেন?",
+    "message": "আপনি কি নিশ্চিত যে আপনি এই ম্যাচ ত্যাগ করতে চান? আপনার দল পরাজিত হবে।",
+    "keepPlaying": "খেলা চালিয়ে যান",
+    "quitButton": "বের হন"
+  },
+  "result": {
+    "correct": "সঠিক!",
+    "wrong": "ভুল!",
+    "encouragement": ["প্রায়!", "ভালো চেষ্টা!", "চালিয়ে যাও!", "খুব কাছে!", "দারুণ প্রচেষ্টা!"],
+    "ropeMovesLeft": "দড়ি ← বামে যাচ্ছে",
+    "ropeMovesRight": "দড়ি → ডানে যাচ্ছে"
+  },
+  "end": {
+    "gameOver": "খেলা শেষ!",
+    "greatGame": "দারুণ খেলা!",
+    "closeMatch": "কী টানটান ম্যাচ!",
+    "wins": "জিতেছে!",
+    "champions": "চ্যাম্পিয়ন!",
+    "bothAmazing": "দুটি দলই অসাধারণ খেলেছে!",
+    "finalRopePosition": "দড়ির চূড়ান্ত অবস্থান",
+    "playerStats": "খেলোয়াড়দের পরিসংখ্যান",
+    "player": "খেলোয়াড়",
+    "score": "স্কোর",
+    "accuracy": "নির্ভুলতা",
+    "avgTime": "গড় সময়",
+    "playAgain": "আবার খেলুন",
+    "backToHome": "হোমে ফিরে যান",
+    "wellDone": "সাবাশ!",
+    "finalScore": "চূড়ান্ত স্কোর: {{score}}"
+  },
+  "scoreboard": {
+    "score": "স্কোর"
+  }
+}

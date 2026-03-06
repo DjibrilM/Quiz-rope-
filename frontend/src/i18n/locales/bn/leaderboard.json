@@ -1,0 +1,10 @@
+{
+  "title": "লিডারবোর্ড",
+  "loadingMessage": "র‍্যাংকিং লোড হচ্ছে...",
+  "emptyTitle": "এখনো কোনো র‍্যাংকিং নেই",
+  "emptySubtitle": "কে সেরা কুইজার তা দেখতে কিছু খেলা খেলুন!",
+  "gamesPlayed_one": "{{count}} টি খেলা খেলা হয়েছে",
+  "gamesPlayed_other": "{{count}} টি খেলা খেলা হয়েছে",
+  "correct": "সঠিক",
+  "accuracy": "নির্ভুলতা"
+}

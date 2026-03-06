@@ -1,0 +1,33 @@
+{
+  "dashboard": {
+    "title": "{{name}}'s Stats",
+    "totalMatches": "Matches Played",
+    "totalQuestions": "Questions Answered",
+    "overallAccuracy": "Overall Accuracy",
+    "subjectBreakdown": "Subject Breakdown",
+    "bestSubject": "Strongest",
+    "weakestSubject": "Needs Practice",
+    "correct": "{{correct}}/{{total}} correct",
+    "avgTime": "Avg {{time}}s",
+    "viewHistory": "View Match History",
+    "noData": "No matches yet",
+    "noDataSubtitle": "Play some games to see stats here!"
+  },
+  "history": {
+    "title": "Match History",
+    "won": "Won",
+    "lost": "Lost",
+    "accuracy": "{{accuracy}}% accuracy",
+    "noMatches": "No matches found",
+    "noMatchesSubtitle": "This player hasn't completed any matches yet."
+  },
+  "review": {
+    "title": "Match Review",
+    "summary": "{{correct}}/{{total}} correct ({{accuracy}}%)",
+    "question": "Question {{number}}",
+    "yourAnswer": "Your answer",
+    "correctAnswer": "Correct answer",
+    "responseTime": "{{time}}s",
+    "explanation": "Explanation"
+  }
+}

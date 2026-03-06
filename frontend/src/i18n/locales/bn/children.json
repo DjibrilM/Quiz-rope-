@@ -1,0 +1,22 @@
+{
+  "title": "আমার সন্তানেরা",
+  "addButton": "যোগ করুন",
+  "addNewPlayer": "নতুন শিশু যোগ করুন",
+  "chooseAvatar": "অবতার বেছে নিন",
+  "ageGrade": "বয়স {{age}} - শ্রেণি {{grade}}",
+  "ageGradeAccessibility": "{{name}}, বয়স {{age}}, শ্রেণি {{grade}}",
+  "emptyTitle": "এখনো কোনো খেলোয়াড় নেই!",
+  "emptySubtitle": "মজা শুরু করতে আপনার প্রথম তরুণ কুইজার যোগ করুন",
+  "form": {
+    "namePlaceholder": "সন্তানের নাম",
+    "agePlaceholder": "বয়স",
+    "gradePlaceholder": "শ্রেণি",
+    "savePlayer": "শিশু যোগ করুন"
+  },
+  "validation": {
+    "nameMinLength": "নাম কমপক্ষে ২ অক্ষরের হতে হবে",
+    "nameMaxLength": "নাম ৩০ অক্ষরের কম হতে হবে",
+    "ageRange": "বয়স ৩-১৮ এর মধ্যে হতে হবে",
+    "gradeRequired": "শ্রেণি প্রয়োজন"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "greeting": "¿Listo para jugar, {{name}}?",
+  "appName": "QuizRope",
+  "activeUntil": "Activo hasta {{date}}",
+  "menu": {
+    "quickPlay": "Juego rápido",
+    "quickPlayDesc": "Salta directo a un juego de prueba",
+    "startNewGame": "Nuevo juego",
+    "startNewGameDesc": "Crea una partida y desafía a los jugadores",
+    "connectDevice": "Conectar dispositivo",
+    "connectDeviceDesc": "Vincula la tableta de un hijo por código QR",
+    "myChildren": "Mis hijos",
+    "myChildrenDesc": "Agrega y administra perfiles de jugadores",
+    "matchHistory": "Historial de partidas",
+    "matchHistoryDesc": "Ve juegos anteriores y estadísticas",
+    "leaderboard": "Clasificación",
+    "leaderboardDesc": "Mira quién es el mejor jugador"
+  }
+}

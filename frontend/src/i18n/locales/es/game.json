@@ -1,0 +1,39 @@
+{
+  "roundLabel": "Ronda {{current}}/{{max}}",
+  "streak": "¡{{count}} seguidas!",
+  "questionProgress": "Pregunta {{current}} de {{max}}",
+  "quit": {
+    "title": "¿Salir del juego?",
+    "message": "¿Estás seguro de que quieres abandonar esta partida? Tu equipo perderá por abandono.",
+    "keepPlaying": "Seguir jugando",
+    "quitButton": "Salir"
+  },
+  "result": {
+    "correct": "¡Correcto!",
+    "wrong": "¡Incorrecto!",
+    "encouragement": ["¡Casi!", "¡Buen intento!", "¡Sigue así!", "¡Muy cerca!", "¡Buen esfuerzo!"],
+    "ropeMovesLeft": "La cuerda se mueve ← a la izquierda",
+    "ropeMovesRight": "La cuerda se mueve → a la derecha"
+  },
+  "end": {
+    "gameOver": "¡Fin del juego!",
+    "greatGame": "¡Gran partido!",
+    "closeMatch": "¡Qué partido tan reñido!",
+    "wins": "¡Gana!",
+    "champions": "¡Campeones!",
+    "bothAmazing": "¡Ambos equipos jugaron increíble!",
+    "finalRopePosition": "Posición final de la cuerda",
+    "playerStats": "Estadísticas de jugadores",
+    "player": "Jugador",
+    "score": "Puntuación",
+    "accuracy": "Precisión",
+    "avgTime": "Tiempo promedio",
+    "playAgain": "Jugar de nuevo",
+    "backToHome": "Volver al inicio",
+    "wellDone": "¡Bien hecho!",
+    "finalScore": "Puntuación final: {{score}}"
+  },
+  "scoreboard": {
+    "score": "Puntuación"
+  }
+}

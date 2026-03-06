@@ -1,0 +1,22 @@
+{
+  "title": "お子様一覧",
+  "addButton": "追加",
+  "addNewPlayer": "新しい子供を追加",
+  "chooseAvatar": "アバターを選ぶ",
+  "ageGrade": "{{age}}歳 - {{grade}}年生",
+  "ageGradeAccessibility": "{{name}}、{{age}}歳、{{grade}}年生",
+  "emptyTitle": "プレイヤーがまだいません！",
+  "emptySubtitle": "最初のクイズプレイヤーを追加して楽しもう",
+  "form": {
+    "namePlaceholder": "お子様の名前",
+    "agePlaceholder": "年齢",
+    "gradePlaceholder": "学年",
+    "savePlayer": "子供を追加"
+  },
+  "validation": {
+    "nameMinLength": "名前は2文字以上で入力してください",
+    "nameMaxLength": "名前は30文字以内で入力してください",
+    "ageRange": "年齢は3〜18歳の範囲で入力してください",
+    "gradeRequired": "学年は必須です"
+  }
+}

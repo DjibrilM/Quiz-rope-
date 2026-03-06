@@ -1,0 +1,34 @@
+{
+  "childJoin": {
+    "title": "Присоединиться к игре!",
+    "instruction": "Покажите этот код родителю",
+    "waitingStatus": "Ожидание сканирования родителем...",
+    "generateNewCode": "Сгенерировать новый код",
+    "errorToken": "Не удалось получить токен. Нажмите ниже, чтобы повторить."
+  },
+  "connectDevice": {
+    "scanTitle": "Сканировать код ребёнка",
+    "scanInstruction": "Наведите камеру на QR-код на устройстве ребёнка",
+    "manualEntryDivider": "или введите код вручную",
+    "manualCodePlaceholder": "Введите код сессии",
+    "loadingTitle": "Загрузка...",
+    "loadingMessage": "Получение игроков...",
+    "selectChildTitle": "Кто играет?",
+    "selectChildInstruction": "Выберите ребёнка для этого устройства",
+    "addNewChild": "+ Добавить ребёнка",
+    "newPlayerTitle": "Новый игрок",
+    "linkingTitle": "Привязка устройства...",
+    "settingUpSession": "Настройка сессии для {{name}}",
+    "errorTitle": "Что-то пошло не так",
+    "successTitle": "Устройство привязано!",
+    "successStatus": "Подключено",
+    "successMessage": "Устройство {{name}} теперь привязано"
+  },
+  "qrCode": {
+    "cameraPermission": "Для сканирования QR-кодов необходим доступ к камере",
+    "generating": "Генерация...",
+    "expired": "Код истёк",
+    "expiredMessage": "Сгенерируйте новый ниже",
+    "linked": "Привязано!"
+  }
+}

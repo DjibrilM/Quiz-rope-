@@ -1,0 +1,34 @@
+{
+  "childJoin": {
+    "title": "Join a Game!",
+    "instruction": "Show this code to your parent",
+    "waitingStatus": "Waiting for parent to scan...",
+    "generateNewCode": "Generate New Code",
+    "errorToken": "Failed to get child token. Tap below to retry."
+  },
+  "connectDevice": {
+    "scanTitle": "Scan Child's Code",
+    "scanInstruction": "Point the camera at the QR code on the child's device",
+    "manualEntryDivider": "or enter code manually",
+    "manualCodePlaceholder": "Enter session code",
+    "loadingTitle": "Loading...",
+    "loadingMessage": "Fetching players...",
+    "selectChildTitle": "Who's Playing?",
+    "selectChildInstruction": "Select a child for this device",
+    "addNewChild": "+ Add New Child",
+    "newPlayerTitle": "New Player",
+    "linkingTitle": "Linking Device...",
+    "settingUpSession": "Setting up {{name}}'s session",
+    "errorTitle": "Something Went Wrong",
+    "successTitle": "Device Linked!",
+    "successStatus": "Connected",
+    "successMessage": "{{name}}'s device is now linked"
+  },
+  "qrCode": {
+    "cameraPermission": "Camera access is needed to scan QR codes",
+    "generating": "Generating...",
+    "expired": "Code Expired",
+    "expiredMessage": "Generate a new one below",
+    "linked": "Linked!"
+  }
+}

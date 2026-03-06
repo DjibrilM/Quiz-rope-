@@ -1,0 +1,12 @@
+{
+  "title": "Таблица лидеров",
+  "loadingMessage": "Загрузка рейтингов...",
+  "emptyTitle": "Рейтингов пока нет",
+  "emptySubtitle": "Сыграйте несколько игр, чтобы узнать, кто лучший знаток!",
+  "gamesPlayed_one": "{{count}} игра сыграна",
+  "gamesPlayed_few": "{{count}} игры сыграно",
+  "gamesPlayed_many": "{{count}} игр сыграно",
+  "gamesPlayed_other": "{{count}} игр сыграно",
+  "correct": "Правильных",
+  "accuracy": "Точность"
+}

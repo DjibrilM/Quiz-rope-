@@ -1,0 +1,19 @@
+{
+  "greeting": "准备好了吗，{{name}}？",
+  "appName": "QuizRope",
+  "activeUntil": "有效期至 {{date}}",
+  "menu": {
+    "quickPlay": "快速开始",
+    "quickPlayDesc": "直接跳入一场测试游戏",
+    "startNewGame": "开始新游戏",
+    "startNewGameDesc": "创建一场比赛并挑战玩家",
+    "connectDevice": "连接设备",
+    "connectDeviceDesc": "通过二维码关联孩子的平板",
+    "myChildren": "我的孩子",
+    "myChildrenDesc": "添加和管理玩家资料",
+    "matchHistory": "比赛记录",
+    "matchHistoryDesc": "查看过去的比赛和统计",
+    "leaderboard": "排行榜",
+    "leaderboardDesc": "看看谁是最强玩家"
+  }
+}

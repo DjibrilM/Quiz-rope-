@@ -1,0 +1,24 @@
+{
+  "subtitle": "اشترك لفتح جميع الميزات",
+  "price": "$4.80",
+  "pricePeriod": "/ شهرياً",
+  "features": {
+    "unlimitedGames": "ألعاب ومباريات غير محدودة",
+    "allSubjects": "جميع المواد ومستويات الصعوبة",
+    "multiDevice": "دعم الأجهزة المتعددة",
+    "progressTracking": "تتبع التقدم والإحصائيات",
+    "manageChildren": "إدارة عدة أطفال"
+  },
+  "subscribeNow": "اشترك الآن",
+  "processing": "جارٍ المعالجة...",
+  "mockActivate": "تفعيل فوري (تجريبي)",
+  "completePayment": "إتمام الدفع",
+  "loadingPayment": "جارٍ تحميل صفحة الدفع...",
+  "errors": {
+    "paymentStartFailed": "فشل بدء الدفع. يرجى المحاولة مرة أخرى.",
+    "paymentFailedTitle": "فشل الدفع",
+    "paymentVerifyFailed": "تعذر التحقق من الدفع. يرجى المحاولة مرة أخرى.",
+    "paymentVerifyError": "فشل التحقق من الدفع. يرجى التواصل مع الدعم.",
+    "mockActivationFailed": "فشل التفعيل التجريبي."
+  }
+}

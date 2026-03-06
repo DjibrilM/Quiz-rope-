@@ -1,0 +1,95 @@
+{
+  "buttons": {
+    "back": "返回",
+    "cancel": "取消",
+    "confirm": "确认",
+    "continue": "继续",
+    "done": "完成",
+    "ok": "好的",
+    "retry": "重试",
+    "save": "保存",
+    "tryAgain": "再试一次",
+    "close": "关闭",
+    "grantPermission": "授予权限",
+    "link": "关联"
+  },
+  "labels": {
+    "or": "或",
+    "vs": "对",
+    "loading": "加载中...",
+    "connecting": "连接中...",
+    "reconnecting": "重新连接中...",
+    "processing": "处理中...",
+    "sessionCode": "会话代码",
+    "generating": "生成中...",
+    "codeExpired": "代码已过期",
+    "generateNewBelow": "请在下方生成新代码",
+    "linked": "已关联！",
+    "loadingCamera": "正在加载相机...",
+    "gameCode": "游戏代码",
+    "waitingForPlayers": "等待玩家加入..."
+  },
+  "status": {
+    "active": "进行中",
+    "completed": "已完成",
+    "cancelled": "已取消",
+    "expired": "已过期"
+  },
+  "errors": {
+    "somethingWentWrong": "出了点问题",
+    "tryAgainLater": "请稍后再试",
+    "networkError": "网络错误，请检查您的网络连接。",
+    "unexpectedError": "发生了意外错误",
+    "error": "错误"
+  },
+  "subjects": {
+    "MATH": "数学",
+    "SCIENCE": "科学",
+    "ENGLISH": "英语",
+    "HISTORY": "历史",
+    "GEOGRAPHY": "地理",
+    "question": "问题"
+  },
+  "difficulties": {
+    "easy": "简单",
+    "easyDesc": "6-8岁",
+    "medium": "中等",
+    "mediumDesc": "9-11岁",
+    "hard": "困难",
+    "hardDesc": "12-14岁"
+  },
+  "avatars": {
+    "lion": "狮子",
+    "fox": "狐狸",
+    "panda": "熊猫",
+    "unicorn": "独角兽",
+    "dragon": "龙",
+    "owl": "猫头鹰",
+    "dolphin": "海豚",
+    "rocket": "火箭",
+    "star": "星星",
+    "dino": "恐龙",
+    "cat": "猫",
+    "dog": "狗"
+  },
+  "accessibility": {
+    "goBack": "返回",
+    "closeModal": "关闭弹窗",
+    "selectOption": "选择选项",
+    "secondsRemaining": "剩余 {{count}} 秒",
+    "subjectLabel": "{{subject}} 科目",
+    "difficultyLabel": "{{label}} 难度，{{desc}}",
+    "roundsLabel": "{{count}} 轮",
+    "avatarLabel": "{{name}} 头像"
+  },
+  "dev": {
+    "mockModeBanner": "正在开发模式下运行",
+    "developmentMode": "开发模式 — Firebase 未配置"
+  },
+  "teams": {
+    "red": "红色",
+    "blue": "蓝色",
+    "redTeam": "红队",
+    "blueTeam": "蓝队"
+  }
+}

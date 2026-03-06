@@ -1,0 +1,33 @@
+{
+  "dashboard": {
+    "title": "Статистика {{name}}",
+    "totalMatches": "Сыграно матчей",
+    "totalQuestions": "Отвечено вопросов",
+    "overallAccuracy": "Общая точность",
+    "subjectBreakdown": "По предметам",
+    "bestSubject": "Сильная сторона",
+    "weakestSubject": "Нужна практика",
+    "correct": "{{correct}}/{{total}} верно",
+    "avgTime": "Сред. {{time}}с",
+    "viewHistory": "История матчей",
+    "noData": "Нет матчей",
+    "noDataSubtitle": "Сыграйте несколько игр, чтобы увидеть статистику!"
+  },
+  "history": {
+    "title": "История матчей",
+    "won": "Победа",
+    "lost": "Поражение",
+    "accuracy": "Точность {{accuracy}}%",
+    "noMatches": "Матчи не найдены",
+    "noMatchesSubtitle": "Этот игрок ещё не завершил ни одного матча."
+  },
+  "review": {
+    "title": "Обзор матча",
+    "summary": "{{correct}}/{{total}} верно ({{accuracy}}%)",
+    "question": "Вопрос {{number}}",
+    "yourAnswer": "Твой ответ",
+    "correctAnswer": "Правильный ответ",
+    "responseTime": "{{time}}с",
+    "explanation": "Объяснение"
+  }
+}
