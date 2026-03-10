@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, ActivityIndicator, InteractionManager } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import { useState, useEffect, useRef } from "react";
@@ -6,7 +6,6 @@ import { useGameOrientation } from "../src/hooks/useOrientation";
 import { useGameStore } from "../src/stores/gameStore";
 import { socketService } from "../src/services/socket";
 import { LobbyQuestionCard } from "../src/components/lobby";
-import { TugOfWarRope } from "../src/components/game";
 import { SAMPLE_QUESTIONS } from "../src/constants/sampleQuestions";
 import { useTranslation } from "react-i18next";
 import { FONTS } from "../src/constants/theme";
@@ -16,39 +15,74 @@ export default function LobbyScreen() {
   const userRole = useGameOrientation();
   const isChildDevice = userRole === "child";
   const { matchId } = useLocalSearchParams();
-  const { currentMatch } = useGameStore();
+  const { currentMatch, setCurrentQuestion } = useGameStore();
 
   const [questionIndex, setQuestionIndex] = useState(0);
   const currentSample = SAMPLE_QUESTIONS[questionIndex];
 
-  const [ropePos, setRopePos] = useState(0);
-  const ropeDirection = useRef(1);
+  const [starting, setStarting] = useState(false);
+  const [playerCount, setPlayerCount] = useState(0);
+  const hasNavigated = useRef(false);
+
+  // Join the socket room and listen for game events.
+  // Navigation to game.tsx is triggered by the server's game:question broadcast
+  // so that all connected clients navigate simultaneously after listeners are registered.
+  useEffect(() => {
+    const socket = socketService.connect();
+
+    socket.emit("match:join", {
+      matchId,
+      playerId: "lobby-player",
+      teamSide: "LEFT",
+    });
+
+    const onLobbyUpdate = (data: { playerCount?: number }) => {
+      if (typeof data.playerCount === "number") {
+        setPlayerCount(data.playerCount);
+      }
+    };
+
+    // Server broadcasts game:question when match:start is received.
+    // We navigate here so game.tsx has its listeners registered before
+    // the next question/timer event arrives.
+    const onGameQuestion = (data: unknown) => {
+      if (hasNavigated.current) return;
+      hasNavigated.current = true;
+      setCurrentQuestion(data as any);
+      InteractionManager.runAfterInteractions(() => {
+        router.replace({
+          pathname: "/game",
+          params: { matchId: matchId as string },
+        });
+      });
+    };
+
+    socket.on("lobby:update", onLobbyUpdate);
+    socket.on("game:question", onGameQuestion);
+
+    return () => {
+      socket.off("lobby:update", onLobbyUpdate);
+      socket.off("game:question", onGameQuestion);
+      // Don't emit match:leave — game.tsx continues using the same room.
+    };
+  }, [matchId]);
 
   useEffect(() => {
     const questionInterval = setInterval(() => {
       setQuestionIndex((prev) => (prev + 1) % SAMPLE_QUESTIONS.length);
     }, 5000);
 
-    const ropeInterval = setInterval(() => {
-      setRopePos((prev) => {
-        if (prev >= 0.3) ropeDirection.current = -1;
-        if (prev <= -0.3) ropeDirection.current = 1;
-        return prev + ropeDirection.current * 0.05;
-      });
-    }, 100);
-
     return () => {
       clearInterval(questionInterval);
-      clearInterval(ropeInterval);
     };
   }, []);
 
   const handleStartGame = () => {
+    if (starting) return;
+    setStarting(true);
+    // Only emit match:start — navigation is handled by the game:question listener above.
+    // This ensures game.tsx's event listeners are registered before the next event arrives.
     socketService.emit("match:start", { matchId });
-    router.replace({
-      pathname: "/game",
-      params: { matchId: matchId as string },
-    });
   };
 
   const matchCode =
@@ -120,8 +154,11 @@ export default function LobbyScreen() {
           </View>
           <Pressable
             onPress={handleStartGame}
+            disabled={starting}
             className="bg-game-success px-8 py-3 rounded-xl active:bg-emerald-600"
+            style={{ opacity: starting ? 0.7 : 1, flexDirection: "row", alignItems: "center", gap: 8 }}
           >
+            {starting && <ActivityIndicator size="small" color="#FFFFFF" />}
             <Text
               className="text-white text-base"
               style={{ fontFamily: "Bungee_400Regular" }}
@@ -190,8 +227,11 @@ export default function LobbyScreen() {
 
           <Pressable
             onPress={handleStartGame}
+            disabled={starting}
             className="bg-game-success px-6 py-3 rounded-xl active:bg-emerald-600"
+            style={{ opacity: starting ? 0.7 : 1, flexDirection: "row", alignItems: "center", gap: 8 }}
           >
+            {starting && <ActivityIndicator size="small" color="#FFFFFF" />}
             <Text
               className="text-white text-base"
               style={{ fontFamily: "Bungee_400Regular" }}
@@ -201,11 +241,6 @@ export default function LobbyScreen() {
           </Pressable>
         </View>
       )}
-
-      {/* Rope */}
-      <View className="h-48 items-center justify-center">
-        <TugOfWarRope ropePosition={ropePos} />
-      </View>
 
       {/* Split Screen Preview Questions */}
       <View

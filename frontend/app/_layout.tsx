@@ -1,12 +1,14 @@
 import "../src/styles/global.css";
 import "../src/i18n";
 import { Stack, router, useSegments } from "expo-router";
+import { FONTS, FORTNITE_COLORS } from "../src/constants/theme";
 import { StatusBar } from "expo-status-bar";
-import { I18nManager } from "react-native";
+import { I18nManager, Platform } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useEffect, useCallback, useRef } from "react";
+import * as ScreenOrientation from "expo-screen-orientation";
 import { useFonts } from "expo-font";
 import i18n, { SUPPORTED_LANGUAGES } from "../src/i18n";
 import type { SupportedLanguage } from "../src/i18n";
@@ -24,10 +26,21 @@ import { soundService } from "../src/services/sound";
 import { ErrorBoundary } from "../src/components/common/ErrorBoundary";
 import { useGameStore } from "../src/stores/gameStore";
 import { apiService } from "../src/services/api";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 SplashScreen.preventAutoHideAsync();
 
-const PUBLIC_ROUTES = ["index", "login", "signup", "child-join", "forgot-password"];
+const PUBLIC_ROUTES = [
+  "index",
+  "login",
+  "signup",
+  "child-join",
+  "forgot-password",
+  "guest-setup",
+  "verify-email",
+];
 
 function useLocaleSync() {
   const { locale, _hasHydrated } = useGameStore();
@@ -41,7 +54,8 @@ function useLocaleSync() {
       i18n.changeLanguage(locale);
     }
 
-    const isRtl = SUPPORTED_LANGUAGES[locale as SupportedLanguage]?.rtl ?? false;
+    const isRtl =
+      SUPPORTED_LANGUAGES[locale as SupportedLanguage]?.rtl ?? false;
     if (I18nManager.isRTL !== isRtl) {
       I18nManager.forceRTL(isRtl);
       I18nManager.allowRTL(isRtl);
@@ -71,11 +85,15 @@ function useProtectedRoute(isLayoutReady: boolean) {
     if (isAuthenticated && isPublicRoute && currentRoute !== "child-join") {
       hasNavigated.current = true;
       router.replace("/home");
-      setTimeout(() => { hasNavigated.current = false; }, 500);
+      setTimeout(() => {
+        hasNavigated.current = false;
+      }, 500);
     } else if (!isAuthenticated && !isPublicRoute) {
       hasNavigated.current = true;
       router.replace("/");
-      setTimeout(() => { hasNavigated.current = false; }, 500);
+      setTimeout(() => {
+        hasNavigated.current = false;
+      }, 500);
     }
   }, [isAuthenticated, segments, _hasHydrated, authToken, isLayoutReady]);
 }
@@ -90,6 +108,13 @@ export default function RootLayout() {
     Nunito_800ExtraBold,
   });
 
+  // Default the entire app to portrait. Individual screens (game/lobby for parent)
+  // override this with their own lock. Using a global default ensures no screen
+  // ever starts with a free/unlocked orientation.
+  useEffect(() => {
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+  }, []);
+
   // Wire up 401 handler to trigger logout
   useEffect(() => {
     apiService.setOnUnauthorized(() => {
@@ -102,7 +127,7 @@ export default function RootLayout() {
   useEffect(() => {
     try {
       firebaseAuthService.configure(
-        process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID
+        process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
       );
     } catch (error) {
       console.warn("Firebase configuration skipped:", error);
@@ -130,20 +155,32 @@ export default function RootLayout() {
 
   return (
     <ErrorBoundary>
-      <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
-        <SafeAreaProvider>
-          <BottomSheetModalProvider>
-            <StatusBar style="light" />
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                contentStyle: { backgroundColor: "#0D0B14" },
-                animation: "slide_from_right",
-              }}
-            />
-          </BottomSheetModalProvider>
-        </SafeAreaProvider>
-      </GestureHandlerRootView>
+      <QueryClientProvider client={queryClient}>
+        <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
+          <SafeAreaProvider>
+            <BottomSheetModalProvider>
+              <StatusBar style="light" />
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  headerStyle: { backgroundColor: FORTNITE_COLORS.bgDark },
+                  headerTitleStyle: {
+                    fontFamily: FONTS.heading,
+                    fontSize: 20,
+                    color: FORTNITE_COLORS.textPrimary,
+                  },
+                  headerTintColor: FORTNITE_COLORS.textPrimary,
+                  headerShadowVisible: false,
+                  headerBlurEffect:
+                    Platform.OS === "ios" ? "regular" : undefined,
+                  headerTransparent: Platform.OS === "ios",
+                  contentStyle: { backgroundColor: FORTNITE_COLORS.bgDark },
+                }}
+              />
+            </BottomSheetModalProvider>
+          </SafeAreaProvider>
+        </GestureHandlerRootView>
+      </QueryClientProvider>
     </ErrorBoundary>
   );
 }

@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Match } from './schemas/match.schema';
@@ -23,6 +23,8 @@ export class MatchService {
     difficulty: string,
     maxRounds: number,
     teams: { name: string; color: string; side: string; players?: string[] }[],
+    gameMode: string = 'splitscreen',
+    context?: string,
   ): Promise<Match> {
     // Create match first so we have its _id as the conversation threadId
     const match = await this.matchModel.create({
@@ -30,6 +32,9 @@ export class MatchService {
       subject,
       difficulty,
       maxRounds,
+      gameMode,
+      // Solo and splitscreen are local games — start immediately
+      status: (gameMode === 'solo' || gameMode === 'splitscreen') ? 'IN_PROGRESS' : 'WAITING',
       teams: teams.map((t) => ({
         name: t.name,
         color: t.color,
@@ -45,6 +50,7 @@ export class MatchService {
       difficulty,
       maxRounds,
       match._id.toString(),
+      context,
     );
 
     match.questions = questions.map((q) => q._id) as any;
@@ -54,8 +60,13 @@ export class MatchService {
     return match;
   }
 
-  async getMatch(matchId: string): Promise<Match | null> {
-    return this.matchModel.findById(matchId).populate('questions');
+  async getMatch(matchId: string): Promise<Match> {
+    if (!Types.ObjectId.isValid(matchId)) {
+      throw new BadRequestException('Invalid match ID');
+    }
+    const match = await this.matchModel.findById(matchId).populate('questions');
+    if (!match) throw new NotFoundException('Match not found');
+    return match;
   }
 
   async getMatchesByParent(parentId: string): Promise<Match[]> {
@@ -64,12 +75,55 @@ export class MatchService {
       .sort({ createdAt: -1 });
   }
 
+  async completeMatch(
+    matchId: string,
+    data: { winner: string; teamScoreLeft: number; teamScoreRight: number; rounds: number },
+  ): Promise<Match> {
+    if (!Types.ObjectId.isValid(matchId)) {
+      throw new BadRequestException('Invalid match ID');
+    }
+    const match = await this.matchModel.findByIdAndUpdate(
+      matchId,
+      {
+        status: 'COMPLETED',
+        winner: data.winner,
+        teamScoreLeft: data.teamScoreLeft,
+        teamScoreRight: data.teamScoreRight,
+        rounds: data.rounds,
+      },
+      { new: true },
+    );
+    if (!match) throw new NotFoundException('Match not found');
+    this.logger.log(`Match completed: ${matchId} | winner=${data.winner} | score=${data.teamScoreLeft}:${data.teamScoreRight}`);
+    return match;
+  }
+
+  /**
+   * Finds an active match by the 6-character display code shown in the lobby.
+   * The code is the last 6 hex characters of the match's MongoDB ObjectId.
+   */
+  async findByCode(code: string): Promise<Match | null> {
+    const upper = code.toUpperCase();
+    // Search recent non-completed matches to keep the scan small
+    const recent = await this.matchModel
+      .find({ status: { $ne: 'COMPLETED' } })
+      .sort({ createdAt: -1 })
+      .limit(200)
+      .exec();
+    return (
+      recent.find(
+        (m) => m._id.toString().slice(-6).toUpperCase() === upper,
+      ) ?? null
+    );
+  }
+
   async submitAnswer(
     matchId: string,
     playerId: string,
     teamSide: string,
     answerIndex: number,
     responseTime: number,
+    questionId?: string,
   ): Promise<{
     isCorrect: boolean;
     correctIndex: number;
@@ -79,15 +133,27 @@ export class MatchService {
     gameOver: boolean;
     winner?: string;
   }> {
+    if (!Types.ObjectId.isValid(matchId)) {
+      throw new BadRequestException('Invalid match ID');
+    }
     const match = await this.matchModel
       .findById(matchId)
       .populate('questions');
-    if (!match) throw new Error('Match not found');
+    if (!match) throw new NotFoundException('Match not found');
 
-    const currentQuestion = match.questions[
-      match.currentQuestionIndex
-    ] as any;
-    if (!currentQuestion) throw new Error('No current question');
+    // Prefer questionId from client (local mode); fall back to currentQuestionIndex
+    let currentQuestion: any;
+    if (questionId) {
+      currentQuestion = (match.questions as any[]).find(
+        (q: any) => q._id?.toString() === questionId,
+      );
+    } else {
+      currentQuestion = match.questions[match.currentQuestionIndex] as any;
+    }
+    if (!currentQuestion) {
+      this.logger.warn(`submitAnswer: question not found for match ${matchId} (questionId=${questionId ?? 'none'})`);
+      throw new NotFoundException('Question not found');
+    }
 
     const isCorrect = answerIndex === currentQuestion.correctIndex;
 
@@ -179,6 +245,8 @@ export class MatchService {
         id: question._id,
         text: question.text,
         options: question.options,
+        correctIndex: question.correctIndex,
+        explanation: question.explanation || '',
         subject: question.subject,
       },
       round: match.currentQuestionIndex,
@@ -200,6 +268,8 @@ export class MatchService {
       id: question._id,
       text: question.text,
       options: question.options,
+      correctIndex: question.correctIndex,
+      explanation: question.explanation || '',
       subject: question.subject,
     };
   }
@@ -470,34 +540,38 @@ export class MatchService {
   }
 
   async getMatchAnswerReview(matchId: string, childId: string) {
-    return this.answerModel.aggregate([
-      {
-        $match: {
-          matchId: new Types.ObjectId(matchId),
-          playerId: childId,
-        },
-      },
-      {
-        $lookup: {
-          from: 'questions',
-          localField: 'questionId',
-          foreignField: '_id',
-          as: 'question',
-        },
-      },
-      { $unwind: '$question' },
-      { $sort: { round: 1 } },
-      {
-        $project: {
-          questionText: '$question.text',
-          options: '$question.options',
-          correctIndex: '$question.correctIndex',
-          childAnswerIndex: '$answerIndex',
-          isCorrect: 1,
-          responseTime: 1,
-          explanation: { $ifNull: ['$question.explanation', ''] },
-        },
-      },
-    ]);
+    if (!Types.ObjectId.isValid(matchId)) {
+      throw new BadRequestException('Invalid match ID');
+    }
+
+    const match = await this.matchModel.findById(matchId).populate('questions');
+    if (!match) throw new NotFoundException('Match not found');
+
+    const questions = match.questions as any[];
+    if (questions.length === 0) return [];
+
+    // Fetch recorded answers for this player (may be empty — that's fine)
+    const answers = await this.answerModel
+      .find({ matchId: new Types.ObjectId(matchId), playerId: childId })
+      .sort({ round: 1 });
+
+    // Index answers by questionId for O(1) lookup
+    const answerByQuestionId = new Map(
+      answers.map((a) => [a.questionId.toString(), a]),
+    );
+
+    // Merge: every question gets returned, enriched with answer data if available
+    return questions.map((q: any) => {
+      const answer = answerByQuestionId.get(q._id.toString());
+      return {
+        questionText: q.text,
+        options: q.options,
+        correctIndex: q.correctIndex,
+        explanation: q.explanation || '',
+        childAnswerIndex: answer?.answerIndex ?? -1,
+        isCorrect: answer?.isCorrect ?? false,
+        responseTime: answer?.responseTime ?? 0,
+      };
+    });
   }
 }

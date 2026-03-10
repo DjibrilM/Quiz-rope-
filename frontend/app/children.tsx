@@ -9,9 +9,10 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useRef, useCallback, useEffect, useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { usePortrait } from "../src/hooks/useOrientation";
 import { useGameStore } from "../src/stores/gameStore";
-import { ScreenHeader, AnimatedLoader } from "../src/components/common";
+import { AnimatedLoader, ScreenHeader } from "../src/components/common";
 import {
   AddChildForm,
   ChildCard,
@@ -28,45 +29,59 @@ import { useTranslation } from "react-i18next";
 import { FONTS } from "../src/constants/theme";
 import { apiService } from "../src/services/api";
 import { hapticsService } from "../src/services/haptics";
+import { Alert } from "react-native";
 
 export default function ChildrenScreen() {
   usePortrait();
   const { t } = useTranslation("children");
-  const { children, setChildren } = useGameStore();
+  const { setChildren } = useGameStore();
+  const queryClient = useQueryClient();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const confirmSheetRef = useRef<BottomSheetModal>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [removingChild, setRemovingChild] = useState<{
     id: string;
     displayName: string;
   } | null>(null);
-  const [removeLoading, setRemoveLoading] = useState(false);
 
+  const { data: children = [], isLoading, isError, error } = useQuery({
+    queryKey: ["children"],
+    queryFn: () => apiService.getChildren(),
+    select: (data) =>
+      data.filter(Boolean).map((c: any) => ({ ...c, id: c._id || c.id })),
+  });
+
+  // Keep zustand store in sync so other screens (leaderboard) can use it
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await apiService.getChildren();
-        if (!cancelled && Array.isArray(data)) {
-          setChildren(
-            data.filter(Boolean).map((c: any) => ({ ...c, id: c._id || c.id })),
-          );
-        }
-      } catch (err: any) {
-        if (!cancelled) {
-          setError(err.message || "Failed to load children");
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+    if (children.length > 0) setChildren(children);
+  }, [children]);
+
+  const addMutation = useMutation({
+    mutationFn: (data: { displayName: string; age: number; grade: string; avatarUrl: string }) =>
+      apiService.createChild(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["children"] });
+      bottomSheetRef.current?.dismiss();
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => apiService.deleteChild(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["children"] });
+      hapticsService.success();
+      confirmSheetRef.current?.dismiss();
+      setRemovingChild(null);
+    },
+    onError: () => {
+      confirmSheetRef.current?.dismiss();
+      setRemovingChild(null);
+    },
+  });
+
+  const errorMessage =
+    (error instanceof Error ? error.message : null) ||
+    (addMutation.error instanceof Error ? addMutation.error.message : null) ||
+    (deleteMutation.error instanceof Error ? deleteMutation.error.message : null);
 
   const handleOpenSheet = useCallback(() => {
     bottomSheetRef.current?.present();
@@ -76,20 +91,13 @@ export default function ChildrenScreen() {
     bottomSheetRef.current?.dismiss();
   }, []);
 
-  const handleAdd = async (data: {
+  const handleAdd = (data: {
     displayName: string;
     age: number;
     grade: string;
     avatarUrl: string;
   }) => {
-    try {
-      const created = await apiService.createChild(data);
-      const newChild = { ...created, id: created._id || (created as any).id };
-      setChildren([...children, newChild]);
-      handleCloseSheet();
-    } catch (err: any) {
-      setError(err.message || "Failed to add child");
-    }
+    addMutation.mutate(data);
   };
 
   const handleRemovePress = useCallback(
@@ -100,27 +108,31 @@ export default function ChildrenScreen() {
     [],
   );
 
-  const handleConfirmRemove = async () => {
+  const handleConfirmRemove = () => {
     if (!removingChild) return;
-    setRemoveLoading(true);
-    try {
-      await apiService.deleteChild(removingChild.id);
-      setChildren(children.filter((c) => c.id !== removingChild.id));
-      hapticsService.success();
-      confirmSheetRef.current?.dismiss();
-    } catch (err: any) {
-      setError(err.message || "Failed to remove child");
-      confirmSheetRef.current?.dismiss();
-    } finally {
-      setRemoveLoading(false);
-      setRemovingChild(null);
-    }
+    deleteMutation.mutate(removingChild.id);
   };
 
   const handleCancelRemove = useCallback(() => {
     confirmSheetRef.current?.dismiss();
     setRemovingChild(null);
   }, []);
+
+  const handleGenerateLinkCode = useCallback(async (childId: string, childName: string) => {
+    try {
+      const result = await apiService.generateGuestLinkCode(childId);
+      const expiresIn = Math.round(
+        (new Date(result.expiresAt).getTime() - Date.now()) / 60000,
+      );
+      Alert.alert(
+        t("linkCode.title", { name: childName }),
+        t("linkCode.body", { code: result.code, minutes: expiresIn }),
+        [{ text: t("linkCode.ok"), style: "default" }],
+      );
+    } catch {
+      Alert.alert(t("linkCode.errorTitle"), t("linkCode.errorBody"));
+    }
+  }, [t]);
 
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
@@ -135,17 +147,25 @@ export default function ChildrenScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-game-bg">
+    <SafeAreaView edges={["bottom"]} className="flex-1 bg-game-bg">
       <ScreenHeader
         title={t("title")}
         rightElement={
           <Pressable
             onPress={handleOpenSheet}
-            className="bg-game-indigo w-[90px] px-4 py-2 rounded-xl"
+            style={{
+              backgroundColor: "#6D4C8A",
+              paddingHorizontal: 14,
+              paddingVertical: 7,
+              borderRadius: 10,
+            }}
           >
             <Text
-              className="text-white text-center flex-row text-xs min-w-max"
-              style={{ fontFamily: "Bungee_400Regular" }}
+              style={{
+                color: "#FFFFFF",
+                fontSize: 12,
+                fontFamily: "Bungee_400Regular",
+              }}
             >
               {t("addButton")}
             </Text>
@@ -154,19 +174,20 @@ export default function ChildrenScreen() {
       />
 
       <ScrollView
-        className="flex-1 pt-5 px-6"
+        className="flex-1 px-6"
+        contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{ paddingBottom: 40 }}
       >
-        {error && (
+        {errorMessage && (
           <View className="bg-red-500/20 rounded-xl px-4 py-3 mb-4">
             <Text
               style={{ color: "#F87171", fontSize: 13, fontFamily: FONTS.body }}
             >
-              {error}
+              {errorMessage}
             </Text>
           </View>
         )}
-        {loading && children.length === 0 ? (
+        {isLoading && children.length === 0 ? (
           <View className="flex-1 items-center justify-center pt-20">
             <AnimatedLoader />
           </View>
@@ -177,8 +198,8 @@ export default function ChildrenScreen() {
             {children
               .filter((c) => c?.displayName)
               .map((child) => (
+                <View key={child.id}>
                 <ChildCard
-                  key={child.id}
                   displayName={child.displayName}
                   age={child.age}
                   grade={child.grade}
@@ -200,6 +221,31 @@ export default function ChildrenScreen() {
                     })
                   }
                 />
+                <Pressable
+                  onPress={() =>
+                    handleGenerateLinkCode(child.id, child.displayName)
+                  }
+                  style={{
+                    marginTop: 8,
+                    paddingVertical: 10,
+                    borderRadius: 10,
+                    borderWidth: 1,
+                    borderColor: "#5B3F8A",
+                    alignItems: "center",
+                    backgroundColor: "#231C2B",
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "#B8A9C9",
+                      fontSize: 13,
+                      fontFamily: FONTS.bodySemiBold,
+                    }}
+                  >
+                    {t("linkCode.getCode")}
+                  </Text>
+                </Pressable>
+                </View>
               ))}
           </View>
         )}
@@ -346,14 +392,14 @@ export default function ChildrenScreen() {
             </Pressable>
             <Pressable
               onPress={handleConfirmRemove}
-              disabled={removeLoading}
+              disabled={deleteMutation.isPending}
               style={{
                 flex: 1,
                 paddingVertical: 14,
                 borderRadius: 12,
                 backgroundColor: "#EF4444",
                 alignItems: "center",
-                opacity: removeLoading ? 0.6 : 1,
+                opacity: deleteMutation.isPending ? 0.6 : 1,
               }}
             >
               <Text
@@ -363,7 +409,7 @@ export default function ChildrenScreen() {
                   fontFamily: FONTS.bodySemiBold,
                 }}
               >
-                {removeLoading ? t("remove.removing") : t("remove.confirm")}
+                {deleteMutation.isPending ? t("remove.removing") : t("remove.confirm")}
               </Text>
             </Pressable>
           </View>

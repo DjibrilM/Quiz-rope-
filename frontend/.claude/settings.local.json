@@ -12,7 +12,11 @@
       "WebFetch(domain:www.npmjs.com)",
       "WebFetch(domain:github.com)",
       "Bash(git checkout:*)",
-      "Bash(git -C /Users/jibm/Desktop/projects/tug-of-war-for-your-brain/frontend rev-parse:*)"
+      "Bash(git -C /Users/jibm/Desktop/projects/tug-of-war-for-your-brain/frontend rev-parse:*)",
+      "Bash(python3 -c \"import openpyxl; print\\(''openpyxl available''\\)\")",
+      "Bash(python3 -c \"import xlsxwriter; print\\(''xlsxwriter available''\\)\")",
+      "Bash(python3 -c \"import docx; print\\(''python-docx available''\\)\")",
+      "Bash(pip3 install python-docx -q)"
     ]
   }
 }

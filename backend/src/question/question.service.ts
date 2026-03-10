@@ -1,9 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Question } from './schemas/question.schema';
 import { isGeminiConfigured } from '../config/gemini.config';
-import { invokeQuestionGraph } from './question.graph';
+import { invokeQuestionGraph, validateContext } from './question.graph';
 import { MOCK_QUESTIONS } from './mock-questions';
 
 @Injectable()
@@ -23,11 +23,20 @@ export class QuestionProviderService {
     difficulty: string,
     count: number = 10,
     threadId?: string,
+    context?: string,
   ): Promise<Question[]> {
+    if (context?.trim() && isGeminiConfigured) {
+      const verdict = await validateContext(subject, context.trim());
+      if (verdict === 'not_related') {
+        throw new BadRequestException('CONTEXT_NOT_RELATED');
+      }
+    }
+
     if (isGeminiConfigured) {
       try {
-        return await this.generateWithGraph(subject, difficulty, count, threadId);
+        return await this.generateWithGraph(subject, difficulty, count, threadId, context);
       } catch (error) {
+        if (error instanceof BadRequestException) throw error;
         this.logger.error(
           'LangGraph/Gemini failed, falling back to mock:',
           error.message,
@@ -44,11 +53,12 @@ export class QuestionProviderService {
     difficulty: string,
     count: number,
     threadId?: string,
+    context?: string,
   ): Promise<Question[]> {
     // Use match ID as thread, or generate a one-off thread
     const thread = threadId || `oneoff-${Date.now()}`;
 
-    const parsed = await invokeQuestionGraph(subject, difficulty, count, thread);
+    const parsed = await invokeQuestionGraph(subject, difficulty, count, thread, context);
 
     const questions = await Promise.all(
       parsed.map((q: any) =>

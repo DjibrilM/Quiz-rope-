@@ -71,11 +71,44 @@ export async function initQuestionGraph(mongoUri: string) {
   }
 }
 
+/**
+ * Validates whether a user-provided context is related to the given subject.
+ * Returns 'related' or 'not_related'. Falls back to 'related' if AI is unavailable.
+ */
+export async function validateContext(
+  subject: string,
+  context: string,
+): Promise<"related" | "not_related"> {
+  const model = getLangChainModel();
+  if (!model) return "related";
+
+  const systemMsg = new SystemMessage(
+    `You are a content validator for an educational quiz app for children. Your only job is to check if a user-provided practice context is relevant to a school subject. Respond with ONLY one word: "related" or "not_related". No punctuation, no explanation, nothing else.`,
+  );
+
+  const humanMsg = new HumanMessage(
+    `Subject: ${subject}\nUser context: "${context}"\n\nIs this context related to the subject?`,
+  );
+
+  try {
+    const response = await model.invoke([systemMsg, humanMsg]);
+    const text =
+      typeof response.content === "string"
+        ? response.content.trim().toLowerCase()
+        : "";
+    return text === "related" ? "related" : "not_related";
+  } catch {
+    // If validation itself fails, let the request through
+    return "related";
+  }
+}
+
 export async function invokeQuestionGraph(
   subject: string,
   difficulty: string,
   count: number,
   threadId: string,
+  context?: string,
 ): Promise<any[]> {
   if (!compiledGraph) {
     compiledGraph = workflow.compile();
@@ -88,20 +121,29 @@ export async function invokeQuestionGraph(
         ? "ages 9-11"
         : "ages 12-14";
 
+  const contextLine = context
+    ? `\n\nPlayer's specific focus: "${context}"\nAll ${count} questions MUST directly address this focus — do not generate generic ${subject} questions.`
+    : "";
+
   const systemMsg = new SystemMessage(
-    `You are an educational quiz generator for children. You create fun, age-appropriate multiple choice questions. Always respond with valid JSON only, no markdown. IMPORTANT: Never repeat a question you already generated in this conversation.`,
+    `You are an educational quiz generator for children. You create fun, age-appropriate multiple choice questions. Always respond with valid JSON only — no surrounding markdown code fences. IMPORTANT: Never repeat a question you already generated in this conversation.`,
   );
 
   const humanMsg = new HumanMessage(
-    `Generate ${count} NEW multiple choice questions about ${subject} at ${difficulty} difficulty (for ${ageRange}).
+    `Generate ${count} NEW multiple choice questions about ${subject} at ${difficulty} difficulty (for ${ageRange}).${contextLine}
 
 Return ONLY a JSON array:
-[{ "text": "question", "options": ["a","b","c","d"], "correctIndex": 0, "explanation": "brief" }]
+[{ "text": "question", "options": ["a","b","c","d"], "correctIndex": 0, "explanation": "markdown explanation" }]
 
 Rules:
 - Exactly 4 options, correctIndex 0-3
 - Age-appropriate, fun, no offensive content
-- Do NOT repeat any question from earlier in this conversation`,
+- Do NOT repeat any question from earlier in this conversation
+- Each explanation must:
+  - Be 3–6 sentences long
+  - Clearly explain WHY the answer is correct, not just restate it
+  - Use Markdown formatting: **bold** for key terms, bullet lists for steps or comparisons, inline formulas where helpful
+  - Be written for the child's age group (${ageRange})`,
   );
 
   const result = await compiledGraph.invoke(

@@ -1,11 +1,11 @@
 import { View, Text, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { usePortrait } from "../src/hooks/useOrientation";
 import { apiService } from "../src/services/api";
-import { ScreenHeader, AnimatedLoader } from "../src/components/common";
+import { AnimatedLoader, ScreenHeader } from "../src/components/common";
 import { getSubjectTheme } from "../src/config/subjectThemes";
 import { FONTS, FORTNITE_COLORS } from "../src/constants/theme";
 import Svg, { Path } from "react-native-svg";
@@ -50,6 +50,8 @@ function QuestionReviewCard({
   index: number;
   t: (key: string, opts?: Record<string, unknown>) => string;
 }) {
+  const hasRecordedAnswer = answer.childAnswerIndex !== -1;
+
   return (
     <View
       style={{
@@ -60,36 +62,48 @@ function QuestionReviewCard({
       }}
     >
       {/* Header row */}
-      <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
         <Text
           style={{
             fontSize: 12,
             fontFamily: FONTS.accent,
-            color: answer.isCorrect ? "#10B981" : "#EF4444",
+            color: !hasRecordedAnswer
+              ? FORTNITE_COLORS.textMuted
+              : answer.isCorrect
+                ? "#10B981"
+                : "#EF4444",
           }}
         >
           {t("analytics:review.question", { number: index + 1 })}
         </Text>
-        <View
-          style={{
-            backgroundColor: "#3D2E4A",
-            borderRadius: 8,
-            paddingHorizontal: 8,
-            paddingVertical: 3,
-          }}
-        >
-          <Text
+        {hasRecordedAnswer && answer.responseTime > 0 && (
+          <View
             style={{
-              fontSize: 11,
-              fontFamily: FONTS.bodySemiBold,
-              color: FORTNITE_COLORS.textMuted,
+              backgroundColor: "#3D2E4A",
+              borderRadius: 8,
+              paddingHorizontal: 8,
+              paddingVertical: 3,
             }}
           >
-            {t("analytics:review.responseTime", {
-              time: (answer.responseTime / 1000).toFixed(1),
-            })}
-          </Text>
-        </View>
+            <Text
+              style={{
+                fontSize: 11,
+                fontFamily: FONTS.bodySemiBold,
+                color: FORTNITE_COLORS.textMuted,
+              }}
+            >
+              {t("analytics:review.responseTime", {
+                time: (answer.responseTime / 1000).toFixed(1),
+              })}
+            </Text>
+          </View>
+        )}
       </View>
 
       {/* Question text */}
@@ -108,7 +122,7 @@ function QuestionReviewCard({
       <View style={{ gap: 6 }}>
         {answer.options.map((option, i) => {
           const isCorrect = i === answer.correctIndex;
-          const isChildAnswer = i === answer.childAnswerIndex;
+          const isChildAnswer = hasRecordedAnswer && i === answer.childAnswerIndex;
           const isWrongAnswer = isChildAnswer && !answer.isCorrect;
 
           let borderColor = "#3D2E4A";
@@ -224,61 +238,82 @@ export default function MatchReviewScreen() {
   usePortrait();
   const { t } = useTranslation(["analytics", "common"]);
   const { matchId, childId, subject } = useLocalSearchParams();
-  const [answers, setAnswers] = useState<AnswerDetail[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
   const theme = getSubjectTheme((subject as string) || "");
 
-  useEffect(() => {
-    if (!matchId || !childId) return;
-    loadReview();
-  }, [matchId, childId]);
+  const {
+    data: answers = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["matchReview", matchId, childId],
+    queryFn: () =>
+      apiService.getMatchReview(matchId as string, childId as string),
+    enabled: !!matchId && !!childId,
+  });
 
-  const loadReview = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const result = await apiService.getMatchReview(
-        matchId as string,
-        childId as string,
-      );
-      setAnswers(result);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to load review";
-      setError(message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const correctCount = answers.filter((a) => a.isCorrect).length;
-  const totalCount = answers.length;
-  const accuracy = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
+  const errorMessage = error instanceof Error ? error.message : "";
+  // Only count answers where the child actually responded
+  const recordedAnswers = answers.filter(
+    (a: AnswerDetail) => (a as any).childAnswerIndex !== -1,
+  );
+  const correctCount = recordedAnswers.filter(
+    (a: AnswerDetail) => a.isCorrect,
+  ).length;
+  const totalCount = recordedAnswers.length || answers.length;
+  const accuracy =
+    recordedAnswers.length > 0
+      ? Math.round((correctCount / recordedAnswers.length) * 100)
+      : 0;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: FORTNITE_COLORS.bgDark }}>
+    <SafeAreaView
+      edges={["bottom"]}
+      style={{ flex: 1, backgroundColor: FORTNITE_COLORS.bgDark }}
+    >
       <ScreenHeader title={t("analytics:review.title")} />
 
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40, gap: 12 }}
+        contentInsetAdjustmentBehavior="automatic"
+        contentContainerStyle={{
+          paddingHorizontal: 20,
+          paddingBottom: 40,
+          gap: 12,
+        }}
       >
-        {loading && (
+        {isLoading && (
           <View style={{ alignItems: "center", paddingTop: 80 }}>
             <AnimatedLoader size="lg" />
           </View>
         )}
 
-        {error && !loading && (
+        {isError && !isLoading && (
           <View style={{ alignItems: "center", paddingTop: 40 }}>
-            <Text style={{ color: "#F87171", fontSize: 14, fontFamily: FONTS.body }}>
-              {error}
+            <Text
+              style={{ color: "#F87171", fontSize: 14, fontFamily: FONTS.body }}
+            >
+              {errorMessage}
             </Text>
           </View>
         )}
 
-        {!loading && !error && answers.length > 0 && (
+        {!isLoading && !isError && answers.length === 0 && (
+          <View style={{ alignItems: "center", paddingTop: 80 }}>
+            <Text
+              style={{
+                color: "#7B6B8A",
+                fontSize: 15,
+                fontFamily: FONTS.body,
+                textAlign: "center",
+              }}
+            >
+              {t("analytics:review.noQuestions")}
+            </Text>
+          </View>
+        )}
+
+        {!isLoading && !isError && answers.length > 0 && (
           <>
             {/* Summary card */}
             <View
@@ -291,7 +326,9 @@ export default function MatchReviewScreen() {
                 justifyContent: "space-between",
               }}
             >
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+              >
                 <View
                   style={{
                     width: 10,
@@ -310,24 +347,36 @@ export default function MatchReviewScreen() {
                   {theme.label}
                 </Text>
               </View>
-              <Text
-                style={{
-                  fontSize: 14,
-                  fontFamily: FONTS.bodySemiBold,
-                  color:
-                    accuracy >= 70
-                      ? "#10B981"
-                      : accuracy >= 40
-                        ? "#F59E0B"
-                        : "#EF4444",
-                }}
-              >
-                {t("analytics:review.summary", {
-                  correct: correctCount,
-                  total: totalCount,
-                  accuracy,
-                })}
-              </Text>
+              {recordedAnswers.length > 0 ? (
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontFamily: FONTS.bodySemiBold,
+                    color:
+                      accuracy >= 70
+                        ? "#10B981"
+                        : accuracy >= 40
+                          ? "#F59E0B"
+                          : "#EF4444",
+                  }}
+                >
+                  {t("analytics:review.summary", {
+                    correct: correctCount,
+                    total: recordedAnswers.length,
+                    accuracy,
+                  })}
+                </Text>
+              ) : (
+                <Text
+                  style={{
+                    fontSize: 13,
+                    fontFamily: FONTS.bodySemiBold,
+                    color: FORTNITE_COLORS.textMuted,
+                  }}
+                >
+                  {answers.length} questions
+                </Text>
+              )}
             </View>
 
             {/* Question cards */}

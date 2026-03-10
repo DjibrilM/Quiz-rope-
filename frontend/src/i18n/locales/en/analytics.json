@@ -11,7 +11,23 @@
     "avgTime": "Avg {{time}}s",
     "viewHistory": "View Match History",
     "noData": "No matches yet",
-    "noDataSubtitle": "Play some games to see stats here!"
+    "noDataSubtitle": "Play some games to see stats here!",
+    "performanceBadge": {
+      "excellent": "Excellent",
+      "good": "Good Progress",
+      "needsWork": "Needs Practice"
+    },
+    "report": {
+      "title": "Learning Report",
+      "strongAt": "Strong At",
+      "practiceNeeded": "Needs More Practice",
+      "practiceHint": "Spend extra time on {{subject}} to improve accuracy",
+      "noWeakSubject": "Keep going — more practice = better insights!",
+      "avgResponseTime": "Avg Response",
+      "avgResponseValue": "{{time}}s per question",
+      "slowNote": "Taking time to think — good habit!",
+      "fastNote": "Answering quickly and confidently!"
+    }
   },
   "history": {
     "title": "Match History",
@@ -28,6 +44,8 @@
     "yourAnswer": "Your answer",
     "correctAnswer": "Correct answer",
     "responseTime": "{{time}}s",
-    "explanation": "Explanation"
+    "explanation": "Explanation",
+    "noAnswers": "No answers recorded for this match.\nDetailed review is only available for multiplayer matches.",
+    "noQuestions": "No questions found for this match."
   }
 }

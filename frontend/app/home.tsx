@@ -4,6 +4,7 @@ import { router } from "expo-router";
 import { usePortrait } from "../src/hooks/useOrientation";
 import { useGameStore } from "../src/stores/gameStore";
 import { firebaseAuthService } from "../src/services/firebase";
+import { AvatarIcon } from "../src/components/common/AvatarIcons";
 import { apiService } from "../src/services/api";
 import { hapticsService } from "../src/services/haptics";
 import { MatchStatus } from "@shared/types/match.types";
@@ -28,7 +29,9 @@ import {
   StaggeredList,
   LanguageSelector,
   FlashingGlobeButton,
+  Button,
 } from "../src/components/common";
+import { BrainMascot } from "../src/components/common/Mascots";
 import { FONTS } from "../src/constants/theme";
 
 function IconQuickPlay() {
@@ -253,15 +256,18 @@ export default function HomeScreen() {
     parentUser,
     isMockMode,
     userRole,
+    guestProfile,
     logout,
     setCurrentMatch,
     setChildren,
   } = useGameStore();
+
+  const isGuest = userRole === "guest";
   const logoutSheetRef = useRef<BottomSheetModal>(null);
   const languageSheetRef = useRef<BottomSheetModal>(null);
 
   useEffect(() => {
-    if (userRole !== "child" && apiService.hasToken()) {
+    if (userRole !== "child" && userRole !== "guest" && apiService.hasToken()) {
       apiService
         .getChildren()
         .then((data) => {
@@ -363,7 +369,9 @@ export default function HomeScreen() {
               }}
             >
               {t("home:greeting", {
-                name: parentUser?.displayName || "Player",
+                name: isGuest
+                  ? guestProfile?.displayName || "Player"
+                  : parentUser?.displayName || "Player",
               })}
             </Text>
           </View>
@@ -392,42 +400,144 @@ export default function HomeScreen() {
             </Pressable>
           </View>
         </View>
-
       </View>
 
+      {/* Guest banner — shown only for guest users */}
+      {isGuest && guestProfile && (
+        <Pressable
+          className="mb-2"
+          onPress={() => router.push("/link-to-parent")}
+          style={{
+            marginHorizontal: 24,
+            marginBottom: 4,
+            backgroundColor: "#1A1520",
+            borderRadius: 16,
+            borderWidth: 1,
+            borderColor: "#9B59B6",
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 12,
+          }}
+        >
+          <View
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: 22,
+              backgroundColor: "#0D0B14",
+              borderWidth: 2,
+              borderColor: "#9B59B6",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <AvatarIcon avatarId={guestProfile.avatarId} size={30} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text
+              style={{
+                color: "#FFFFFF",
+                fontSize: 13,
+                fontFamily: FONTS.bodyBold,
+              }}
+            >
+              {guestProfile.displayName}
+            </Text>
+            <Text
+              style={{
+                color: "#9B59B6",
+                fontSize: 11,
+                fontFamily: FONTS.body,
+                marginTop: 1,
+              }}
+            >
+              {t("home:guest.linkBannerCta")}
+            </Text>
+          </View>
+          <Text style={{ color: "#9B59B6", fontSize: 18 }}>{"›"}</Text>
+        </Pressable>
+      )}
+
       <ScrollView
-        className="flex-1 px-6"
+        className="flex-1 px-6 mt-2"
         contentContainerStyle={{ paddingBottom: 40 }}
       >
         <StaggeredList staggerMs={80}>
-          {isMockMode && (
-            <MenuItem
-              icon={<IconQuickPlay />}
-              title={t("home:menu.quickPlay")}
-              subtitle={t("home:menu.quickPlayDesc")}
-              onPress={handleQuickPlay}
-              highlight
-            />
+          {/* Quick play / solo — always available */}
+          {isMockMode && !isGuest && (
+            <View style={{ position: "relative" }}>
+              <View
+                style={{
+                  position: "absolute",
+                  top: -45,
+                  right: 10,
+                  zIndex: -1,
+                  transform: [{ rotate: "10deg" }],
+                }}
+              >
+                <BrainMascot size={85} />
+              </View>
+              <MenuItem
+                icon={<IconQuickPlay />}
+                title={t("home:menu.quickPlay")}
+                subtitle={t("home:menu.quickPlayDesc")}
+                onPress={handleQuickPlay}
+                highlight
+              />
+            </View>
           )}
 
-          <MenuItem
-            icon={<IconNewGame />}
-            title={t("home:menu.startNewGame")}
-            subtitle={t("home:menu.startNewGameDesc")}
-            onPress={() => router.push("/create-match")}
-            highlight
-          />
-
-          {userRole !== "child" && (
-            <MenuItem
-              icon={<IconConnectDevice />}
-              title={t("home:menu.connectDevice")}
-              subtitle={t("home:menu.connectDeviceDesc")}
-              onPress={() => router.push("/connect-device")}
-            />
+          {/* Guest: solo play as the highlighted primary action */}
+          {isGuest && (
+            <View style={{ position: "relative" }}>
+              <View
+                style={{
+                  position: "absolute",
+                  top: -45,
+                  right: 10,
+                  zIndex: -1,
+                  transform: [{ rotate: "10deg" }],
+                }}
+              >
+                <BrainMascot size={85} />
+              </View>
+              <MenuItem
+                icon={<IconQuickPlay />}
+                title={t("home:menu.soloPlay")}
+                subtitle={t("home:menu.soloPlayDesc")}
+                onPress={() => router.push("/create-match")}
+                highlight
+              />
+            </View>
           )}
 
-          {userRole !== "child" && (
+          {/* Parent / child: create a new game */}
+          {!isGuest && (
+            <View style={{ position: "relative" }}>
+              <View
+                style={{
+                  position: "absolute",
+                  top: -20,
+                  left: -20,
+                  zIndex: 10,
+                  transform: [{ rotate: "-15deg" }],
+                }}
+              >
+                <BrainMascot size={90} />
+              </View>
+              <MenuItem
+                icon={<IconNewGame />}
+                title={t("home:menu.startNewGame")}
+                subtitle={t("home:menu.startNewGameDesc")}
+                onPress={() => router.push("/create-match")}
+                highlight
+              />
+            </View>
+          )}
+
+          {userRole !== "child" && !isGuest && (
             <MenuItem
               icon={<IconChildren />}
               title={t("home:menu.myChildren")}
@@ -449,14 +559,23 @@ export default function HomeScreen() {
             subtitle={t("home:menu.leaderboardDesc")}
             onPress={() => router.push("/leaderboard" as any)}
           />
+
+          {/* Guest: link to parent as a menu item too */}
+          {isGuest && (
+            <MenuItem
+              icon={<IconChildren />}
+              title={t("home:guest.linkMenuItem")}
+              subtitle={t("home:guest.linkMenuItemDesc")}
+              onPress={() => router.push("/link-to-parent")}
+            />
+          )}
         </StaggeredList>
       </ScrollView>
 
       <BottomSheetModal
         ref={logoutSheetRef}
-        snapPoints={["30%"]}
         enablePanDownToClose
-        enableDynamicSizing={false}
+        enableDynamicSizing={true}
         backdropComponent={renderBackdrop}
         backgroundStyle={{
           backgroundColor: "#1A1520",
@@ -470,15 +589,15 @@ export default function HomeScreen() {
         }}
       >
         <BottomSheetView
-          style={{ flex: 1, paddingHorizontal: 24, paddingBottom: 20 }}
+          style={{ paddingHorizontal: 24, paddingBottom: 40, paddingTop: 10 }}
         >
           <Text
             style={{
               color: "#FFFFFF",
-              fontSize: 18,
+              fontSize: 22,
               textAlign: "center",
-              marginBottom: 8,
-              fontFamily: "Bungee_400Regular",
+              marginBottom: 12,
+              fontFamily: "LuckiestGuy_400Regular",
             }}
           >
             {t("auth:logout.title")}
@@ -486,50 +605,27 @@ export default function HomeScreen() {
           <Text
             style={{
               color: "#B8A9C9",
-              fontSize: 14,
+              fontSize: 15,
               textAlign: "center",
-              marginBottom: 24,
+              marginBottom: 32,
               fontFamily: FONTS.body,
             }}
           >
             {t("auth:logout.confirmation")}
           </Text>
-          <View className="flex-row gap-3">
-            <Pressable
-              onPress={handleCloseLogout}
-              style={{
-                flex: 1,
-                paddingVertical: 14,
-                borderRadius: 12,
-                borderWidth: 1,
-                borderColor: "#3D2E4A",
-                alignItems: "center",
-              }}
-            >
-              <Text
-                style={{
-                  color: "#B8A9C9",
-                  fontSize: 14,
-                  fontFamily: FONTS.bodySemiBold,
-                }}
-              >
-                {t("common:buttons.cancel")}
-              </Text>
-            </Pressable>
-            <Pressable
+          <View className="flex-col gap-3">
+            <Button
+              label={t("auth:logout.button")}
+              variant="danger"
               onPress={handleLogout}
-              className="flex-1 py-3.5 rounded-xl bg-red-500 items-center active:bg-red-600"
-            >
-              <Text
-                style={{
-                  color: "#FFFFFF",
-                  fontSize: 14,
-                  fontFamily: FONTS.bodySemiBold,
-                }}
-              >
-                {t("auth:logout.button")}
-              </Text>
-            </Pressable>
+              className="w-full max-w-none"
+            />
+            <Button
+              label={t("common:buttons.cancel")}
+              variant="secondary"
+              onPress={handleCloseLogout}
+              className="w-full max-w-none"
+            />
           </View>
         </BottomSheetView>
       </BottomSheetModal>

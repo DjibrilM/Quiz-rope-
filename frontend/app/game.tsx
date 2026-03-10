@@ -1,13 +1,21 @@
 import { View, Text, Pressable, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, memo } from "react";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSequence,
+  Easing,
+} from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 import { useGameOrientation } from "../src/hooks/useOrientation";
 import { useGameStore } from "../src/stores/gameStore";
 import { socketService } from "../src/services/socket";
 import { soundService } from "../src/services/sound";
 import { hapticsService } from "../src/services/haptics";
+import { apiService } from "../src/services/api";
 import { ConnectionStatus } from "../src/components/common/ConnectionStatus";
 import {
   QuestionCard,
@@ -16,16 +24,77 @@ import {
   GameEndOverlay,
   StreakBadge,
 } from "../src/components/game";
+import { MascotBuddy } from "../src/components/common";
 import { FONTS } from "../src/constants/theme";
-import type { StoreQuestion, StoreRoundResult } from "../src/stores/gameStore";
+import type {
+  StoreQuestion,
+  StoreRoundResult,
+  CorrectionItem,
+} from "../src/stores/gameStore";
 import { SAMPLE_QUESTIONS } from "../src/constants/sampleQuestions";
 
-const MOCK_QUESTIONS: StoreQuestion[] = SAMPLE_QUESTIONS;
+const FALLBACK_QUESTIONS: StoreQuestion[] = SAMPLE_QUESTIONS;
+
+/** Shuffle a question's options using Fisher-Yates, keeping correctIndex in sync. */
+function shuffleOptions(q: StoreQuestion): StoreQuestion {
+  const options = [...q.options];
+  const n = options.length;
+  for (let i = n - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [options[i], options[j]] = [options[j], options[i]];
+  }
+  const correctIndex = options.indexOf(q.options[q.correctIndex]);
+  return { ...q, options, correctIndex };
+}
+
+// Floating "+10" that pops up and fades when the score increments
+const ScorePop = memo(function ScorePop({ side }: { side: "left" | "right" }) {
+  const translateY = useSharedValue(0);
+  const opacity = useSharedValue(0);
+
+  useEffect(() => {
+    translateY.value = 0;
+    opacity.value = 1;
+    translateY.value = withTiming(-32, {
+      duration: 600,
+      easing: Easing.out(Easing.cubic),
+    });
+    opacity.value = withSequence(
+      withTiming(1, { duration: 50 }),
+      withTiming(0, { duration: 500 }),
+    );
+  }, []);
+
+  const style = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+    opacity: opacity.value,
+    position: "absolute" as const,
+    bottom: "100%",
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    pointerEvents: "none" as any,
+  }));
+
+  return (
+    <Animated.View style={style}>
+      <Text
+        style={{
+          color: "#10B981",
+          fontSize: 16,
+          fontFamily: "Bungee_400Regular",
+        }}
+      >
+        +10
+      </Text>
+    </Animated.View>
+  );
+});
 
 export default function GameScreen() {
   const { t } = useTranslation(["game", "common"]);
   const userRole = useGameOrientation();
-  const isChildDevice = userRole === "child";
+  const isChildDevice = userRole === "child" || userRole === "guest";
   const { matchId } = useLocalSearchParams();
   const {
     teamScores,
@@ -43,26 +112,83 @@ export default function GameScreen() {
     resetGame,
     incrementStreak,
     resetStreak,
+    pushCorrection,
+    clearCorrection,
   } = useGameStore();
 
   const isSoloMode = currentMatch?.gameMode === "solo";
+  // Both solo and splitscreen run locally (no socket required)
+  const isLocalMode = isSoloMode || currentMatch?.gameMode === "splitscreen";
+
+  // Questions: fetched from backend (Gemini/AI), fallback to local samples on error
+  const questionsRef = useRef<StoreQuestion[]>(FALLBACK_QUESTIONS);
+  // Track correct answers per side without depending on Zustand closure values
+  const correctCountRef = useRef({ left: 0, right: 0 });
 
   const [currentRound, setCurrentRound] = useState(1);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [showGameEnd, setShowGameEnd] = useState(false);
+  // Key increments each correct answer to re-mount ScorePop and re-trigger its animation
+  const [scorePopKey, setScorePopKey] = useState<{
+    left: number;
+    right: number;
+  }>({ left: 0, right: 0 });
+
+  // Mascot Buddy State
+  const [buddyVisible, setBuddyVisible] = useState(false);
+  const [buddyMessage, setBuddyMessage] = useState("");
+  const { streak } = useGameStore();
+
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const resultTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevTimeRef = useRef(30);
 
-  useEffect(() => {
-    soundService.play('gameStart');
+  // Refs to break circular dependency between startTimer and handleTimeout
+  const handleTimeoutRef = useRef<(() => void) | null>(null);
+  const startTimerRef = useRef<(() => void) | null>(null);
 
-    setCurrentQuestion(MOCK_QUESTIONS[0]);
+  const startTimer = useCallback(() => {
+    // Remote multiplayer: server drives the timer via game:timer events
+    if (!isLocalMode) return;
+
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+
+    let t = 30;
     setTimeRemaining(30);
+    timerRef.current = setInterval(() => {
+      t -= 1;
+      setTimeRemaining(t);
+      if (t <= 0) {
+        clearInterval(timerRef.current!);
+        timerRef.current = null;
+        handleTimeoutRef.current?.();
+      }
+    }, 1000);
+  }, [setTimeRemaining]);
+
+  // Keep startTimerRef pointing to the latest startTimer
+  startTimerRef.current = startTimer;
+
+  useEffect(() => {
+    soundService.play("gameStart");
     setTeamScores({ left: 0, right: 0 });
+    clearCorrection();
 
     const socket = socketService.getSocket();
-    if (socket) {
+
+    if (!isLocalMode && socket?.connected) {
+      // Multiplayer: rejoin the room (server drives questions and timer via events).
+      // The first question was already set in the store by lobby's game:question listener.
+      socket.emit("match:join", {
+        matchId,
+        playerId: "game-player",
+        teamSide: "LEFT",
+      });
+
       socket.on("game:question", (data: unknown) => {
         setCurrentQuestion(data as StoreQuestion);
         setSelectedAnswer(null);
@@ -83,79 +209,306 @@ export default function GameScreen() {
       socket.on("game:end", (data: unknown) => {
         setGameEndResult(data as typeof gameEndResult);
         setShowGameEnd(true);
-        soundService.play('gameEnd');
+        soundService.play("gameEnd");
         hapticsService.heavy();
       });
+    } else {
+      // Solo: fetch AI-generated questions from backend then start local timer.
+      // Timer deferred until after fetch so the countdown begins on a real question.
+      const loadQuestionsAndStart = async () => {
+        try {
+          if (matchId) {
+            const match = (await apiService.getMatch(matchId as string)) as any;
+            const fetched: StoreQuestion[] = (match?.questions || [])
+              .filter((q: any) => q?.text && Array.isArray(q.options))
+              .map((q: any) =>
+                shuffleOptions({
+                  id: q._id || q.id || "",
+                  text: q.text,
+                  options: q.options,
+                  correctIndex: q.correctIndex,
+                  explanation: q.explanation || "",
+                  subject: q.subject || "",
+                }),
+              );
+            if (fetched.length > 0) {
+              questionsRef.current = fetched;
+              setCurrentQuestion(fetched[0]);
+            } else {
+              setCurrentQuestion(FALLBACK_QUESTIONS[0]);
+            }
+          } else {
+            setCurrentQuestion(FALLBACK_QUESTIONS[0]);
+          }
+        } catch {
+          setCurrentQuestion(FALLBACK_QUESTIONS[0]);
+        }
+        startTimerRef.current?.();
+      };
+      loadQuestionsAndStart();
     }
 
-    startTimer();
-
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-      if (socket) {
-        socket.off("game:question");
-        socket.off("game:score-update");
-        socket.off("game:round-result");
-        socket.off("game:timer");
-        socket.off("game:end");
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      if (resultTimeoutRef.current) {
+        clearTimeout(resultTimeoutRef.current);
+        resultTimeoutRef.current = null;
+      }
+      setBuddyVisible(false);
+      const s = socketService.getSocket();
+      if (s) {
+        s.off("game:question");
+        s.off("game:score-update");
+        s.off("game:round-result");
+        s.off("game:timer");
+        s.off("game:end");
       }
     };
   }, []);
 
   useEffect(() => {
-    if (timeRemaining <= 5 && timeRemaining > 0 && prevTimeRef.current !== timeRemaining) {
-      soundService.play('countdown');
+    if (
+      timeRemaining <= 5 &&
+      timeRemaining > 0 &&
+      prevTimeRef.current !== timeRemaining
+    ) {
+      soundService.play("countdown");
       hapticsService.light();
     }
     prevTimeRef.current = timeRemaining;
   }, [timeRemaining]);
 
-  const startTimer = () => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    let t = 30;
-    setTimeRemaining(30);
-    timerRef.current = setInterval(() => {
-      t -= 1;
-      setTimeRemaining(t);
-      if (t <= 0 && timerRef.current) clearInterval(timerRef.current);
-    }, 1000);
-  };
+  // Called when a round ends (either by answer or timeout) to trigger game end or next round
+  const endRound = useCallback(
+    (nextRound: number, newLeftScore: number, newRightScore: number) => {
+      const maxRounds = currentMatch?.maxRounds || 10;
+
+      if (nextRound > maxRounds) {
+        setShowGameEnd(true);
+        soundService.play("gameEnd");
+        hapticsService.heavy();
+
+        if (matchId) {
+          const winner = newLeftScore >= newRightScore ? "LEFT" : "RIGHT";
+          apiService
+            .completeMatch(matchId as string, {
+              winner,
+              teamScoreLeft: newLeftScore,
+              teamScoreRight: newRightScore,
+              rounds: nextRound - 1,
+            })
+            .catch(() => {
+              /* best-effort */
+            });
+        }
+
+        const totalRounds = nextRound - 1;
+        if (isSoloMode) {
+          setGameEndResult({
+            matchId: matchId as string,
+            winnerTeamId: "LEFT",
+            finalRopePosition: 0,
+            teamScores: { left: newLeftScore, right: 0 },
+            stats: [
+              {
+                playerId: "solo-player",
+                displayName: "You",
+                correctAnswers: correctCountRef.current.left,
+                totalAnswers: totalRounds,
+                avgResponseTime: Math.round(Math.random() * 5000 + 2000),
+              },
+            ],
+          });
+        } else {
+          const winner = newLeftScore >= newRightScore ? "LEFT" : "RIGHT";
+          setGameEndResult({
+            matchId: matchId as string,
+            winnerTeamId: winner,
+            finalRopePosition: 0,
+            teamScores: { left: newLeftScore, right: newRightScore },
+            stats: [
+              {
+                playerId: "player-red-1",
+                displayName: "Red Player",
+                correctAnswers: correctCountRef.current.left,
+                totalAnswers: totalRounds,
+                avgResponseTime: Math.round(Math.random() * 5000 + 2000),
+              },
+              {
+                playerId: "player-blue-1",
+                displayName: "Blue Player",
+                correctAnswers: correctCountRef.current.right,
+                totalAnswers: totalRounds,
+                avgResponseTime: Math.round(Math.random() * 5000 + 2000),
+              },
+            ],
+          });
+        }
+      } else {
+        if (resultTimeoutRef.current) clearTimeout(resultTimeoutRef.current);
+        // Solo: 1200ms is enough for kids to see the result and stay engaged.
+        // Multiplayer: server drives the pace (3s gap in gateway), so this timeout
+        // only runs in solo mode anyway.
+        resultTimeoutRef.current = setTimeout(
+          () => {
+            setCurrentRound(nextRound);
+            setCurrentQuestion(
+              questionsRef.current[
+                (nextRound - 1) % questionsRef.current.length
+              ],
+            );
+            setSelectedAnswer(null);
+            setShowResult(false);
+            startTimerRef.current?.();
+          },
+          1200,
+        );
+      }
+    },
+    [currentMatch, isSoloMode, matchId, setGameEndResult, setCurrentQuestion],
+  );
+
+  // Called when timer runs out with no answer — treats round as wrong/skipped
+  const handleTimeout = useCallback(() => {
+    // Remote multiplayer: server handles timeout
+    if (!isLocalMode) return;
+
+    if (selectedAnswer !== null) return; // already answered
+
+    const currentQ =
+      questionsRef.current[(currentRound - 1) % questionsRef.current.length];
+
+    pushCorrection({
+      questionText: currentQ.text,
+      options: currentQ.options,
+      correctIndex: currentQ.correctIndex,
+      explanation: currentQ.explanation || "",
+      userAnswerIndex: -1,
+      isCorrect: false,
+    } as CorrectionItem);
+
+    // Buddy feedback for timeout
+    if (Math.random() > 0.5) {
+      setBuddyMessage(
+        t("game:buddy.timeout", "Too slow! Let's get the next one! ⏰"),
+      );
+      setBuddyVisible(true);
+    }
+
+    resetStreak();
+    soundService.play("wrong");
+    hapticsService.error();
+
+    const result: StoreRoundResult = {
+      isCorrect: false,
+      correctIndex: currentQ.correctIndex,
+      ropeMovement: 0,
+      newRopePosition: 0,
+    };
+    setRoundResult(result);
+    setShowResult(true);
+
+    endRound(currentRound + 1, teamScores.left, teamScores.right);
+  }, [
+    selectedAnswer,
+    currentRound,
+    teamScores,
+    resetStreak,
+    setRoundResult,
+    pushCorrection,
+    endRound,
+  ]);
+
+  // Keep handleTimeoutRef pointing to the latest handleTimeout
+  useEffect(() => {
+    handleTimeoutRef.current = handleTimeout;
+  }, [handleTimeout]);
 
   const handleAnswer = useCallback(
     (answerIndex: number, teamSide: "LEFT" | "RIGHT") => {
       if (selectedAnswer !== null) return;
       setSelectedAnswer(answerIndex);
-      if (timerRef.current) clearInterval(timerRef.current);
 
-      const socket = socketService.getSocket();
-      if (socket?.connected) {
-        socket.emit("game:answer", {
-          matchId,
-          playerId: "mock-player",
-          teamSide,
-          answerIndex,
-          responseTime: (30 - timeRemaining) * 1000,
-        });
-        return;
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
       }
 
-      const currentQ = MOCK_QUESTIONS[(currentRound - 1) % MOCK_QUESTIONS.length];
+      const currentQ =
+        questionsRef.current[(currentRound - 1) % questionsRef.current.length];
       const isCorrect = answerIndex === currentQ.correctIndex;
 
-      // Points-based scoring: +10 for correct answer
+      // Persist answer to backend (best-effort, non-blocking)
+      // Use team-specific playerId for splitscreen so analytics separate both sides
+      if (matchId) {
+        const playerId = isSoloMode
+          ? "mock-player"
+          : teamSide === "LEFT"
+            ? "player-red"
+            : "player-blue";
+        apiService
+          .submitAnswer(matchId as string, {
+            playerId,
+            teamSide,
+            answerIndex,
+            responseTime: (30 - timeRemaining) * 1000,
+            questionId: currentQ.id,
+          })
+          .catch(() => {
+            /* best-effort */
+          });
+      }
+
+      pushCorrection({
+        questionText: currentQ.text,
+        options: currentQ.options,
+        correctIndex: currentQ.correctIndex,
+        explanation: currentQ.explanation || "",
+        userAnswerIndex: answerIndex,
+        isCorrect,
+      } as CorrectionItem);
+
       if (isCorrect) {
-        updateTeamScore(teamSide.toLowerCase() as "left" | "right", 10);
+        const side = teamSide.toLowerCase() as "left" | "right";
+        correctCountRef.current[side] += 1;
+        updateTeamScore(side, 10);
         incrementStreak();
-        soundService.play('correct');
+        soundService.play("correct");
         hapticsService.success();
+        setScorePopKey((prev) => ({ ...prev, [side]: prev[side] + 1 }));
+
+        // Buddy feedback for streaks / fast answers
+        const currentStreak = streak + 1;
+        if (currentStreak === 3) {
+          setBuddyMessage(t("game:buddy.streak3", "On fire! 3 in a row! 🔥"));
+          setBuddyVisible(true);
+        } else if (currentStreak === 5) {
+          setBuddyMessage(t("game:buddy.streak5", "Unstoppable! 🚀"));
+          setBuddyVisible(true);
+        } else if (timeRemaining > 25 && Math.random() > 0.3) {
+          setBuddyMessage(t("game:buddy.fast", "Lightning fast! ⚡️"));
+          setBuddyVisible(true);
+        }
       } else {
+        // Occasional encouragement on wrong answer
+        if (streak > 2) {
+          setBuddyMessage(
+            t("game:buddy.streakLost", "Oh no, streak lost! Rebuild it! 💪"),
+          );
+          setBuddyVisible(true);
+        }
         resetStreak();
-        soundService.play('wrong');
+        soundService.play("wrong");
         hapticsService.error();
       }
 
-      const newLeftScore = teamScores.left + (isCorrect && teamSide === "LEFT" ? 10 : 0);
-      const newRightScore = teamScores.right + (isCorrect && teamSide === "RIGHT" ? 10 : 0);
+      const newLeftScore =
+        teamScores.left + (isCorrect && teamSide === "LEFT" ? 10 : 0);
+      const newRightScore =
+        teamScores.right + (isCorrect && teamSide === "RIGHT" ? 10 : 0);
 
       const result: StoreRoundResult = {
         isCorrect,
@@ -163,108 +516,72 @@ export default function GameScreen() {
         ropeMovement: 0,
         newRopePosition: 0,
       };
-      setShowResult(true);
       setRoundResult(result);
+      setShowResult(true);
 
-      setTimeout(() => {
-        const nextRound = currentRound + 1;
-        const maxRounds = currentMatch?.maxRounds || 10;
-
-        if (nextRound > maxRounds) {
-          if (isSoloMode) {
-            setShowGameEnd(true);
-            soundService.play('gameEnd');
-            hapticsService.heavy();
-            setGameEndResult({
-              matchId: matchId as string,
-              winnerTeamId: "LEFT",
-              finalRopePosition: 0,
-              teamScores: { left: newLeftScore, right: 0 },
-              stats: [
-                {
-                  playerId: "solo-player",
-                  displayName: "You",
-                  correctAnswers: newLeftScore / 10,
-                  totalAnswers: nextRound - 1,
-                  avgResponseTime: Math.round(Math.random() * 5000 + 2000),
-                },
-              ],
-            });
-          } else {
-            const winner = newLeftScore >= newRightScore ? "LEFT" : "RIGHT";
-            setShowGameEnd(true);
-            soundService.play('gameEnd');
-            hapticsService.heavy();
-            setGameEndResult({
-              matchId: matchId as string,
-              winnerTeamId: winner,
-              finalRopePosition: 0,
-              teamScores: { left: newLeftScore, right: newRightScore },
-              stats: [
-                {
-                  playerId: "player-red-1",
-                  displayName: "Red Player",
-                  correctAnswers: newLeftScore / 10,
-                  totalAnswers: nextRound - 1,
-                  avgResponseTime: Math.round(Math.random() * 5000 + 2000),
-                },
-                {
-                  playerId: "player-blue-1",
-                  displayName: "Blue Player",
-                  correctAnswers: newRightScore / 10,
-                  totalAnswers: nextRound - 1,
-                  avgResponseTime: Math.round(Math.random() * 5000 + 2000),
-                },
-              ],
-            });
-          }
-        } else {
-          setCurrentRound(nextRound);
-          const nextQ = MOCK_QUESTIONS[(nextRound - 1) % MOCK_QUESTIONS.length];
-          setCurrentQuestion(nextQ);
-          setSelectedAnswer(null);
-          setShowResult(false);
-          startTimer();
-        }
-      }, 2500);
+      endRound(currentRound + 1, newLeftScore, newRightScore);
     },
-    [selectedAnswer, timeRemaining, currentRound, currentMatch, teamScores, isSoloMode]
+    [
+      selectedAnswer,
+      timeRemaining,
+      currentRound,
+      currentMatch,
+      matchId,
+      teamScores,
+      isSoloMode,
+      endRound,
+      updateTeamScore,
+      incrementStreak,
+      resetStreak,
+      setRoundResult,
+      pushCorrection,
+      setScorePopKey,
+    ],
   );
 
   const handleAbandon = useCallback(() => {
-    Alert.alert(
-      t("game:quit.title"),
-      t("game:quit.message"),
-      [
-        { text: t("game:quit.keepPlaying"), style: "cancel" },
-        {
-          text: t("game:quit.quitButton"),
-          style: "destructive",
-          onPress: () => {
-            if (timerRef.current) clearInterval(timerRef.current);
-            const socket = socketService.getSocket();
-            if (socket?.connected) {
-              socket.emit("game:abandon", { matchId, playerId: "mock-player" });
-            }
-            resetGame();
-            hapticsService.medium();
-            router.replace("/home");
-          },
+    Alert.alert(t("game:quit.title"), t("game:quit.message"), [
+      { text: t("game:quit.keepPlaying"), style: "cancel" },
+      {
+        text: t("game:quit.quitButton"),
+        style: "destructive",
+        onPress: () => {
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+          }
+          if (resultTimeoutRef.current) {
+            clearTimeout(resultTimeoutRef.current);
+            resultTimeoutRef.current = null;
+          }
+          if (!isSoloMode) {
+            socketService
+              .getSocket()
+              ?.emit("game:abandon", { matchId, playerId: "mock-player" });
+          }
+          resetGame();
+          hapticsService.medium();
+          router.back();
         },
-      ]
-    );
+      },
+    ]);
   }, [matchId, resetGame, t]);
 
   const handlePlayAgain = () => {
+    if (resultTimeoutRef.current) {
+      clearTimeout(resultTimeoutRef.current);
+      resultTimeoutRef.current = null;
+    }
+    correctCountRef.current = { left: 0, right: 0 };
     setShowGameEnd(false);
     setCurrentRound(1);
     setSelectedAnswer(null);
     setShowResult(false);
     setTeamScores({ left: 0, right: 0 });
     resetStreak();
-    setCurrentQuestion(MOCK_QUESTIONS[0]);
-    soundService.play('gameStart');
-    startTimer();
+    setCurrentQuestion(questionsRef.current[0]);
+    soundService.play("gameStart");
+    startTimerRef.current?.();
   };
 
   return (
@@ -318,7 +635,10 @@ export default function GameScreen() {
                     letterSpacing: 1,
                   }}
                 >
-                  {t("game:roundLabel", { current: currentRound, max: currentMatch?.maxRounds || 10 })}
+                  {t("game:roundLabel", {
+                    current: currentRound,
+                    max: currentMatch?.maxRounds || 10,
+                  })}
                 </Text>
                 <TimerBar timeRemaining={timeRemaining} maxTime={30} />
               </View>
@@ -333,15 +653,20 @@ export default function GameScreen() {
                 >
                   {t("game:scoreboard.score")}
                 </Text>
-                <Text
-                  style={{
-                    color: "#ffffff",
-                    fontSize: 24,
-                    fontFamily: "Bungee_400Regular",
-                  }}
-                >
-                  {teamScores.left}
-                </Text>
+                <View style={{ position: "relative" }}>
+                  {scorePopKey.left > 0 && (
+                    <ScorePop key={`left-${scorePopKey.left}`} side="left" />
+                  )}
+                  <Text
+                    style={{
+                      color: "#ffffff",
+                      fontSize: 24,
+                      fontFamily: "Bungee_400Regular",
+                    }}
+                  >
+                    {teamScores.left}
+                  </Text>
+                </View>
               </View>
             </>
           ) : (
@@ -358,15 +683,20 @@ export default function GameScreen() {
                 >
                   {t("common:teams.red")}
                 </Text>
-                <Text
-                  style={{
-                    color: "#ffffff",
-                    fontSize: 24,
-                    fontFamily: "Bungee_400Regular",
-                  }}
-                >
-                  {teamScores.left}
-                </Text>
+                <View style={{ position: "relative" }}>
+                  {scorePopKey.left > 0 && (
+                    <ScorePop key={`left-${scorePopKey.left}`} side="left" />
+                  )}
+                  <Text
+                    style={{
+                      color: "#ffffff",
+                      fontSize: 24,
+                      fontFamily: "Bungee_400Regular",
+                    }}
+                  >
+                    {teamScores.left}
+                  </Text>
+                </View>
               </View>
 
               <View style={{ alignItems: "center", gap: 4 }}>
@@ -378,7 +708,10 @@ export default function GameScreen() {
                     letterSpacing: 1,
                   }}
                 >
-                  {t("game:roundLabel", { current: currentRound, max: currentMatch?.maxRounds || 10 })}
+                  {t("game:roundLabel", {
+                    current: currentRound,
+                    max: currentMatch?.maxRounds || 10,
+                  })}
                 </Text>
                 <TimerBar timeRemaining={timeRemaining} maxTime={30} />
               </View>
@@ -394,24 +727,43 @@ export default function GameScreen() {
                 >
                   {t("common:teams.blue")}
                 </Text>
-                <Text
-                  style={{
-                    color: "#ffffff",
-                    fontSize: 24,
-                    fontFamily: "Bungee_400Regular",
-                  }}
-                >
-                  {teamScores.right}
-                </Text>
+                <View style={{ position: "relative" }}>
+                  {scorePopKey.right > 0 && (
+                    <ScorePop key={`right-${scorePopKey.right}`} side="right" />
+                  )}
+                  <Text
+                    style={{
+                      color: "#ffffff",
+                      fontSize: 24,
+                      fontFamily: "Bungee_400Regular",
+                    }}
+                  >
+                    {teamScores.right}
+                  </Text>
+                </View>
               </View>
             </>
           )}
         </View>
       </View>
 
-      {/* Progress bar + Streak */}
-      <View style={{ paddingHorizontal: 20, paddingTop: 6, paddingBottom: 10, gap: 6 }}>
-        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 }}>
+      {/* Progress bar + Streak + Score dominance */}
+      <View
+        style={{
+          paddingHorizontal: 20,
+          paddingTop: 6,
+          paddingBottom: 10,
+          gap: 6,
+        }}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+          }}
+        >
           <Text
             style={{
               color: "#7B6B8A",
@@ -419,10 +771,14 @@ export default function GameScreen() {
               fontFamily: FONTS.body,
             }}
           >
-            {t("game:questionProgress", { current: currentRound, max: currentMatch?.maxRounds || 10 })}
+            {t("game:questionProgress", {
+              current: currentRound,
+              max: currentMatch?.maxRounds || 10,
+            })}
           </Text>
           <StreakBadge />
         </View>
+        {/* Round progress bar */}
         <View
           style={{
             height: 4,
@@ -440,6 +796,69 @@ export default function GameScreen() {
             }}
           />
         </View>
+        {/* Score dominance bar (split screen only) */}
+        {!isSoloMode && (
+          <View>
+            <View
+              style={{
+                height: 8,
+                backgroundColor: "#1A1520",
+                borderRadius: 4,
+                overflow: "hidden",
+                flexDirection: "row",
+              }}
+            >
+              <View
+                style={{
+                  flex: Math.max(teamScores.left, 1),
+                  backgroundColor: "#ff6b6b",
+                  borderTopLeftRadius: 4,
+                  borderBottomLeftRadius: 4,
+                }}
+              />
+              <View
+                style={{
+                  flex: Math.max(teamScores.right, 1),
+                  backgroundColor: "#4ecdc4",
+                  borderTopRightRadius: 4,
+                  borderBottomRightRadius: 4,
+                }}
+              />
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginTop: 2,
+              }}
+            >
+              <Text
+                style={{
+                  color:
+                    teamScores.left > teamScores.right ? "#ff6b6b" : "#5A4B6B",
+                  fontSize: 9,
+                  fontFamily: FONTS.bodySemiBold,
+                }}
+              >
+                {teamScores.left > teamScores.right
+                  ? t("common:teams.red") + " ▲"
+                  : ""}
+              </Text>
+              <Text
+                style={{
+                  color:
+                    teamScores.right > teamScores.left ? "#4ecdc4" : "#5A4B6B",
+                  fontSize: 9,
+                  fontFamily: FONTS.bodySemiBold,
+                }}
+              >
+                {teamScores.right > teamScores.left
+                  ? "▲ " + t("common:teams.blue")
+                  : ""}
+              </Text>
+            </View>
+          </View>
+        )}
       </View>
 
       {/* Question cards */}
@@ -450,6 +869,7 @@ export default function GameScreen() {
         <QuestionCard
           question={currentQuestion}
           selectedAnswer={selectedAnswer}
+          correctIndex={isSoloMode ? currentQuestion?.correctIndex : undefined}
           roundResult={showResult ? roundResult : null}
           onAnswer={(index: number) => handleAnswer(index, "LEFT")}
           teamSide="LEFT"
@@ -475,9 +895,29 @@ export default function GameScreen() {
         <GameEndOverlay
           result={gameEndResult}
           onPlayAgain={handlePlayAgain}
-          onExit={() => router.replace("/home")}
+          onExit={() => router.back()}
+          onReview={() =>
+            isSoloMode
+              ? router.push("/correction" as any)
+              : router.push({
+                  pathname: "/match-review" as any,
+                  params: {
+                    matchId: matchId as string,
+                    childId: "mock-player",
+                    subject: currentMatch?.subject || "",
+                  },
+                })
+          }
         />
       )}
+
+      {/* Floating Mascot Buddy */}
+      <MascotBuddy
+        message={buddyMessage}
+        visible={buddyVisible}
+        onHide={() => setBuddyVisible(false)}
+        displayDurationMs={2500}
+      />
     </SafeAreaView>
   );
 }

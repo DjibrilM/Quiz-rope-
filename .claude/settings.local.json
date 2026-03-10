@@ -1,7 +1,16 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(for f in leaderboard child-matches)",
+      "Bash(do echo \"=== $f ===\")",
+      "Read(//Users/jibm/desktop/projects/tug-of-war-for-your-brain/frontend/app/**)",
+      "Bash(done)",
+      "Bash(for f in match-history child-matches child-stats leaderboard match-review)",
+      "Bash(do)",
+      "Bash(echo \"=== $f ===\")",
+      "Bash(for f in home children)",
+      "Bash(pip3 install:*)"
     ]
   }
 }

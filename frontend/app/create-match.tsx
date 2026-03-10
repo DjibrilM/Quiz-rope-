@@ -1,13 +1,18 @@
-import { useState } from "react";
-import { View, Text, ScrollView, Pressable } from "react-native";
+import { useState, useTransition } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  Pressable,
+  ActivityIndicator,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import Svg, { Path } from "react-native-svg";
 import { usePortrait } from "../src/hooks/useOrientation";
 import { useGameStore } from "../src/stores/gameStore";
-import { socketService } from "../src/services/socket";
 import { apiService } from "../src/services/api";
-import { ScreenHeader, StaggeredList } from "../src/components/common";
+import { StaggeredList, ScreenHeader } from "../src/components/common";
 import { SubjectCard } from "../src/components/match";
 import { autoDifficulty } from "../src/utils/autoDifficulty";
 import { MatchStatus } from "@shared/types/match.types";
@@ -28,6 +33,7 @@ function PlayIcon() {
 
 export default function CreateMatchScreen() {
   usePortrait();
+  const [isPending, startTransition] = useTransition();
   const { t } = useTranslation(["match", "common"]);
   const { children, userRole, setCurrentMatch } = useGameStore();
   const [gameMode, setGameMode] = useState<GameMode>("solo");
@@ -45,68 +51,71 @@ export default function CreateMatchScreen() {
   const [starting, setStarting] = useState(false);
 
   const handleStart = async () => {
-    if (!selectedSubject || starting) return;
-    setStarting(true);
+    startTransition(() => {
+      const fn = async () => {
+        if (!selectedSubject || starting) return;
+        setStarting(true);
 
-    try {
-      hapticsService.medium();
+        try {
+          hapticsService.medium();
 
-      const difficulty =
-        userRole === "child" ? "EASY" : autoDifficulty(children);
-      const maxRounds = 10;
-      const teams = [
-        { name: "Red Team", color: "#EF4444", side: "LEFT" },
-        { name: "Blue Team", color: "#3B82F6", side: "RIGHT" },
-      ];
+          const difficulty =
+            userRole === "child" ? "EASY" : autoDifficulty(children);
+          const maxRounds = 10;
+          const teams = [
+            { name: "Red Team", color: "#EF4444", side: "LEFT" },
+            { name: "Blue Team", color: "#3B82F6", side: "RIGHT" },
+          ];
 
-      const created = await apiService.createMatch({
-        subject: selectedSubject,
-        difficulty,
-        maxRounds,
-        teams,
-      });
+          const created = await apiService.createMatch({
+            subject: selectedSubject,
+            difficulty,
+            maxRounds,
+            gameMode,
+            teams,
+          });
 
-      const match = {
-        ...(created as any),
-        id: (created as any)._id || (created as any).id,
-        gameMode,
-        teams: ((created as any).teams || teams).map((t: any, i: number) => ({
-          id: t._id || t.id || `team-${i}`,
-          name: t.name,
-          color: t.color,
-          side: t.side,
-          players: t.players || [],
-        })),
-        ropePosition: (created as any).ropePosition || 0,
-        currentQuestionIndex: (created as any).currentQuestionIndex || 0,
-        status: userRole === "child" ? MatchStatus.IN_PROGRESS : ((created as any).status || MatchStatus.WAITING),
-        rounds: (created as any).rounds || 0,
-        maxRounds,
-        createdAt: (created as any).createdAt || new Date(),
+          const match = {
+            ...(created as any),
+            id: (created as any)._id || (created as any).id,
+            gameMode,
+            teams: ((created as any).teams || teams).map(
+              (t: any, i: number) => ({
+                id: t._id || t.id || `team-${i}`,
+                name: t.name,
+                color: t.color,
+                side: t.side,
+                players: t.players || [],
+              }),
+            ),
+            ropePosition: (created as any).ropePosition || 0,
+            currentQuestionIndex: (created as any).currentQuestionIndex || 0,
+            status: MatchStatus.IN_PROGRESS,
+            rounds: (created as any).rounds || 0,
+            maxRounds,
+            createdAt: (created as any).createdAt || new Date(),
+          };
+
+          setCurrentMatch(match);
+          router.replace({ pathname: "/game", params: { matchId: match.id } });
+        } catch (error) {
+          console.error("Failed to create match:", error);
+        } finally {
+          setStarting(false);
+        }
       };
 
-      socketService.connect();
-      setCurrentMatch(match);
-
-      const goDirectToGame = userRole === "child";
-      router.replace(
-        goDirectToGame
-          ? { pathname: "/game", params: { matchId: match.id } }
-          : { pathname: "/lobby", params: { matchId: match.id } },
-      );
-    } catch (error) {
-      console.error("Failed to create match:", error);
-    } finally {
-      setStarting(false);
-    }
+      fn();
+    });
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-game-bg">
+    <SafeAreaView edges={["bottom"]} className="flex-1 bg-game-bg">
       <ScreenHeader title={t("match:create.title")} />
 
       <ScrollView
         className="flex-1 px-6"
+        contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{ paddingBottom: 120, paddingTop: 8 }}
       >
         <Text
@@ -231,7 +240,7 @@ export default function CreateMatchScreen() {
         >
           <Pressable
             onPress={handleStart}
-            disabled={starting}
+            disabled={starting || isPending}
             style={{
               flexDirection: "row",
               alignItems: "center",
@@ -248,7 +257,11 @@ export default function CreateMatchScreen() {
               opacity: starting ? 0.7 : 1,
             }}
           >
-            <PlayIcon />
+            {starting || isPending ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <PlayIcon />
+            )}
             <Text
               style={{
                 color: "#FFFFFF",
@@ -257,7 +270,7 @@ export default function CreateMatchScreen() {
               }}
             >
               {starting
-                ? t("common:buttons.loading")
+                ? t("common:labels.loading")
                 : t("match:create.startButton", {
                     subject: t(`common:subjects.${selectedSubject}`),
                   })}

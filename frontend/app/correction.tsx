@@ -1,0 +1,283 @@
+import { View, Text, ScrollView, Pressable } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
+import Svg, { Path } from "react-native-svg";
+import Markdown from "react-native-markdown-display";
+import { usePortrait } from "../src/hooks/useOrientation";
+import { useGameStore } from "../src/stores/gameStore";
+import { FONTS, FORTNITE_COLORS } from "../src/constants/theme";
+
+const OPTION_LABELS = ["A", "B", "C", "D"];
+
+function CheckIcon() {
+  return (
+    <Svg width={14} height={14} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M20 6L9 17l-5-5"
+        stroke="#10B981"
+        strokeWidth={3}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+function XIcon() {
+  return (
+    <Svg width={14} height={14} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M18 6L6 18M6 6l12 12"
+        stroke="#EF4444"
+        strokeWidth={3}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+export default function CorrectionScreen() {
+  usePortrait();
+  const { t } = useTranslation(["game", "common"]);
+  const lastMatchCorrection = useGameStore((s) => s.lastMatchCorrection);
+
+  const correctCount = lastMatchCorrection.filter((a) => a.isCorrect).length;
+  const total = lastMatchCorrection.length;
+  const accuracy = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: FORTNITE_COLORS.bgDark }}>
+      {/* Header */}
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          paddingHorizontal: 20,
+          paddingVertical: 14,
+          borderBottomWidth: 1,
+          borderBottomColor: "#3D2E4A",
+        }}
+      >
+        <Pressable
+          onPress={() => router.back()}
+          style={{
+            width: 32,
+            height: 32,
+            backgroundColor: "#1A1520",
+            borderRadius: 16,
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: 12,
+          }}
+        >
+          <Text style={{ color: "#B8A9C9", fontSize: 16, fontWeight: "bold" }}>{"<"}</Text>
+        </Pressable>
+        <Text
+          style={{
+            flex: 1,
+            color: "#FFFFFF",
+            fontSize: 20,
+            fontFamily: "Bungee_400Regular",
+          }}
+        >
+          {t("game:correction.title")}
+        </Text>
+      </View>
+
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40, paddingTop: 16, gap: 12 }}
+      >
+        {total === 0 ? (
+          <View style={{ alignItems: "center", paddingTop: 60 }}>
+            <Text style={{ color: FORTNITE_COLORS.textMuted, fontSize: 15, fontFamily: FONTS.body }}>
+              {t("game:correction.empty")}
+            </Text>
+          </View>
+        ) : (
+          <>
+            {/* Summary */}
+            <View
+              style={{
+                backgroundColor: FORTNITE_COLORS.bgCard,
+                borderRadius: 16,
+                padding: 16,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 4,
+              }}
+            >
+              <Text style={{ fontSize: 15, fontFamily: FONTS.bodyBold, color: FORTNITE_COLORS.textPrimary }}>
+                {t("game:correction.summary", { correct: correctCount, total })}
+              </Text>
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontFamily: FONTS.bodyBold,
+                  color:
+                    accuracy >= 70 ? "#10B981" : accuracy >= 40 ? "#F59E0B" : "#EF4444",
+                }}
+              >
+                {accuracy}%
+              </Text>
+            </View>
+
+            {/* Question cards */}
+            {lastMatchCorrection.map((item, index) => (
+              <View
+                key={index}
+                style={{
+                  backgroundColor: FORTNITE_COLORS.bgCard,
+                  borderRadius: 16,
+                  padding: 16,
+                  gap: 12,
+                  borderWidth: 1,
+                  borderColor: item.isCorrect ? "#10B98130" : "#EF444430",
+                }}
+              >
+                {/* Question header */}
+                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontFamily: FONTS.accent,
+                      color: item.isCorrect ? "#10B981" : "#EF4444",
+                    }}
+                  >
+                    {t("game:correction.question", { number: index + 1 })}
+                  </Text>
+                  {item.isCorrect ? <CheckIcon /> : <XIcon />}
+                </View>
+
+                {/* Question text */}
+                <Text
+                  style={{
+                    fontSize: 15,
+                    fontFamily: FONTS.bodySemiBold,
+                    color: FORTNITE_COLORS.textPrimary,
+                    lineHeight: 22,
+                  }}
+                >
+                  {item.questionText}
+                </Text>
+
+                {/* Options */}
+                <View style={{ gap: 6 }}>
+                  {item.options.map((option, i) => {
+                    const isCorrect = i === item.correctIndex;
+                    const isUserWrong = i === item.userAnswerIndex && !item.isCorrect;
+
+                    let borderColor = "#3D2E4A";
+                    let bgColor = "transparent";
+                    if (isCorrect) { borderColor = "#10B981"; bgColor = "#10B98110"; }
+                    else if (isUserWrong) { borderColor = "#EF4444"; bgColor = "#EF444410"; }
+
+                    return (
+                      <View
+                        key={i}
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 8,
+                          borderWidth: 1.5,
+                          borderColor,
+                          backgroundColor: bgColor,
+                          borderRadius: 10,
+                          paddingHorizontal: 12,
+                          paddingVertical: 10,
+                        }}
+                      >
+                        <View
+                          style={{
+                            width: 22,
+                            height: 22,
+                            borderRadius: 11,
+                            backgroundColor: isCorrect ? "#10B98130" : isUserWrong ? "#EF444430" : "#3D2E4A",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Text
+                            style={{
+                              fontSize: 11,
+                              fontFamily: FONTS.accent,
+                              color: isCorrect ? "#10B981" : isUserWrong ? "#EF4444" : FORTNITE_COLORS.textMuted,
+                            }}
+                          >
+                            {OPTION_LABELS[i]}
+                          </Text>
+                        </View>
+                        <Text
+                          style={{
+                            flex: 1,
+                            fontSize: 13,
+                            fontFamily: FONTS.body,
+                            color: isCorrect ? "#10B981" : isUserWrong ? "#EF4444" : FORTNITE_COLORS.textSecondary,
+                          }}
+                        >
+                          {option}
+                        </Text>
+                        {isCorrect && <CheckIcon />}
+                        {isUserWrong && <XIcon />}
+                      </View>
+                    );
+                  })}
+                  {item.userAnswerIndex === -1 && (
+                    <Text style={{ color: "#7B6B8A", fontSize: 12, fontFamily: FONTS.body, marginTop: 2 }}>
+                      {t("game:correction.skipped")}
+                    </Text>
+                  )}
+                </View>
+
+                {/* Explanation */}
+                {item.explanation ? (
+                  <View
+                    style={{
+                      backgroundColor: "#3D2E4A30",
+                      borderRadius: 10,
+                      padding: 12,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 11,
+                        fontFamily: FONTS.bodySemiBold,
+                        color: FORTNITE_COLORS.textMuted,
+                        marginBottom: 6,
+                      }}
+                    >
+                      {t("game:correction.explanation")}
+                    </Text>
+                    <Markdown
+                      style={{
+                        body: {
+                          fontSize: 13,
+                          fontFamily: FONTS.body,
+                          color: FORTNITE_COLORS.textSecondary,
+                          lineHeight: 20,
+                        },
+                        strong: {
+                          fontFamily: FONTS.bodySemiBold,
+                          color: FORTNITE_COLORS.textPrimary,
+                        },
+                        bullet_list: { marginTop: 4, marginBottom: 0 },
+                        ordered_list: { marginTop: 4, marginBottom: 0 },
+                        list_item: { marginBottom: 2 },
+                        paragraph: { marginTop: 0, marginBottom: 6 },
+                      }}
+                    >
+                      {item.explanation}
+                    </Markdown>
+                  </View>
+                ) : null}
+              </View>
+            ))}
+          </>
+        )}
+      </ScrollView>
+    </SafeAreaView>
+  );
+}

@@ -48,7 +48,10 @@ function ChildIcon() {
   );
 }
 
-const VARIANT_STYLES: Record<string, { bg: string; activeBg: string; textClass: string; loaderColor: string }> = {
+const VARIANT_STYLES: Record<
+  string,
+  { bg: string; activeBg: string; textClass: string; loaderColor: string }
+> = {
   google: {
     bg: "bg-white",
     activeBg: "active:bg-gray-100",
@@ -102,28 +105,30 @@ export function LoginButton({
   const styles = VARIANT_STYLES[variant];
 
   const icon =
-    variant === "google" ? <GoogleIcon /> :
-    variant === "child" ? <ChildIcon /> :
-    null;
+    variant === "google" ? (
+      <GoogleIcon />
+    ) : variant === "child" ? (
+      <ChildIcon />
+    ) : null;
 
   return (
     <Pressable
       onPress={handlePress}
       disabled={loading}
-      className={`w-full max-w-sm py-4 px-6 rounded-2xl flex-row items-center justify-center mb-4 ${styles.bg} ${styles.activeBg}`}
+      className={`w-full max-w-sm py-4 min-h-12 px-6 rounded-2xl flex-row items-center justify-center mb-4 ${styles.bg} ${styles.activeBg}`}
       style={loading ? { opacity: 0.7 } : undefined}
       accessibilityRole="button"
       accessibilityLabel={displayLabel}
       accessibilityState={{ busy: loading }}
     >
-      {loading ? (
-        <AnimatedLoader color={styles.loaderColor} size="sm" />
-      ) : (
-        icon
-      )}
+      {loading ? <AnimatedLoader color={styles.loaderColor} size="sm" /> : icon}
       <Text
         className={`text-lg font-bold ${styles.textClass}`}
-        style={{ fontFamily: "Bungee_400Regular", letterSpacing: 0.5, marginLeft: loading ? 10 : 0 }}
+        style={{
+          fontFamily: "Bungee_400Regular",
+          letterSpacing: 0.5,
+          marginLeft: loading ? 10 : 0,
+        }}
       >
         {loading ? t("labels.connecting") : displayLabel}
       </Text>

@@ -12,6 +12,7 @@ interface MatchHistoryCardProps {
 
 export function MatchHistoryCard({ match, onPress }: MatchHistoryCardProps) {
   const { t } = useTranslation(["match", "common"]);
+  const isSolo = (match as any).gameMode === "solo";
   const isRedWinner = match.winner === "LEFT";
   const winnerColor = isRedWinner ? "text-team-red" : "text-team-blue";
   const winnerLabel = isRedWinner ? t("common:teams.redTeam") : t("common:teams.blueTeam");
@@ -46,12 +47,22 @@ export function MatchHistoryCard({ match, onPress }: MatchHistoryCardProps) {
 
         <View className="items-end">
           {match.status === "COMPLETED" && match.winner ? (
-            <Text className={`text-base font-bold ${winnerColor}`} style={{ fontFamily: FONTS.bodyBold }}>
-              {winnerLabel} {t("match:history.won")}
-            </Text>
+            isSolo ? (
+              <Text style={{ color: "#10B981", fontSize: 13, fontFamily: FONTS.bodyBold }}>
+                {t("match:history.completed")}
+              </Text>
+            ) : (
+              <Text className={`text-base font-bold ${winnerColor}`} style={{ fontFamily: FONTS.bodyBold }}>
+                {winnerLabel} {t("match:history.won")}
+              </Text>
+            )
           ) : (
-            <Text style={{ color: "#7B6B8A", fontSize: 13, fontFamily: FONTS.bodySemiBold }}>
-              {match.status}
+            <Text style={{
+              fontSize: 12,
+              fontFamily: FONTS.bodySemiBold,
+              color: match.status === "IN_PROGRESS" ? "#F59E0B" : "#7B6B8A",
+            }}>
+              {match.status === "IN_PROGRESS" ? t("match:history.inProgress") : t("match:history.waiting")}
             </Text>
           )}
           <Text style={{ color: "#7B6B8A", fontSize: 12, fontFamily: FONTS.body, marginTop: 4 }}>{dateStr}</Text>

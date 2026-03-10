@@ -1,6 +1,6 @@
 import React from "react";
-import { View, Text, Pressable } from "react-native";
-import { router } from "expo-router";
+import { View, Text, Pressable, Platform } from "react-native";
+import { router, Stack } from "expo-router";
 import Svg, { Path } from "react-native-svg";
 import { useTranslation } from "react-i18next";
 
@@ -17,6 +17,18 @@ export function ScreenHeader({
 }: ScreenHeaderProps) {
   const { t } = useTranslation("common");
 
+  if (Platform.OS === "ios") {
+    return (
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          title,
+          ...(rightElement && { headerRight: () => rightElement }),
+        }}
+      />
+    );
+  }
+
   return (
     <View
       style={{
@@ -31,12 +43,16 @@ export function ScreenHeader({
         {showBack && (
           <Pressable
             onPress={() => router.back()}
-            style={{
+            style={({ pressed }) => ({
               width: 40,
               height: 40,
               alignItems: "center",
               justifyContent: "center",
-            }}
+              borderRadius: 20,
+              backgroundColor: pressed
+                ? "rgba(255,255,255,0.08)"
+                : "transparent",
+            })}
             accessibilityRole="button"
             accessibilityLabel={t("accessibility.goBack")}
           >
@@ -60,12 +76,15 @@ export function ScreenHeader({
             color: "#FFFFFF",
             fontFamily: "LuckiestGuy_400Regular",
           }}
+          numberOfLines={1}
         >
           {title}
         </Text>
       </View>
 
-      <View style={{ width: 48, alignItems: "flex-end" }}>{rightElement}</View>
+      <View style={{ width: 48, alignItems: "flex-end" }}>
+        {rightElement}
+      </View>
     </View>
   );
 }

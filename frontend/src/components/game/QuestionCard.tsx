@@ -17,6 +17,8 @@ interface QuestionCardProps {
     subject: string;
   } | null;
   selectedAnswer: number | null;
+  /** When provided (solo mode), enables instant correct/wrong feedback without roundResult */
+  correctIndex?: number;
   roundResult: {
     isCorrect: boolean;
     correctIndex: number;
@@ -32,6 +34,7 @@ const OPTION_LABELS = ["A", "B", "C", "D"];
 export function QuestionCard({
   question,
   selectedAnswer,
+  correctIndex,
   roundResult,
   onAnswer,
   teamSide,
@@ -39,15 +42,16 @@ export function QuestionCard({
 }: QuestionCardProps) {
   const { t } = useTranslation("common");
 
-  const questionScale = useSharedValue(0.92);
+  const questionScale = useSharedValue(0.95);
   const questionOpacity = useSharedValue(0);
 
   useEffect(() => {
     if (!question) return;
-    questionScale.value = 0.92;
+    questionScale.value = 0.95;
     questionOpacity.value = 0;
-    questionScale.value = withSpring(1, { damping: 20, stiffness: 180 });
-    questionOpacity.value = withSpring(1, { damping: 20, stiffness: 180 });
+    // Snappier spring for faster question reveal
+    questionScale.value = withSpring(1, { damping: 28, stiffness: 300 });
+    questionOpacity.value = withSpring(1, { damping: 28, stiffness: 300 });
   }, [question?.id]);
 
   const questionAnimatedStyle = useAnimatedStyle(() => ({
@@ -57,9 +61,19 @@ export function QuestionCard({
 
   if (!question) return null;
 
+  // When correctIndex is provided (solo mode), give instant feedback the moment
+  // selectedAnswer is set — no intermediate "selected" grey state.
+  const resolvedCorrectIndex = correctIndex ?? roundResult?.correctIndex;
+
   const getVariant = (
     index: number,
   ): "default" | "selected" | "correct" | "wrong" => {
+    if (selectedAnswer !== null && resolvedCorrectIndex !== undefined) {
+      if (index === resolvedCorrectIndex) return "correct";
+      if (index === selectedAnswer) return "wrong";
+      return "default";
+    }
+    // Multiplayer fallback: wait for roundResult from server
     if (roundResult) {
       if (index === roundResult.correctIndex) return "correct";
       if (index === selectedAnswer && !roundResult.isCorrect) return "wrong";
@@ -129,7 +143,7 @@ export function QuestionCard({
               optionText={option}
               index={i}
               questionId={question.id}
-              staggerDelay={i * 80}
+              staggerDelay={i * 35}
               variant={getVariant(i)}
               teamColor={teamColor}
               disabled={selectedAnswer !== null}
@@ -147,7 +161,7 @@ export function QuestionCard({
                 optionText={option}
                 index={i}
                 questionId={question.id}
-                staggerDelay={i * 80}
+                staggerDelay={i * 35}
                 variant={getVariant(i)}
                 teamColor={teamColor}
                 disabled={selectedAnswer !== null}

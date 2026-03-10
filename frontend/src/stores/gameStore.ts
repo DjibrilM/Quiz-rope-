@@ -13,6 +13,16 @@ interface StoreQuestion {
   options: string[];
   correctIndex: number;
   subject: string;
+  explanation?: string;
+}
+
+interface CorrectionItem {
+  questionText: string;
+  options: string[];
+  correctIndex: number;
+  explanation: string;
+  userAnswerIndex: number; // -1 = timeout/skipped
+  isCorrect: boolean;
 }
 
 interface StoreRoundResult {
@@ -29,13 +39,22 @@ interface ChildSession {
   jwtToken: string | null;
 }
 
+interface GuestProfile {
+  /** Locally generated ID so we can reference the profile across sessions. */
+  guestId: string;
+  displayName: string;
+  avatarId: string;
+}
+
 interface GameState {
   isAuthenticated: boolean;
   parentUser: ParentUser | null;
   authToken: string | null;
   isMockMode: boolean;
-  userRole: 'parent' | 'child' | null;
+  userRole: 'parent' | 'child' | 'guest' | null;
   childSession: ChildSession | null;
+  /** Persisted local guest profile — survives logouts and app restarts. */
+  guestProfile: GuestProfile | null;
   currentMatch: Match | null;
   ropePosition: number;
   teamScores: { left: number; right: number };
@@ -45,6 +64,7 @@ interface GameState {
   gameEndResult: GameEndResult | null;
   streak: number;
   bestStreak: number;
+  lastMatchCorrection: CorrectionItem[];
   children: Child[];
   locale: SupportedLanguage;
   subscriptionStatus: 'none' | 'active' | 'cancelled' | 'expired' | 'past_due' | 'checking';
@@ -55,6 +75,12 @@ interface GameState {
   resetStreak: () => void;
   setAuth: (user: ParentUser & Record<string, unknown>, mockMode: boolean, token: string) => void;
   setChildSession: (session: ChildSession) => void;
+  /** Set the persistent guest profile and mark the user as authenticated. */
+  setGuestProfile: (profile: GuestProfile) => void;
+  /** Re-authenticate an existing guest profile without changing it. */
+  loginAsGuest: () => void;
+  /** Clear guest identity entirely (used when the guest links to a real account). */
+  clearGuestProfile: () => void;
   setLocale: (locale: SupportedLanguage) => void;
   setSubscriptionStatus: (status: GameState['subscriptionStatus'], expiresAt?: string | null) => void;
   logout: () => void;
@@ -67,11 +93,13 @@ interface GameState {
   setRoundResult: (result: StoreRoundResult | null) => void;
   setGameEndResult: (result: GameEndResult | null) => void;
   setChildren: (children: Child[]) => void;
+  pushCorrection: (item: CorrectionItem) => void;
+  clearCorrection: () => void;
   resetGame: () => void;
   setHasHydrated: (hydrated: boolean) => void;
 }
 
-export type { StoreQuestion, StoreRoundResult, ChildSession };
+export type { StoreQuestion, StoreRoundResult, CorrectionItem, ChildSession, GuestProfile };
 
 export const useGameStore = create<GameState>()(
   persist(
@@ -83,6 +111,7 @@ export const useGameStore = create<GameState>()(
       locale: (i18n.language as SupportedLanguage) || 'en',
       userRole: null,
       childSession: null,
+      guestProfile: null,
       currentMatch: null,
       ropePosition: 0,
       teamScores: { left: 0, right: 0 },
@@ -92,6 +121,7 @@ export const useGameStore = create<GameState>()(
       gameEndResult: null,
       streak: 0,
       bestStreak: 0,
+      lastMatchCorrection: [],
       children: [],
       subscriptionStatus: 'active',
       subscriptionExpiresAt: null,
@@ -107,8 +137,19 @@ export const useGameStore = create<GameState>()(
           subscriptionStatus: 'active',
           subscriptionExpiresAt: null,
         }),
+
       setChildSession: (session) =>
         set({ childSession: session, userRole: 'child', isAuthenticated: true, authToken: session.jwtToken }),
+
+      setGuestProfile: (profile) =>
+        set({ guestProfile: profile, userRole: 'guest', isAuthenticated: true }),
+
+      loginAsGuest: () =>
+        set({ userRole: 'guest', isAuthenticated: true }),
+
+      clearGuestProfile: () =>
+        set({ guestProfile: null }),
+
       setLocale: (locale) => {
         i18n.changeLanguage(locale);
         const isRtl = SUPPORTED_LANGUAGES[locale].rtl;
@@ -118,8 +159,10 @@ export const useGameStore = create<GameState>()(
         }
         set({ locale });
       },
+
       setSubscriptionStatus: (status, expiresAt) =>
         set({ subscriptionStatus: status, subscriptionExpiresAt: expiresAt ?? null }),
+
       logout: () =>
         set({
           isAuthenticated: false,
@@ -130,7 +173,9 @@ export const useGameStore = create<GameState>()(
           subscriptionStatus: 'active',
           subscriptionExpiresAt: null,
           isMockMode: false,
+          // guestProfile intentionally NOT cleared — persists across logouts
         }),
+
       setCurrentMatch: (match) => set({ currentMatch: match }),
       setRopePosition: (position) => set({ ropePosition: position }),
       setTeamScores: (scores) => set({ teamScores: scores }),
@@ -147,6 +192,9 @@ export const useGameStore = create<GameState>()(
       setRoundResult: (result) => set({ roundResult: result }),
       setGameEndResult: (result) => set({ gameEndResult: result }),
       setChildren: (children) => set({ children }),
+      pushCorrection: (item) =>
+        set((state) => ({ lastMatchCorrection: [...state.lastMatchCorrection, item] })),
+      clearCorrection: () => set({ lastMatchCorrection: [] }),
       incrementStreak: () =>
         set((state) => ({
           streak: state.streak + 1,
@@ -177,6 +225,7 @@ export const useGameStore = create<GameState>()(
         isMockMode: state.isMockMode,
         userRole: state.userRole,
         childSession: state.childSession,
+        guestProfile: state.guestProfile,
         locale: state.locale,
         subscriptionStatus: state.subscriptionStatus,
         subscriptionExpiresAt: state.subscriptionExpiresAt,

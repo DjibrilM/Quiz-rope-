@@ -4,6 +4,7 @@ import { Model, Types } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import { Child } from './schemas/child.schema';
 import { DeviceSession } from './schemas/device-session.schema';
+import { GuestLink } from './schemas/guest-link.schema';
 
 @Injectable()
 export class ChildrenService {
@@ -13,6 +14,8 @@ export class ChildrenService {
     @InjectModel(Child.name) private childModel: Model<Child>,
     @InjectModel(DeviceSession.name)
     private sessionModel: Model<DeviceSession>,
+    @InjectModel(GuestLink.name)
+    private guestLinkModel: Model<GuestLink>,
   ) {}
 
   async createChild(
@@ -144,6 +147,67 @@ export class ChildrenService {
       authorized: !!session.parentId,
       ...(session.parentId && { parentId: session.parentId.toString() }),
       ...(session.childId && { childId: session.childId.toString() }),
+    };
+  }
+
+  // ─── Guest link codes ───────────────────────────────────────────────────────
+
+  /**
+   * Parent generates a short code that a guest kid can enter to link their
+   * local guest profile to an existing child account.
+   */
+  async generateGuestLinkCode(
+    parentId: string,
+    childId: string,
+  ): Promise<{ code: string; expiresAt: Date }> {
+    // Invalidate any prior unused code for this child
+    await this.guestLinkModel.deleteMany({
+      childId: new Types.ObjectId(childId),
+      used: false,
+    });
+
+    const code = uuidv4().replace(/-/g, '').slice(0, 6).toUpperCase();
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+    await this.guestLinkModel.create({
+      code,
+      parentId: new Types.ObjectId(parentId),
+      childId: new Types.ObjectId(childId),
+      expiresAt,
+    });
+
+    this.logger.log(
+      `Guest link code ${code} generated for child ${childId} by parent ${parentId}`,
+    );
+    return { code, expiresAt };
+  }
+
+  /**
+   * Validates a guest link code and marks it as used.
+   * Returns the resolved parentId and childId on success.
+   */
+  async validateAndConsumeGuestCode(
+    code: string,
+  ): Promise<{ parentId: string; childId: string } | null> {
+    const link = await this.guestLinkModel.findOneAndUpdate(
+      {
+        code: code.toUpperCase(),
+        used: false,
+        expiresAt: { $gt: new Date() },
+      },
+      { used: true },
+      { new: true },
+    );
+
+    if (!link) return null;
+
+    this.logger.log(
+      `Guest link code ${code} consumed — child ${link.childId}`,
+    );
+
+    return {
+      parentId: link.parentId.toString(),
+      childId: link.childId.toString(),
     };
   }
 }

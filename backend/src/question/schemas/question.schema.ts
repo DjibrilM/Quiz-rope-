@@ -18,7 +18,7 @@ export class Question extends Document {
   @Prop({ required: true })
   difficulty: string;
 
-  @Prop({ default: '' })
+  @Prop({ required: true, default: '' })
   explanation: string;
 
   @Prop({ default: 'mock' })

@@ -13,7 +13,16 @@
     "myChildrenDesc": "إضافة وإدارة ملفات اللاعبين",
     "matchHistory": "سجل المباريات",
     "matchHistoryDesc": "عرض الألعاب السابقة والإحصائيات",
+    "soloPlay": "لعب فردي",
+    "soloPlayDesc": "العب بمفردك بالوتيرة التي تناسبك",
+    "joinMatch": "الانضمام لمباراة",
+    "joinMatchDesc": "أدخل رمزاً للانضمام إلى مباراة مباشرة",
     "leaderboard": "لوحة المتصدرين",
     "leaderboardDesc": "شاهد من هو أفضل لاعب"
+  },
+  "guest": {
+    "linkBannerCta": "اضغط لربط تقدمك بحساب أحد الوالدين",
+    "linkMenuItem": "ربط بأحد الوالدين",
+    "linkMenuItemDesc": "تواصل مع حساب أحد الوالدين واحفظ تقدمك"
   }
 }

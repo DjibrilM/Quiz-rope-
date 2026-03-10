@@ -84,6 +84,28 @@ class FirebaseAuthService {
     };
   }
 
+  async sendEmailVerification(): Promise<void> {
+    const user = auth().currentUser;
+    if (!user) throw new Error("No user signed in");
+    await user.sendEmailVerification();
+  }
+
+  async reloadUser(): Promise<void> {
+    const user = auth().currentUser;
+    if (!user) throw new Error("No user signed in");
+    await user.reload();
+  }
+
+  isEmailVerified(): boolean {
+    return auth().currentUser?.emailVerified ?? false;
+  }
+
+  async getIdToken(): Promise<string> {
+    const user = auth().currentUser;
+    if (!user) throw new Error("No user signed in");
+    return user.getIdToken(true);
+  }
+
   async signOut(): Promise<void> {
     try {
       await GoogleSignin.signOut();
