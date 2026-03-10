@@ -13,7 +13,16 @@
     "myChildrenDesc": "Ajouter et gérer les profils de joueurs",
     "matchHistory": "Historique des matchs",
     "matchHistoryDesc": "Consulter les parties passées et les statistiques",
+    "soloPlay": "Jeu solo",
+    "soloPlayDesc": "Jouez seul, à votre rythme",
+    "joinMatch": "Rejoindre un match",
+    "joinMatchDesc": "Entrez un code pour rejoindre un match en direct",
     "leaderboard": "Classement",
     "leaderboardDesc": "Voir qui est le meilleur joueur"
+  },
+  "guest": {
+    "linkBannerCta": "Appuyez pour lier vos progrès à un compte parent",
+    "linkMenuItem": "Lier au parent",
+    "linkMenuItemDesc": "Connectez-vous à un compte parent et sauvegardez vos progrès"
   }
 }

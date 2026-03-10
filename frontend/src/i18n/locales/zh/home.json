@@ -13,7 +13,16 @@
     "myChildrenDesc": "添加和管理玩家资料",
     "matchHistory": "比赛记录",
     "matchHistoryDesc": "查看过去的比赛和统计",
+    "soloPlay": "单人游戏",
+    "soloPlayDesc": "按自己的节奏独自游玩",
+    "joinMatch": "加入比赛",
+    "joinMatchDesc": "输入代码加入实时比赛",
     "leaderboard": "排行榜",
     "leaderboardDesc": "看看谁是最强玩家"
+  },
+  "guest": {
+    "linkBannerCta": "点击将进度与家长账号关联",
+    "linkMenuItem": "关联家长",
+    "linkMenuItemDesc": "连接家长账号并保存您的进度"
   }
 }

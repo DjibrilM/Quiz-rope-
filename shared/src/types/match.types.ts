@@ -1,11 +1,11 @@
 export enum MatchStatus {
-  WAITING = 'WAITING',
-  IN_PROGRESS = 'IN_PROGRESS',
-  COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED',
+  WAITING = "WAITING",
+  IN_PROGRESS = "IN_PROGRESS",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
 }
 
-export type TeamSide = 'LEFT' | 'RIGHT';
+export type TeamSide = "LEFT" | "RIGHT";
 
 export interface Team {
   id: string;
@@ -17,10 +17,10 @@ export interface Team {
 
 export type RopePosition = number; // -5 to 5, 0 is center
 
-export type GameMode = 'solo' | 'splitscreen';
+export type GameMode = "solo" | "splitscreen";
 
 export interface Match {
-  id: string;
+  _id: string;
   hostParentId: string;
   subject: string;
   difficulty: string;

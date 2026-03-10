@@ -13,7 +13,16 @@
     "myChildrenDesc": "プレイヤープロフィールの追加と管理",
     "matchHistory": "対戦履歴",
     "matchHistoryDesc": "過去のゲームと統計を確認",
+    "soloPlay": "ひとりプレイ",
+    "soloPlayDesc": "自分のペースで一人で遊ぼう",
+    "joinMatch": "マッチに参加",
+    "joinMatchDesc": "コードを入力してライブマッチに参加",
     "leaderboard": "ランキング",
     "leaderboardDesc": "トッププレイヤーを確認しよう"
+  },
+  "guest": {
+    "linkBannerCta": "タップして進捗を保護者アカウントにリンク",
+    "linkMenuItem": "保護者にリンク",
+    "linkMenuItemDesc": "保護者アカウントに接続して進捗を保存しよう"
   }
 }

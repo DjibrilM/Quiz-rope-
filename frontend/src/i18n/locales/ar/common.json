@@ -40,7 +40,9 @@
     "tryAgainLater": "يرجى المحاولة مرة أخرى لاحقاً",
     "networkError": "خطأ في الشبكة. يرجى التحقق من اتصالك.",
     "unexpectedError": "حدث خطأ غير متوقع",
-    "error": "خطأ"
+    "error": "خطأ",
+    "nameRequired": "الاسم مطلوب",
+    "nameTooLong": "يجب أن يكون الاسم أقل من 20 حرفاً"
   },
   "subjects": {
     "MATH": "الرياضيات",

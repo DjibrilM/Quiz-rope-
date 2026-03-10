@@ -5,8 +5,12 @@
   "menu": {
     "quickPlay": "Quick Play",
     "quickPlayDesc": "Jump straight into a test game",
-    "startNewGame": "Start New Game",
-    "startNewGameDesc": "Create a match and challenge players",
+    "startNewGame": "Play",
+    "startNewGameDesc": "Solo or split screen — pick your mode",
+    "soloPlay": "Play",
+    "soloPlayDesc": "Solo or split screen — pick your mode",
+    "joinMatch": "Join Match",
+    "joinMatchDesc": "Enter a code to join a live match",
     "connectDevice": "Connect Device",
     "connectDeviceDesc": "Link a child's tablet via QR code",
     "myChildren": "My Children",
@@ -15,5 +19,10 @@
     "matchHistoryDesc": "View past games and stats",
     "leaderboard": "Leaderboard",
     "leaderboardDesc": "See who's the top player"
+  },
+  "guest": {
+    "linkBannerCta": "Tap to link your progress to a parent account",
+    "linkMenuItem": "Link to Parent",
+    "linkMenuItemDesc": "Connect to a parent account and save your progress"
   }
 }

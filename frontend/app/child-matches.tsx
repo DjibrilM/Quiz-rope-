@@ -1,11 +1,11 @@
 import { View, Text, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { usePortrait } from "../src/hooks/useOrientation";
 import { apiService } from "../src/services/api";
-import { ScreenHeader, AnimatedLoader, EmptyState, StaggeredList, BouncePress } from "../src/components/common";
+import { AnimatedLoader, EmptyState, StaggeredList, BouncePress, ScreenHeader } from "../src/components/common";
 import { getSubjectTheme } from "../src/config/subjectThemes";
 import { FONTS, FORTNITE_COLORS } from "../src/constants/theme";
 import type { ChildMatchSummary } from "@shared/types/analytics.types";
@@ -137,53 +137,39 @@ export default function ChildMatchesScreen() {
   usePortrait();
   const { t } = useTranslation(["analytics", "common"]);
   const { childId, childName } = useLocalSearchParams();
-  const [matches, setMatches] = useState<ChildMatchSummary[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const { data: matches = [], isLoading, isError, error, refetch } = useQuery({
+    queryKey: ["childMatches", childId],
+    queryFn: () => apiService.getChildMatchHistory(childId as string),
+    enabled: !!childId,
+  });
 
-  useEffect(() => {
-    if (!childId) return;
-    loadMatches();
-  }, [childId]);
-
-  const loadMatches = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const result = await apiService.getChildMatchHistory(childId as string);
-      setMatches(result);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to load matches";
-      setError(message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const errorMessage = error instanceof Error ? error.message : "";
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: FORTNITE_COLORS.bgDark }}>
+    <SafeAreaView edges={["bottom"]} style={{ flex: 1, backgroundColor: FORTNITE_COLORS.bgDark }}>
       <ScreenHeader title={t("analytics:history.title")} />
 
       <ScrollView
         style={{ flex: 1 }}
+        contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 }}
       >
-        {loading && (
+        {isLoading && (
           <View style={{ alignItems: "center", paddingTop: 80 }}>
             <AnimatedLoader size="lg" />
           </View>
         )}
 
-        {error && !loading && (
+        {isError && !isLoading && (
           <EmptyState
             illustration="error"
             title={t("common:errors.somethingWentWrong")}
-            subtitle={error}
-            action={{ label: t("common:buttons.tryAgain"), onPress: loadMatches }}
+            subtitle={errorMessage}
+            action={{ label: t("common:buttons.tryAgain"), onPress: refetch }}
           />
         )}
 
-        {!loading && !error && matches.length === 0 && (
+        {!isLoading && !isError && matches.length === 0 && (
           <EmptyState
             illustration="noMatches"
             title={t("analytics:history.noMatches")}
@@ -191,7 +177,7 @@ export default function ChildMatchesScreen() {
           />
         )}
 
-        {!loading && !error && matches.length > 0 && (
+        {!isLoading && !isError && matches.length > 0 && (
           <StaggeredList staggerMs={60}>
             {matches.map((match) => (
               <MatchCard

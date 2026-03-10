@@ -7,6 +7,7 @@ import {
   DeviceSession,
   DeviceSessionSchema,
 } from './schemas/device-session.schema';
+import { GuestLink, GuestLinkSchema } from './schemas/guest-link.schema';
 import { AuthModule } from '../auth/auth.module';
 import { RealtimeModule } from '../realtime/realtime.module';
 
@@ -15,6 +16,7 @@ import { RealtimeModule } from '../realtime/realtime.module';
     MongooseModule.forFeature([
       { name: Child.name, schema: ChildSchema },
       { name: DeviceSession.name, schema: DeviceSessionSchema },
+      { name: GuestLink.name, schema: GuestLinkSchema },
     ]),
     AuthModule,
     forwardRef(() => RealtimeModule),

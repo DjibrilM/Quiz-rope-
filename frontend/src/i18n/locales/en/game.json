@@ -31,7 +31,16 @@
     "playAgain": "Play Again",
     "backToHome": "Back to Home",
     "wellDone": "Well Done!",
-    "finalScore": "Final Score: {{score}}"
+    "finalScore": "Final Score: {{score}}",
+    "reviewAnswers": "Review Answers"
+  },
+  "correction": {
+    "title": "Correction",
+    "question": "Question {{number}}",
+    "summary": "{{correct}} / {{total}} correct",
+    "explanation": "Explanation",
+    "skipped": "Time ran out — no answer given",
+    "empty": "No answers to review"
   },
   "scoreboard": {
     "score": "Score"

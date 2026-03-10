@@ -25,6 +25,7 @@ class ApiService {
     this.client = axios.create({
       baseURL: API_URL,
       headers: { 'Content-Type': 'application/json' },
+      timeout: 10000,
     });
 
     this.client.interceptors.response.use(
@@ -63,11 +64,12 @@ class ApiService {
     return !!this.client.defaults.headers.common['Authorization'];
   }
 
-  private async request<T>(path: string, options: { method?: string; data?: Record<string, unknown> | unknown[] } = {}): Promise<T> {
+  private async request<T>(path: string, options: { method?: string; data?: Record<string, unknown> | unknown[]; timeout?: number } = {}): Promise<T> {
     const response = await this.client.request({
       url: path,
       method: options.method || 'GET',
       data: options.data,
+      timeout: options.timeout,
     });
     return response.data;
   }
@@ -131,11 +133,14 @@ class ApiService {
     subject: string;
     difficulty: string;
     maxRounds: number;
+    gameMode?: string;
+    context?: string;
     teams: { name: string; color: string; side: string; players?: string[] }[];
   }): Promise<Match> {
     return this.request('/matches', {
       method: 'POST',
       data: data as unknown as Record<string, unknown>,
+      timeout: 60000, // Gemini question generation can take up to ~30s
     });
   }
 
@@ -145,6 +150,20 @@ class ApiService {
 
   async getMatch(id: string): Promise<Match> {
     return this.request(`/matches/${id}`);
+  }
+
+  async submitAnswer(matchId: string, data: { playerId: string; teamSide: string; answerIndex: number; responseTime: number; questionId?: string }): Promise<void> {
+    return this.request(`/matches/${matchId}/answer`, {
+      method: 'POST',
+      data: data as unknown as Record<string, unknown>,
+    });
+  }
+
+  async completeMatch(id: string, data: { winner: string; teamScoreLeft: number; teamScoreRight: number; rounds: number }): Promise<Match> {
+    return this.request(`/matches/${id}/complete`, {
+      method: 'PATCH',
+      data: data as unknown as Record<string, unknown>,
+    });
   }
 
   async getMatchStats(id: string): Promise<PlayerStats[]> {
@@ -214,6 +233,39 @@ class ApiService {
 
   async mockActivateSubscription(): Promise<{ status: string; activated?: boolean; subscription?: { currentPeriodEnd?: string } }> {
     return this.request('/subscription/mock-activate', { method: 'POST' });
+  }
+
+  // Guest mode
+
+  /** Parent generates a short code for a specific child to enter on their device. */
+  async generateGuestLinkCode(childId: string): Promise<{ code: string; expiresAt: string }> {
+    return this.request('/children/guest-link', {
+      method: 'POST',
+      data: { childId },
+    });
+  }
+
+  /**
+   * Guest kid enters the parent-generated code.
+   * Returns a child JWT if valid, used to transition from guest → child.
+   */
+  async redeemGuestCode(code: string): Promise<{ token: string; parentId: string; childId: string }> {
+    return this.request('/auth/guest-token', {
+      method: 'POST',
+      data: { code },
+    });
+  }
+
+  /** Look up an active match by its 6-character lobby code. */
+  async findMatchByCode(code: string): Promise<{
+    found: boolean;
+    matchId?: string;
+    subject?: string;
+    difficulty?: string;
+    maxRounds?: number;
+    status?: string;
+  }> {
+    return this.request(`/matches/join/${code.toUpperCase()}`);
   }
 }
 

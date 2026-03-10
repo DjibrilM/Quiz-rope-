@@ -13,3 +13,5 @@ export { EmptyState } from "./EmptyState";
 export { AvatarIcon } from "./AvatarIcons";
 export { LanguageSelector } from "./LanguageSelector";
 export { FlashingGlobeButton } from "./FlashingGlobeButton";
+export { Button } from "./Button";
+export { MascotBuddy } from "./MascotBuddy";

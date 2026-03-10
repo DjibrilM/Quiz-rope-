@@ -40,7 +40,9 @@
     "tryAgainLater": "Por favor, tente novamente mais tarde",
     "networkError": "Erro de rede. Verifique sua conexao.",
     "unexpectedError": "Ocorreu um erro inesperado",
-    "error": "Erro"
+    "error": "Erro",
+    "nameRequired": "O nome é obrigatório",
+    "nameTooLong": "O nome deve ter menos de 20 caracteres"
   },
   "subjects": {
     "MATH": "Matematica",

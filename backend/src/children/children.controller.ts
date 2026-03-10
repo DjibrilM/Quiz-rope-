@@ -105,4 +105,25 @@ export class ChildrenController {
 
     return { success: true, session };
   }
+
+  // --- Guest link code endpoints ---
+
+  /**
+   * Parent calls this to generate a short code for a specific child.
+   * The kid enters this code in the app to link their guest profile.
+   */
+  @Post('guest-link')
+  @UseGuards(FirebaseAuthGuard)
+  async generateGuestLinkCode(
+    @Req() req,
+    @Body() body: { childId: string },
+  ) {
+    if (!body.childId) {
+      throw new NotFoundException('childId is required');
+    }
+    return this.childrenService.generateGuestLinkCode(
+      req.user._id.toString(),
+      body.childId,
+    );
+  }
 }

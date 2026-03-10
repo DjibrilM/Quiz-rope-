@@ -7,6 +7,7 @@
     "backend:dev": "cd backend && npm run start:dev",
     "backend:start": "cd backend && npm run start",
     "frontend:dev": "cd frontend && npx expo start",
-    "install:all": "cd backend && npm install && cd ../frontend && npm install"
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "dev": "./dev.sh"
   }
 }

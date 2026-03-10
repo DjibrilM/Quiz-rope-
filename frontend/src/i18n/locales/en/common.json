@@ -40,7 +40,9 @@
     "tryAgainLater": "Please try again later",
     "networkError": "Network error. Please check your connection.",
     "unexpectedError": "An unexpected error occurred",
-    "error": "Error"
+    "error": "Error",
+    "nameRequired": "Name is required",
+    "nameTooLong": "Name must be under 20 characters"
   },
   "subjects": {
     "MATH": "Math",

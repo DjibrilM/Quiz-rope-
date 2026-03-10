@@ -8,6 +8,7 @@ import Animated, {
   withTiming,
   Easing,
 } from "react-native-reanimated";
+import Svg, { Path, Circle } from "react-native-svg";
 import { soundService } from "../../services/sound";
 import { hapticsService } from "../../services/haptics";
 import { FONTS } from "../../constants/theme";
@@ -33,6 +34,35 @@ const OPTION_COLORS = [
   { bg: '#241A22', border: '#E85D75', badgeBg: '#E85D75' },  // D - Pink
 ];
 
+function CheckIcon() {
+  return (
+    <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
+      <Circle cx="12" cy="12" r="11" fill="#10B981" />
+      <Path
+        d="M7 12l3.5 3.5 6.5-7"
+        stroke="#FFFFFF"
+        strokeWidth={2.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+function XIcon() {
+  return (
+    <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
+      <Circle cx="12" cy="12" r="11" fill="#EF4444" />
+      <Path
+        d="M8 8l8 8M16 8L8 16"
+        stroke="#FFFFFF"
+        strokeWidth={2.5}
+        strokeLinecap="round"
+      />
+    </Svg>
+  );
+}
+
 export function AnimatedOption({
   label,
   optionText,
@@ -44,36 +74,39 @@ export function AnimatedOption({
   onPress,
 }: AnimatedOptionProps) {
   const scale = useSharedValue(0);
-  const translateY = useSharedValue(10);
+  const translateY = useSharedValue(8);
   const opacity = useSharedValue(0);
   const feedbackScale = useSharedValue(1);
   const shakeX = useSharedValue(0);
 
+  // Entry animation on new question — fast and snappy
   useEffect(() => {
     scale.value = 0;
-    translateY.value = 10;
+    translateY.value = 8;
     opacity.value = 0;
     feedbackScale.value = 1;
     shakeX.value = 0;
-    const ease = { duration: 250, easing: Easing.out(Easing.cubic) };
+    const ease = { duration: 160, easing: Easing.out(Easing.cubic) };
     scale.value = withDelay(staggerDelay, withTiming(1, ease));
     translateY.value = withDelay(staggerDelay, withTiming(0, ease));
-    opacity.value = withDelay(staggerDelay, withTiming(1, { duration: 200 }));
+    opacity.value = withDelay(staggerDelay, withTiming(1, { duration: 130 }));
   }, [questionId]);
 
-  // Pulse on correct, shake on wrong
+  // Instant feedback animations on answer
   useEffect(() => {
     if (variant === "correct") {
+      // Quick celebratory pulse
       feedbackScale.value = withSequence(
-        withTiming(1.06, { duration: 120 }),
-        withTiming(1, { duration: 150, easing: Easing.out(Easing.cubic) }),
+        withTiming(1.07, { duration: 70, easing: Easing.out(Easing.cubic) }),
+        withTiming(1, { duration: 100, easing: Easing.out(Easing.cubic) }),
       );
     } else if (variant === "wrong") {
+      // Fast shake to signal error
       shakeX.value = withSequence(
-        withTiming(-5, { duration: 50 }),
-        withTiming(5, { duration: 50 }),
-        withTiming(-3, { duration: 50 }),
-        withTiming(0, { duration: 50 }),
+        withTiming(-6, { duration: 40 }),
+        withTiming(6, { duration: 40 }),
+        withTiming(-3, { duration: 35 }),
+        withTiming(0, { duration: 35 }),
       );
     }
   }, [variant]);
@@ -88,18 +121,13 @@ export function AnimatedOption({
   }));
 
   const handlePress = () => {
+    onPress();
     soundService.play("buttonPress");
     hapticsService.selection();
-    onPress();
   };
 
   let bg: string, border: string, badgeBg: string, textC: string;
-  if (variant === "selected") {
-    bg = "#231C2B";
-    border = "#B8A9C9";
-    badgeBg = "#B8A9C9";
-    textC = "#ffffff";
-  } else if (variant === "correct") {
+  if (variant === "correct") {
     bg = "#0A2E1A";
     border = "#10B981";
     badgeBg = "#10B981";
@@ -109,6 +137,11 @@ export function AnimatedOption({
     border = "#EF4444";
     badgeBg = "#EF4444";
     textC = "#EF4444";
+  } else if (variant === "selected") {
+    bg = "#231C2B";
+    border = "#B8A9C9";
+    badgeBg = "#B8A9C9";
+    textC = "#ffffff";
   } else {
     const optColor = OPTION_COLORS[index % 4];
     bg = optColor.bg;
@@ -171,6 +204,9 @@ export function AnimatedOption({
       >
         {optionText}
       </Text>
+      {/* Instant result icons */}
+      {variant === "correct" && <CheckIcon />}
+      {variant === "wrong" && <XIcon />}
     </AnimatedPressable>
   );
 }

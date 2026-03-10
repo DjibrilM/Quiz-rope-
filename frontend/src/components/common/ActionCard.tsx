@@ -47,7 +47,7 @@ export function ActionCard({
     <BouncePress
       onPress={handlePress}
       disabled={isDisabled}
-      className={`flex-1 min-w-[280px] p-8 rounded-3xl ${variantStyles[variant]}`}
+      className={`flex-1 min-w-[280px] min-h-[160px] p-8 rounded-3xl ${variantStyles[variant]}`}
       style={isDisabled ? { opacity: 0.5 } : undefined}
       accessibilityRole="button"
       accessibilityLabel={title}

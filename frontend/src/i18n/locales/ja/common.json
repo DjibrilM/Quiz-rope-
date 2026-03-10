@@ -40,7 +40,9 @@
     "tryAgainLater": "後でもう一度お試しください",
     "networkError": "ネットワークエラーです。接続を確認してください。",
     "unexpectedError": "予期しないエラーが発生しました",
-    "error": "エラー"
+    "error": "エラー",
+    "nameRequired": "名前は必須です",
+    "nameTooLong": "名前は20文字未満にしてください"
   },
   "subjects": {
     "MATH": "算数",

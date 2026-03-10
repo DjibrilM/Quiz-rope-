@@ -27,5 +27,13 @@
     "confirm": "Remove",
     "cancel": "Keep",
     "removing": "Removing..."
+  },
+  "linkCode": {
+    "getCode": "Get Link Code",
+    "title": "Link Code for {{name}}",
+    "body": "Code: {{code}}\nExpires in {{minutes}} minutes",
+    "ok": "Got It",
+    "errorTitle": "Failed to Generate Code",
+    "errorBody": "Something went wrong. Please try again."
   }
 }

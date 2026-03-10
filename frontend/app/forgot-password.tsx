@@ -1,4 +1,5 @@
 import { View, Text, ScrollView, TextInput, Pressable, KeyboardAvoidingView, Platform } from "react-native";
+import Svg, { Path, Line } from "react-native-svg";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -18,6 +19,8 @@ export default function ForgotPasswordScreen() {
   const [code, setCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   usePortrait();
@@ -295,23 +298,65 @@ export default function ForgotPasswordScreen() {
           {t("auth:forgotPassword.newPasswordInstruction")}
         </Text>
 
-        <TextInput
-          value={newPassword}
-          onChangeText={(v) => { setNewPassword(v); clearError(); }}
-          placeholder={t("auth:forgotPassword.newPasswordPlaceholder")}
-          placeholderTextColor="#7B6B8A"
-          secureTextEntry
-          style={inputStyle}
-        />
+        <View style={{ position: "relative", marginBottom: 12 }}>
+          <TextInput
+            value={newPassword}
+            onChangeText={(v) => { setNewPassword(v); clearError(); }}
+            placeholder={t("auth:forgotPassword.newPasswordPlaceholder")}
+            placeholderTextColor="#7B6B8A"
+            secureTextEntry={!showNewPassword}
+            style={{ ...inputStyle, marginBottom: 0, paddingRight: 52 }}
+          />
+          <Pressable
+            onPress={() => setShowNewPassword((v) => !v)}
+            style={{ position: "absolute", right: 16, top: 0, bottom: 0, justifyContent: "center" }}
+            hitSlop={8}
+          >
+            {showNewPassword ? (
+              <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
+                <Path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94" stroke="#7B6B8A" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
+                <Path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19" stroke="#7B6B8A" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
+                <Path d="M10.73 10.73a3 3 0 104.54 4.54" stroke="#7B6B8A" strokeWidth={1.8} strokeLinecap="round" />
+                <Line x1="1" y1="1" x2="23" y2="23" stroke="#7B6B8A" strokeWidth={1.8} strokeLinecap="round" />
+              </Svg>
+            ) : (
+              <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
+                <Path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="#7B6B8A" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
+                <Path d="M12 9a3 3 0 100 6 3 3 0 000-6z" stroke="#7B6B8A" strokeWidth={1.8} />
+              </Svg>
+            )}
+          </Pressable>
+        </View>
 
-        <TextInput
-          value={confirmPassword}
-          onChangeText={(v) => { setConfirmPassword(v); clearError(); }}
-          placeholder={t("auth:forgotPassword.confirmPasswordPlaceholder")}
-          placeholderTextColor="#7B6B8A"
-          secureTextEntry
-          style={inputStyle}
-        />
+        <View style={{ position: "relative", marginBottom: 12 }}>
+          <TextInput
+            value={confirmPassword}
+            onChangeText={(v) => { setConfirmPassword(v); clearError(); }}
+            placeholder={t("auth:forgotPassword.confirmPasswordPlaceholder")}
+            placeholderTextColor="#7B6B8A"
+            secureTextEntry={!showConfirmPassword}
+            style={{ ...inputStyle, marginBottom: 0, paddingRight: 52 }}
+          />
+          <Pressable
+            onPress={() => setShowConfirmPassword((v) => !v)}
+            style={{ position: "absolute", right: 16, top: 0, bottom: 0, justifyContent: "center" }}
+            hitSlop={8}
+          >
+            {showConfirmPassword ? (
+              <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
+                <Path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94" stroke="#7B6B8A" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
+                <Path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19" stroke="#7B6B8A" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
+                <Path d="M10.73 10.73a3 3 0 104.54 4.54" stroke="#7B6B8A" strokeWidth={1.8} strokeLinecap="round" />
+                <Line x1="1" y1="1" x2="23" y2="23" stroke="#7B6B8A" strokeWidth={1.8} strokeLinecap="round" />
+              </Svg>
+            ) : (
+              <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
+                <Path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="#7B6B8A" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
+                <Path d="M12 9a3 3 0 100 6 3 3 0 000-6z" stroke="#7B6B8A" strokeWidth={1.8} />
+              </Svg>
+            )}
+          </Pressable>
+        </View>
 
         {error ? (
           <Text style={{ color: "#EF4444", fontSize: 14, fontFamily: FONTS.body, marginBottom: 16, marginLeft: 8 }}>{error}</Text>

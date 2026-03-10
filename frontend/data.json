@@ -1,0 +1,101 @@
+{
+  "_id": "69ac0ce94f2de193ce9af963",
+  "hostParentId": "69924a6a02046a2222309c2c",
+  "subject": "SCIENCE",
+  "difficulty": "EASY",
+  "teams": [
+    {
+      "name": "Red Team",
+      "players": [],
+      "color": "#EF4444",
+      "side": "LEFT",
+      "_id": "69ac0ce94f2de193ce9af964"
+    },
+    {
+      "name": "Blue Team",
+      "players": [],
+      "color": "#3B82F6",
+      "side": "RIGHT",
+      "_id": "69ac0ce94f2de193ce9af965"
+    }
+  ],
+  "ropePosition": 0,
+  "gameMode": "solo",
+  "currentQuestionIndex": 0,
+  "questions": [
+    {
+      "_id": "69ac0ced4f2de193ce9af967",
+      "text": "Which part of a plant grows underground and drinks up water from the soil?",
+      "options": ["Roots", "Leaves", "Flowers", "Stem"],
+      "correctIndex": 0,
+      "subject": "SCIENCE",
+      "difficulty": "EASY",
+      "explanation": "The **roots** are the hidden helpers of the plant. They act like tiny straws that soak up **water** and **nutrients** from the dirt. Without roots, a plant would fall over and get very thirsty! \n* They anchor the plant in place. \n* They store food for later. \n* They help the plant stay strong.",
+      "generatedBy": "langchain-gemini",
+      "createdAt": "2026-03-07T11:33:01.573Z",
+      "updatedAt": "2026-03-07T11:33:01.573Z",
+      "__v": 0
+    },
+    {
+      "_id": "69ac0ced4f2de193ce9af968",
+      "text": "What do we call the big, bright star that gives our planet heat and light?",
+      "options": ["The Sun", "The Moon", "Mars", "A Comet"],
+      "correctIndex": 0,
+      "subject": "SCIENCE",
+      "difficulty": "EASY",
+      "explanation": "The **Sun** is actually a giant, glowing ball of hot gas right in the center of our **solar system**. It is much bigger than the Earth! \n* It provides the **energy** plants need to grow. \n* It keeps our world warm enough for us to live. \n* It is the reason we have daytime.",
+      "generatedBy": "langchain-gemini",
+      "createdAt": "2026-03-07T11:33:01.573Z",
+      "updatedAt": "2026-03-07T11:33:01.573Z",
+      "__v": 0
+    },
+    {
+      "_id": "69ac0ced4f2de193ce9af969",
+      "text": "Which of these is a liquid state of matter?",
+      "options": ["Water", "A rock", "A wooden block", "A toy car"],
+      "correctIndex": 0,
+      "subject": "SCIENCE",
+      "difficulty": "EASY",
+      "explanation": "A **liquid** is something that can flow and change its shape to fit the container it is in. \n* **Water** can pour from a pitcher into a glass. \n* Solids like rocks keep their own shape no matter where you put them. \n* Liquids are fun because they are always ready to splash and move!",
+      "generatedBy": "langchain-gemini",
+      "createdAt": "2026-03-07T11:33:01.573Z",
+      "updatedAt": "2026-03-07T11:33:01.573Z",
+      "__v": 0
+    },
+    {
+      "_id": "69ac0ced4f2de193ce9af96a",
+      "text": "What do caterpillars turn into after they build a chrysalis?",
+      "options": ["A butterfly", "A frog", "A bird", "A fish"],
+      "correctIndex": 0,
+      "subject": "SCIENCE",
+      "difficulty": "EASY",
+      "explanation": "This amazing change is called **metamorphosis**. The caterpillar builds a cozy home called a **chrysalis** to rest inside. \n* Inside, its body changes shape completely. \n* Eventually, it pops out as a beautiful **butterfly**. \n* It is like a real-life magic trick in nature!",
+      "generatedBy": "langchain-gemini",
+      "createdAt": "2026-03-07T11:33:01.573Z",
+      "updatedAt": "2026-03-07T11:33:01.573Z",
+      "__v": 0
+    },
+    {
+      "_id": "69ac0ced4f2de193ce9af96b",
+      "text": "Which sense do you use to tell if something is soft or hard?",
+      "options": ["Touch", "Sight", "Taste", "Hearing"],
+      "correctIndex": 0,
+      "subject": "SCIENCE",
+      "difficulty": "EASY",
+      "explanation": "Your sense of **touch** comes from the skin all over your body. Your hands are especially good at feeling textures! \n* If you touch a fluffy pillow, your brain knows it is **soft**. \n* If you touch a brick, your brain knows it is **hard**. \n* This sense helps you explore the world safely every single day.",
+      "generatedBy": "langchain-gemini",
+      "createdAt": "2026-03-07T11:33:01.573Z",
+      "updatedAt": "2026-03-07T11:33:01.573Z",
+      "__v": 0
+    }
+  ],
+  "status": "COMPLETED",
+  "rounds": 5,
+  "maxRounds": 5,
+  "teamScoreLeft": 20,
+  "teamScoreRight": 0,
+  "winner": "LEFT",
+  "createdAt": "2026-03-07T11:32:57.857Z",
+  "updatedAt": "2026-03-07T11:33:19.168Z",
+  "__v": 1
+}

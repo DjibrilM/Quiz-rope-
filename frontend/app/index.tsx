@@ -1,4 +1,4 @@
-import { View, ScrollView, Text, Pressable } from "react-native";
+import { View, ScrollView, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
@@ -10,6 +10,17 @@ import Svg, {
   LinearGradient,
   Stop,
 } from "react-native-svg";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withRepeat,
+  withTiming,
+  withSequence,
+  Easing,
+  FadeInDown,
+} from "react-native-reanimated";
+import { LinearGradient as ExpoLinearGradient } from "expo-linear-gradient";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTranslation } from "react-i18next";
 import { usePortrait } from "../src/hooks/useOrientation";
@@ -17,11 +28,15 @@ import { apiService } from "../src/services/api";
 import { useGameStore } from "../src/stores/gameStore";
 import { AppTitle } from "../src/components/auth";
 import {
-  ActionCard,
   StaggeredList,
   LanguageSelector,
   FlashingGlobeButton,
+  BouncePress,
+  Button,
+  ActionCard,
 } from "../src/components/common";
+import { AvatarIcon } from "../src/components/common/AvatarIcons";
+import { FONTS } from "../src/constants/theme";
 
 function ParentIcon() {
   return (
@@ -136,12 +151,52 @@ function DevIcon() {
   );
 }
 
+function GuestIcon({ avatarId }: { avatarId?: string }) {
+  return (
+    <View
+      style={{
+        marginBottom: 12,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      {avatarId ? (
+        <AvatarIcon avatarId={avatarId} size={52} />
+      ) : (
+        <Svg width={52} height={52} viewBox="0 0 24 24" fill="none">
+          <Defs>
+            <LinearGradient id="guestGrad" x1="0" y1="0" x2="1" y2="1">
+              <Stop offset="0" stopColor="#C084FC" />
+              <Stop offset="1" stopColor="#A78BFA" />
+            </LinearGradient>
+          </Defs>
+          <Circle cx="12" cy="8" r="4" fill="url(#guestGrad)" />
+          <Path
+            d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"
+            stroke="url(#guestGrad)"
+            strokeWidth={1.8}
+            strokeLinecap="round"
+            fill="none"
+          />
+          <Circle cx="19" cy="5" r="3" fill="#E85D75" />
+          <Path
+            d="M18 5h2M19 4v2"
+            stroke="#FFFFFF"
+            strokeWidth={1.2}
+            strokeLinecap="round"
+          />
+        </Svg>
+      )}
+    </View>
+  );
+}
+
 export default function RoleSelectScreen() {
   const { t } = useTranslation("auth");
   const langSheetRef = useRef<BottomSheetModal>(null);
   const [isMockMode, setIsMockMode] = useState(false);
   const [devLoading, setDevLoading] = useState(false);
-  const { setAuth } = useGameStore();
+  const { setAuth, guestProfile, loginAsGuest } = useGameStore();
   usePortrait();
 
   useEffect(() => {
@@ -204,7 +259,11 @@ export default function RoleSelectScreen() {
           gap: 16,
         }}
       >
-        <AppTitle />
+        <Animated.View
+          entering={FadeInDown.springify().damping(12).mass(0.9).stiffness(150)}
+        >
+          <AppTitle />
+        </Animated.View>
 
         <View className="w-full max-w-sm" style={{ gap: 16 }}>
           <StaggeredList staggerMs={100}>
@@ -224,15 +283,40 @@ export default function RoleSelectScreen() {
               variant="secondary"
             />
 
+            {/* Guest / play-without-account entry point */}
+            <View style={{ marginTop: 8 }}>
+              {guestProfile ? (
+                <Button
+                  label={t("roleSelect.continueAsGuest", {
+                    name: guestProfile.displayName,
+                  })}
+                  variant="outline"
+                  onPress={() => {
+                    loginAsGuest();
+                    router.replace("/home");
+                  }}
+                  icon={<GuestIcon avatarId={guestProfile.avatarId} />}
+                />
+              ) : (
+                <Button
+                  label={t("roleSelect.guest")}
+                  variant="outline"
+                  onPress={() => router.push("/guest-setup")}
+                  icon={<GuestIcon />}
+                />
+              )}
+            </View>
+
             {__DEV__ && isMockMode && (
-              <ActionCard
-                icon={<DevIcon />}
-                title={t("roleSelect.devMode")}
-                description={t("roleSelect.devModeDesc")}
-                onPress={handleDevLogin}
-                variant="outline"
-                loading={devLoading}
-              />
+              <View style={{ marginTop: 8 }}>
+                <Button
+                  label={t("roleSelect.devMode")}
+                  variant="ghost"
+                  onPress={handleDevLogin}
+                  loading={devLoading}
+                  icon={<DevIcon />}
+                />
+              </View>
             )}
           </StaggeredList>
         </View>

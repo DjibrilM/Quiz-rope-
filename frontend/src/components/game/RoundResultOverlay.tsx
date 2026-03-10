@@ -156,8 +156,8 @@ export function RoundResultOverlay({ result }: RoundResultOverlayProps) {
   );
 
   useEffect(() => {
-    translateY.value = withTiming(0, { duration: 250, easing: Easing.out(Easing.cubic) });
-    opacity.value = withTiming(1, { duration: 200 });
+    translateY.value = withTiming(0, { duration: 60, easing: Easing.out(Easing.cubic) });
+    opacity.value = withTiming(1, { duration: 50 });
 
     if (!result.isCorrect) {
       shakeX.value = withSequence(
@@ -177,7 +177,6 @@ export function RoundResultOverlay({ result }: RoundResultOverlayProps) {
   const bg = result.isCorrect
     ? "rgba(16, 185, 129, 0.95)"
     : "rgba(217, 119, 6, 0.90)";
-  const ropeText = result.ropeMovement < 0 ? t("result.ropeMovesLeft") : t("result.ropeMovesRight");
 
   return (
     <View
@@ -194,7 +193,7 @@ export function RoundResultOverlay({ result }: RoundResultOverlayProps) {
             gap: 10,
             backgroundColor: bg,
             paddingHorizontal: 20,
-            paddingVertical: 10,
+            paddingVertical: 12,
             borderRadius: 40,
             overflow: "visible",
           },
@@ -203,26 +202,15 @@ export function RoundResultOverlay({ result }: RoundResultOverlayProps) {
       >
         {result.isCorrect && <MiniSparkles />}
         {result.isCorrect ? <SmallCheck /> : <SmallX />}
-        <View>
-          <Text
-            style={{
-              color: "#FFFFFF",
-              fontSize: 15,
-              fontFamily: "LuckiestGuy_400Regular",
-            }}
-          >
-            {result.isCorrect ? t("result.correct") : encourageMsg}
-          </Text>
-          <Text
-            style={{
-              color: "rgba(255,255,255,0.75)",
-              fontSize: 11,
-              fontFamily: FONTS.body,
-            }}
-          >
-            {ropeText}
-          </Text>
-        </View>
+        <Text
+          style={{
+            color: "#FFFFFF",
+            fontSize: 16,
+            fontFamily: "LuckiestGuy_400Regular",
+          }}
+        >
+          {result.isCorrect ? t("result.correct") : encourageMsg}
+        </Text>
       </Animated.View>
     </View>
   );

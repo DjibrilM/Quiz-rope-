@@ -1,13 +1,12 @@
 import { useState } from "react";
-import { View, Text, ScrollView, Pressable } from "react-native";
+import { View, Text, ScrollView, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import Svg, { Path } from "react-native-svg";
 import { usePortrait } from "../src/hooks/useOrientation";
 import { useGameStore } from "../src/stores/gameStore";
-import { socketService } from "../src/services/socket";
 import { apiService } from "../src/services/api";
-import { ScreenHeader } from "../src/components/common";
+import { Button, ScreenHeader } from "../src/components/common";
 import { DifficultySelector, RoundsSelector } from "../src/components/match";
 import { MatchStatus } from "@shared/types/match.types";
 import { useTranslation } from "react-i18next";
@@ -24,6 +23,9 @@ function PlayIcon() {
 
 export default function SoloMatchScreen() {
   usePortrait();
+  const [creatingMatch, setCreatingMatch] = useState(false);
+  const [context, setContext] = useState("");
+  const [contextError, setContextError] = useState("");
   const { t } = useTranslation(["match", "common"]);
   const { subject } = useLocalSearchParams<{ subject: string }>();
   const { setCurrentMatch } = useGameStore();
@@ -33,7 +35,9 @@ export default function SoloMatchScreen() {
   const subjectLabel = t(`common:subjects.${subject}`);
 
   const handleStart = async () => {
+    setContextError("");
     try {
+      setCreatingMatch(true);
       hapticsService.medium();
 
       const teams = [
@@ -45,6 +49,8 @@ export default function SoloMatchScreen() {
         subject: subject!,
         difficulty,
         maxRounds,
+        gameMode: "solo",
+        context: context.trim() || undefined,
         teams,
       });
 
@@ -67,26 +73,95 @@ export default function SoloMatchScreen() {
         createdAt: (created as any).createdAt || new Date(),
       };
 
-      socketService.connect();
+      // Solo mode runs entirely offline — no socket needed.
+      // Connecting the socket causes startTimer in game.tsx to bail out early.
       setCurrentMatch(match);
       router.replace({ pathname: "/game", params: { matchId: match.id } });
-    } catch (error) {
-      console.error("Failed to create match:", error);
+    } catch (error: any) {
+      setCreatingMatch(false);
+      if (error?.message === "CONTEXT_NOT_RELATED") {
+        setContextError(t("match:solo.contextNotRelated"));
+      } else {
+        console.error("Failed to create match:", error);
+      }
     }
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-game-bg">
-      <ScreenHeader
-        title={t("match:solo.title", { subject: subjectLabel })}
-      />
+    <SafeAreaView edges={["bottom"]} className="flex-1 bg-game-bg">
+      <ScreenHeader title={t("match:solo.title", { subject: subjectLabel })} />
 
       <ScrollView
         className="flex-1 px-6"
+        contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{ paddingBottom: 120, paddingTop: 24 }}
       >
         <DifficultySelector selected={difficulty} onSelect={setDifficulty} />
         <RoundsSelector selected={maxRounds} onSelect={setMaxRounds} />
+
+        {/* Context input */}
+        <View style={{ marginTop: 24 }}>
+          <Text
+            style={{
+              color: "#B8A9C9",
+              fontSize: 11,
+              fontFamily: FONTS.bodySemiBold,
+              letterSpacing: 1.5,
+              textTransform: "uppercase",
+              marginBottom: 8,
+            }}
+          >
+            {t("match:solo.contextLabel")}
+          </Text>
+          <TextInput
+            value={context}
+            onChangeText={(v) => {
+              setContext(v);
+              if (contextError) setContextError("");
+            }}
+            placeholder={t("match:solo.contextPlaceholder")}
+            placeholderTextColor="#4A3D5A"
+            multiline
+            numberOfLines={3}
+            style={{
+              backgroundColor: "#1A1520",
+              borderWidth: 1.5,
+              borderColor: contextError ? "#EF4444" : "#3D2E4A",
+              borderRadius: 14,
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+              color: "#FFFFFF",
+              fontSize: 14,
+              fontFamily: FONTS.body,
+              lineHeight: 20,
+              minHeight: 80,
+              textAlignVertical: "top",
+            }}
+          />
+          {contextError ? (
+            <Text
+              style={{
+                color: "#EF4444",
+                fontSize: 13,
+                fontFamily: FONTS.body,
+                marginTop: 6,
+              }}
+            >
+              {contextError}
+            </Text>
+          ) : (
+            <Text
+              style={{
+                color: "#4A3D5A",
+                fontSize: 12,
+                fontFamily: FONTS.body,
+                marginTop: 6,
+              }}
+            >
+              {t("match:solo.contextHint")}
+            </Text>
+          )}
+        </View>
       </ScrollView>
 
       {/* Start Game button */}
@@ -102,34 +177,13 @@ export default function SoloMatchScreen() {
           backgroundColor: "#0D0B14E8",
         }}
       >
-        <Pressable
+        <Button
+          className="w-full"
           onPress={handleStart}
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 10,
-            backgroundColor: "#9B59B6",
-            paddingVertical: 18,
-            borderRadius: 20,
-            shadowColor: "#9B59B6",
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.4,
-            shadowRadius: 12,
-            elevation: 8,
-          }}
-        >
-          <PlayIcon />
-          <Text
-            style={{
-              color: "#FFFFFF",
-              fontSize: 18,
-              fontFamily: FONTS.heading,
-            }}
-          >
-            {t("match:solo.startButton")}
-          </Text>
-        </Pressable>
+          label={t("match:solo.startButton")}
+          icon={<PlayIcon />}
+          loading={creatingMatch}
+        />
       </View>
     </SafeAreaView>
   );

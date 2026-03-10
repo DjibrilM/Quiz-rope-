@@ -21,7 +21,11 @@
   },
   "solo": {
     "title": "Solo - {{subject}}",
-    "startButton": "Start Game"
+    "startButton": "Start Game",
+    "contextLabel": "Customize Your Practice",
+    "contextPlaceholder": "e.g. square roots, fractions with denominators up to 20...",
+    "contextHint": "Optional — describe exactly what you want to practice",
+    "contextNotRelated": "This context is not related to the topic."
   },
   "selectors": {
     "subject": "Subject",
@@ -33,7 +37,11 @@
     "loadingMessage": "Loading your battle history...",
     "emptyTitle": "No matches yet",
     "emptySubtitle": "Start a game to see your battle history here!",
-    "won": "Won"
+    "won": "Won",
+    "completed": "Completed",
+    "review": "Review Answers",
+    "inProgress": "In Progress",
+    "waiting": "Not Started"
   },
   "detail": {
     "title": "Match Details",
@@ -45,6 +53,30 @@
     "playerStatistics": "Player Statistics",
     "score": "Score",
     "accuracy": "Accuracy",
-    "avgTime": "Avg Time"
+    "avgTime": "Avg Time",
+    "reviewAnswers": "Review Answers",
+    "completed": "Completed",
+    "soloMode": "Solo Practice",
+    "splitMode": "Split Screen",
+    "yourPerformance": "Your Performance",
+    "teamScores": "Team Scores",
+    "correct": "Correct",
+    "total": "Total",
+    "noStats": "No answers recorded yet",
+    "mode": "Mode",
+    "players": "Players",
+    "redWins": "Red Team Wins!",
+    "blueWins": "Blue Team Wins!",
+    "draw": "Draw!",
+    "soloComplete": "Session Complete!"
+  },
+  "join": {
+    "title": "Join a Match",
+    "subtitle": "Ask the host for the 6-character match code",
+    "joinButton": "Join Match",
+    "codeLengthError": "Please enter a 6-character code",
+    "notFoundError": "Match not found. Check the code and try again.",
+    "matchEndedError": "This match has already ended.",
+    "networkError": "Something went wrong. Please try again."
   }
 }
