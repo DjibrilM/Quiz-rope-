@@ -11,8 +11,9 @@ export type ButtonVariant =
 
 export interface ButtonProps {
   onPress: () => void;
-  label: string;
+  label?: string;
   variant?: ButtonVariant;
+  children?: React.ReactNode;
   loading?: boolean;
   disabled?: boolean;
   icon?: React.ReactNode;
@@ -64,6 +65,7 @@ const VARIANT_STYLES: Record<
 };
 
 export function Button({
+  children,
   onPress,
   label,
   variant = "primary",
@@ -90,6 +92,7 @@ export function Button({
       ) : (
         <>
           {icon}
+          {children}
           <Text
             className={`text-lg font-bold ${styles.textClass}`}
             style={{

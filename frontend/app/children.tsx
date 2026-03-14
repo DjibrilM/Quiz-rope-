@@ -12,7 +12,7 @@ import { useRef, useCallback, useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { usePortrait } from "../src/hooks/useOrientation";
 import { useGameStore } from "../src/stores/gameStore";
-import { AnimatedLoader, ScreenHeader } from "../src/components/common";
+import { AnimatedLoader, Button, ScreenHeader } from "../src/components/common";
 import {
   AddChildForm,
   ChildCard,
@@ -42,8 +42,17 @@ export default function ChildrenScreen() {
     id: string;
     displayName: string;
   } | null>(null);
+  const [selectedChildForCode, setSelectedChildForCode] = useState<{
+    id: string;
+    displayName: string;
+  } | null>(null);
 
-  const { data: children = [], isLoading, isError, error } = useQuery({
+  const {
+    data: children = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
     queryKey: ["children"],
     queryFn: () => apiService.getChildren(),
     select: (data) =>
@@ -52,12 +61,24 @@ export default function ChildrenScreen() {
 
   // Keep zustand store in sync so other screens (leaderboard) can use it
   useEffect(() => {
-    if (children.length > 0) setChildren(children);
+    if (children.length > 0) {
+      setChildren(children);
+      // Auto-select first child for the bottom code button if none selected
+      setSelectedChildForCode((prev) => {
+        if (prev) return prev;
+        const first = children.find((c) => c?.displayName);
+        return first ? { id: first.id, displayName: first.displayName } : null;
+      });
+    }
   }, [children]);
 
   const addMutation = useMutation({
-    mutationFn: (data: { displayName: string; age: number; grade: string; avatarUrl: string }) =>
-      apiService.createChild(data),
+    mutationFn: (data: {
+      displayName: string;
+      age: number;
+      grade: string;
+      avatarUrl: string;
+    }) => apiService.createChild(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["children"] });
       bottomSheetRef.current?.dismiss();
@@ -81,7 +102,9 @@ export default function ChildrenScreen() {
   const errorMessage =
     (error instanceof Error ? error.message : null) ||
     (addMutation.error instanceof Error ? addMutation.error.message : null) ||
-    (deleteMutation.error instanceof Error ? deleteMutation.error.message : null);
+    (deleteMutation.error instanceof Error
+      ? deleteMutation.error.message
+      : null);
 
   const handleOpenSheet = useCallback(() => {
     bottomSheetRef.current?.present();
@@ -118,21 +141,24 @@ export default function ChildrenScreen() {
     setRemovingChild(null);
   }, []);
 
-  const handleGenerateLinkCode = useCallback(async (childId: string, childName: string) => {
-    try {
-      const result = await apiService.generateGuestLinkCode(childId);
-      const expiresIn = Math.round(
-        (new Date(result.expiresAt).getTime() - Date.now()) / 60000,
-      );
-      Alert.alert(
-        t("linkCode.title", { name: childName }),
-        t("linkCode.body", { code: result.code, minutes: expiresIn }),
-        [{ text: t("linkCode.ok"), style: "default" }],
-      );
-    } catch {
-      Alert.alert(t("linkCode.errorTitle"), t("linkCode.errorBody"));
-    }
-  }, [t]);
+  const handleGenerateLinkCode = useCallback(
+    async (childId: string, childName: string) => {
+      try {
+        const result = await apiService.generateGuestLinkCode(childId);
+        const expiresIn = Math.round(
+          (new Date(result.expiresAt).getTime() - Date.now()) / 60000,
+        );
+        Alert.alert(
+          t("linkCode.title", { name: childName }),
+          t("linkCode.body", { code: result.code, minutes: expiresIn }),
+          [{ text: t("linkCode.ok"), style: "default" }],
+        );
+      } catch {
+        Alert.alert(t("linkCode.errorTitle"), t("linkCode.errorBody"));
+      }
+    },
+    [t],
+  );
 
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
@@ -151,32 +177,48 @@ export default function ChildrenScreen() {
       <ScreenHeader
         title={t("title")}
         rightElement={
-          <Pressable
-            onPress={handleOpenSheet}
-            style={{
-              backgroundColor: "#6D4C8A",
-              paddingHorizontal: 14,
-              paddingVertical: 7,
-              borderRadius: 10,
-            }}
-          >
-            <Text
+          Platform.OS === "android" ? (
+            <Pressable
+              onPress={handleOpenSheet}
               style={{
-                color: "#FFFFFF",
-                fontSize: 12,
-                fontFamily: "Bungee_400Regular",
+                backgroundColor: "#6D4C8A",
+                paddingHorizontal: 14,
+                paddingVertical: 7,
+                borderRadius: 10,
               }}
             >
-              {t("addButton")}
-            </Text>
-          </Pressable>
+              <Text
+                style={{
+                  color: "#FFFFFF",
+                  fontSize: 12,
+                  fontFamily: "Bungee_400Regular",
+                }}
+              >
+                {t("addButton")}
+              </Text>
+            </Pressable>
+          ) : (
+            <Pressable onPress={handleOpenSheet} className="px-3">
+              <Text
+                style={{
+                  color: "#FFFFFF",
+                  fontSize: 12,
+                  fontFamily: "Bungee_400Regular",
+                }}
+              >
+                {t("addButton")}
+              </Text>
+            </Pressable>
+          )
         }
       />
 
       <ScrollView
-        className="flex-1 px-6"
+        className="flex-1 px-6 pt-6"
         contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={{ paddingBottom: 40 }}
+        contentContainerStyle={{
+          paddingBottom: selectedChildForCode ? 120 : 40,
+        }}
       >
         {errorMessage && (
           <View className="bg-red-500/20 rounded-xl px-4 py-3 mb-4">
@@ -199,57 +241,72 @@ export default function ChildrenScreen() {
               .filter((c) => c?.displayName)
               .map((child) => (
                 <View key={child.id}>
-                <ChildCard
-                  displayName={child.displayName}
-                  age={child.age}
-                  grade={child.grade}
-                  avatarUrl={child.avatarUrl}
-                  onPress={() =>
-                    router.push({
-                      pathname: "/child-stats" as any,
-                      params: {
-                        childId: child.id,
-                        childName: child.displayName,
-                        avatarUrl: child.avatarUrl,
-                      },
-                    })
-                  }
-                  onRemove={() =>
-                    handleRemovePress({
-                      id: child.id,
-                      displayName: child.displayName,
-                    })
-                  }
-                />
-                <Pressable
-                  onPress={() =>
-                    handleGenerateLinkCode(child.id, child.displayName)
-                  }
-                  style={{
-                    marginTop: 8,
-                    paddingVertical: 10,
-                    borderRadius: 10,
-                    borderWidth: 1,
-                    borderColor: "#5B3F8A",
-                    alignItems: "center",
-                    backgroundColor: "#231C2B",
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: "#B8A9C9",
-                      fontSize: 13,
-                      fontFamily: FONTS.bodySemiBold,
+                  <ChildCard
+                    displayName={child.displayName}
+                    age={child.age}
+                    grade={child.grade}
+                    avatarUrl={child.avatarUrl}
+                    onPress={() => {
+                      setSelectedChildForCode({
+                        id: child.id,
+                        displayName: child.displayName,
+                      });
+                      router.push({
+                        pathname: "/child-stats" as any,
+                        params: {
+                          childId: child.id,
+                          childName: child.displayName,
+                          avatarUrl: child.avatarUrl,
+                        },
+                      });
                     }}
-                  >
-                    {t("linkCode.getCode")}
-                  </Text>
-                </Pressable>
+                    onRemove={() =>
+                      handleRemovePress({
+                        id: child.id,
+                        displayName: child.displayName,
+                      })
+                    }
+                  />
                 </View>
               ))}
           </View>
         )}
       </ScrollView>
+
+      {/* Get Code bottom bar */}
+      {selectedChildForCode && (
+        <View
+          className="absolute border-t border-white/5 bottom-0 left-0 right-0 px-6"
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            paddingHorizontal: 24,
+            paddingBottom: 36,
+            paddingTop: 16,
+            backgroundColor: "#0D0B14E8",
+          }}
+        >
+          <Button
+            className="min-w-full"
+            onPress={() =>
+              handleGenerateLinkCode(
+                selectedChildForCode.id,
+                selectedChildForCode.displayName,
+              )
+            }
+            variant="primary"
+            label={
+              children.filter((c) => c?.displayName).length > 1
+                ? t("linkCode.getCode") +
+                  " — " +
+                  selectedChildForCode.displayName
+                : t("linkCode.getCode")
+            }
+          />
+        </View>
+      )}
 
       {/* Add child bottom sheet */}
       <BottomSheetModal
@@ -409,7 +466,9 @@ export default function ChildrenScreen() {
                   fontFamily: FONTS.bodySemiBold,
                 }}
               >
-                {deleteMutation.isPending ? t("remove.removing") : t("remove.confirm")}
+                {deleteMutation.isPending
+                  ? t("remove.removing")
+                  : t("remove.confirm")}
               </Text>
             </Pressable>
           </View>

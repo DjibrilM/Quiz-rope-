@@ -10,6 +10,7 @@
     "prebuild:clean": "expo prebuild --clean",
     "lint": "eslint .",
     "ios:iphone": "expo run:ios --device 9ADB501C-5815-4F40-BB34-FDA1C6D92D91",
+    "ios:iphone-max": "expo run:ios --device B88099A9-E46B-41C6-A6F7-E8AA0247867B",
     "ios:ipad": "expo run:ios --device ADA84E0D-C886-4CD5-8736-67D410291850"
   },
   "dependencies": {

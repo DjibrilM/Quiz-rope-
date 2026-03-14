@@ -94,20 +94,6 @@ class ApiService {
     return this.request('/auth/me');
   }
 
-  async sendOtp(email: string): Promise<{ success: boolean; message: string }> {
-    return this.request('/auth/send-otp', {
-      method: 'POST',
-      data: { email },
-    });
-  }
-
-  async resetPassword(email: string, code: string, newPassword: string): Promise<{ success: boolean; message: string }> {
-    return this.request('/auth/reset-password', {
-      method: 'POST',
-      data: { email, code, newPassword },
-    });
-  }
-
   // Children
   async getChildren(): Promise<Child[]> {
     return this.request('/children');
@@ -152,14 +138,14 @@ class ApiService {
     return this.request(`/matches/${id}`);
   }
 
-  async submitAnswer(matchId: string, data: { playerId: string; teamSide: string; answerIndex: number; responseTime: number; questionId?: string }): Promise<void> {
+  async submitAnswer(matchId: string, data: { playerId: string; teamSide: string; answerIndex: number; responseTime: number; questionId?: string; isCorrect?: boolean }): Promise<void> {
     return this.request(`/matches/${matchId}/answer`, {
       method: 'POST',
       data: data as unknown as Record<string, unknown>,
     });
   }
 
-  async completeMatch(id: string, data: { winner: string; teamScoreLeft: number; teamScoreRight: number; rounds: number }): Promise<Match> {
+  async completeMatch(id: string, data: { winner: string; rounds: number }): Promise<Match> {
     return this.request(`/matches/${id}/complete`, {
       method: 'PATCH',
       data: data as unknown as Record<string, unknown>,

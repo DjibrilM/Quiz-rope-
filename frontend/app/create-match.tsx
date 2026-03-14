@@ -1,21 +1,10 @@
-import { useState, useTransition } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  ActivityIndicator,
-} from "react-native";
+import { useState } from "react";
+import { View, Text, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
-import Svg, { Path } from "react-native-svg";
 import { usePortrait } from "../src/hooks/useOrientation";
-import { useGameStore } from "../src/stores/gameStore";
-import { apiService } from "../src/services/api";
 import { StaggeredList, ScreenHeader } from "../src/components/common";
 import { SubjectCard } from "../src/components/match";
-import { autoDifficulty } from "../src/utils/autoDifficulty";
-import { MatchStatus } from "@shared/types/match.types";
 import type { GameMode } from "@shared/types/match.types";
 import { useTranslation } from "react-i18next";
 import { FONTS } from "../src/constants/theme";
@@ -23,90 +12,18 @@ import { hapticsService } from "../src/services/haptics";
 
 const SUBJECTS = ["MATH", "SCIENCE", "ENGLISH", "HISTORY", "GEOGRAPHY"];
 
-function PlayIcon() {
-  return (
-    <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
-      <Path d="M5 3l14 9-14 9V3z" fill="#FFFFFF" />
-    </Svg>
-  );
-}
-
 export default function CreateMatchScreen() {
   usePortrait();
-  const [isPending, startTransition] = useTransition();
   const { t } = useTranslation(["match", "common"]);
-  const { children, userRole, setCurrentMatch } = useGameStore();
   const [gameMode, setGameMode] = useState<GameMode>("solo");
-  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
 
   const handleSubjectPress = (subject: string) => {
+    hapticsService.medium();
     if (gameMode === "solo") {
-      hapticsService.medium();
       router.push({ pathname: "/solo-match", params: { subject } });
     } else {
-      setSelectedSubject(subject);
+      router.push({ pathname: "/split-match" as any, params: { subject } });
     }
-  };
-
-  const [starting, setStarting] = useState(false);
-
-  const handleStart = async () => {
-    startTransition(() => {
-      const fn = async () => {
-        if (!selectedSubject || starting) return;
-        setStarting(true);
-
-        try {
-          hapticsService.medium();
-
-          const difficulty =
-            userRole === "child" ? "EASY" : autoDifficulty(children);
-          const maxRounds = 10;
-          const teams = [
-            { name: "Red Team", color: "#EF4444", side: "LEFT" },
-            { name: "Blue Team", color: "#3B82F6", side: "RIGHT" },
-          ];
-
-          const created = await apiService.createMatch({
-            subject: selectedSubject,
-            difficulty,
-            maxRounds,
-            gameMode,
-            teams,
-          });
-
-          const match = {
-            ...(created as any),
-            id: (created as any)._id || (created as any).id,
-            gameMode,
-            teams: ((created as any).teams || teams).map(
-              (t: any, i: number) => ({
-                id: t._id || t.id || `team-${i}`,
-                name: t.name,
-                color: t.color,
-                side: t.side,
-                players: t.players || [],
-              }),
-            ),
-            ropePosition: (created as any).ropePosition || 0,
-            currentQuestionIndex: (created as any).currentQuestionIndex || 0,
-            status: MatchStatus.IN_PROGRESS,
-            rounds: (created as any).rounds || 0,
-            maxRounds,
-            createdAt: (created as any).createdAt || new Date(),
-          };
-
-          setCurrentMatch(match);
-          router.replace({ pathname: "/game", params: { matchId: match.id } });
-        } catch (error) {
-          console.error("Failed to create match:", error);
-        } finally {
-          setStarting(false);
-        }
-      };
-
-      fn();
-    });
   };
 
   return (
@@ -216,68 +133,13 @@ export default function CreateMatchScreen() {
               <SubjectCard
                 key={subject}
                 subject={subject}
-                selected={selectedSubject === subject}
+                selected={false}
                 onPress={handleSubjectPress}
               />
             ))}
           </StaggeredList>
         </View>
       </ScrollView>
-
-      {/* Sticky start button (multiplayer only — solo navigates on subject tap) */}
-      {selectedSubject && gameMode !== "solo" && (
-        <View
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            paddingHorizontal: 24,
-            paddingBottom: 36,
-            paddingTop: 16,
-            backgroundColor: "#0D0B14E8",
-          }}
-        >
-          <Pressable
-            onPress={handleStart}
-            disabled={starting || isPending}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 10,
-              backgroundColor: "#9B59B6",
-              paddingVertical: 18,
-              borderRadius: 20,
-              shadowColor: "#9B59B6",
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.4,
-              shadowRadius: 12,
-              elevation: 8,
-              opacity: starting ? 0.7 : 1,
-            }}
-          >
-            {starting || isPending ? (
-              <ActivityIndicator size="small" color="#FFFFFF" />
-            ) : (
-              <PlayIcon />
-            )}
-            <Text
-              style={{
-                color: "#FFFFFF",
-                fontSize: 18,
-                fontFamily: FONTS.heading,
-              }}
-            >
-              {starting
-                ? t("common:labels.loading")
-                : t("match:create.startButton", {
-                    subject: t(`common:subjects.${selectedSubject}`),
-                  })}
-            </Text>
-          </Pressable>
-        </View>
-      )}
     </SafeAreaView>
   );
 }

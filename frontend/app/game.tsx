@@ -1,5 +1,5 @@
 import { View, Text, Pressable, Alert } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState, useCallback, useRef, memo } from "react";
 import Animated, {
@@ -94,8 +94,9 @@ const ScorePop = memo(function ScorePop({ side }: { side: "left" | "right" }) {
 export default function GameScreen() {
   const { t } = useTranslation(["game", "common"]);
   const userRole = useGameOrientation();
+  const insets = useSafeAreaInsets();
   const isChildDevice = userRole === "child" || userRole === "guest";
-  const { matchId } = useLocalSearchParams();
+  const { matchId, p1Name, p2Name } = useLocalSearchParams();
   const {
     teamScores,
     setTeamScores,
@@ -117,8 +118,9 @@ export default function GameScreen() {
   } = useGameStore();
 
   const isSoloMode = currentMatch?.gameMode === "solo";
+  const isSplitscreen = currentMatch?.gameMode === "splitscreen";
   // Both solo and splitscreen run locally (no socket required)
-  const isLocalMode = isSoloMode || currentMatch?.gameMode === "splitscreen";
+  const isLocalMode = isSoloMode || isSplitscreen;
 
   // Questions: fetched from backend (Gemini/AI), fallback to local samples on error
   const questionsRef = useRef<StoreQuestion[]>(FALLBACK_QUESTIONS);
@@ -126,9 +128,12 @@ export default function GameScreen() {
   const correctCountRef = useRef({ left: 0, right: 0 });
 
   const [currentRound, setCurrentRound] = useState(1);
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [selectedAnswerLeft, setSelectedAnswerLeft] = useState<number | null>(null);
+  const [selectedAnswerRight, setSelectedAnswerRight] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [showGameEnd, setShowGameEnd] = useState(false);
+  // allAnswered: true when the round is over and correct answers should be revealed
+  const [allAnswered, setAllAnswered] = useState(false);
   // Key increments each correct answer to re-mount ScorePop and re-trigger its animation
   const [scorePopKey, setScorePopKey] = useState<{
     left: number;
@@ -191,7 +196,9 @@ export default function GameScreen() {
 
       socket.on("game:question", (data: unknown) => {
         setCurrentQuestion(data as StoreQuestion);
-        setSelectedAnswer(null);
+        setSelectedAnswerLeft(null);
+        setSelectedAnswerRight(null);
+        setAllAnswered(false);
         setShowResult(false);
       });
       socket.on("game:score-update", (data: unknown) => {
@@ -296,8 +303,6 @@ export default function GameScreen() {
           apiService
             .completeMatch(matchId as string, {
               winner,
-              teamScoreLeft: newLeftScore,
-              teamScoreRight: newRightScore,
               rounds: nextRound - 1,
             })
             .catch(() => {
@@ -324,6 +329,8 @@ export default function GameScreen() {
           });
         } else {
           const winner = newLeftScore >= newRightScore ? "LEFT" : "RIGHT";
+          const p1 = (p1Name as string) || "Red Player";
+          const p2 = (p2Name as string) || "Blue Player";
           setGameEndResult({
             matchId: matchId as string,
             winnerTeamId: winner,
@@ -331,15 +338,15 @@ export default function GameScreen() {
             teamScores: { left: newLeftScore, right: newRightScore },
             stats: [
               {
-                playerId: "player-red-1",
-                displayName: "Red Player",
+                playerId: isSplitscreen ? p1 : "player-red-1",
+                displayName: isSplitscreen ? p1 : "Red Player",
                 correctAnswers: correctCountRef.current.left,
                 totalAnswers: totalRounds,
                 avgResponseTime: Math.round(Math.random() * 5000 + 2000),
               },
               {
-                playerId: "player-blue-1",
-                displayName: "Blue Player",
+                playerId: isSplitscreen ? p2 : "player-blue-1",
+                displayName: isSplitscreen ? p2 : "Blue Player",
                 correctAnswers: correctCountRef.current.right,
                 totalAnswers: totalRounds,
                 avgResponseTime: Math.round(Math.random() * 5000 + 2000),
@@ -350,8 +357,7 @@ export default function GameScreen() {
       } else {
         if (resultTimeoutRef.current) clearTimeout(resultTimeoutRef.current);
         // Solo: 1200ms is enough for kids to see the result and stay engaged.
-        // Multiplayer: server drives the pace (3s gap in gateway), so this timeout
-        // only runs in solo mode anyway.
+        // Splitscreen: 1800ms gives both players time to see the answer reveal.
         resultTimeoutRef.current = setTimeout(
           () => {
             setCurrentRound(nextRound);
@@ -360,15 +366,17 @@ export default function GameScreen() {
                 (nextRound - 1) % questionsRef.current.length
               ],
             );
-            setSelectedAnswer(null);
+            setSelectedAnswerLeft(null);
+            setSelectedAnswerRight(null);
+            setAllAnswered(false);
             setShowResult(false);
             startTimerRef.current?.();
           },
-          1200,
+          isSplitscreen ? 1800 : 1200,
         );
       }
     },
-    [currentMatch, isSoloMode, matchId, setGameEndResult, setCurrentQuestion],
+    [currentMatch, isSoloMode, isSplitscreen, matchId, p1Name, p2Name, setGameEndResult, setCurrentQuestion],
   );
 
   // Called when timer runs out with no answer — treats round as wrong/skipped
@@ -376,7 +384,10 @@ export default function GameScreen() {
     // Remote multiplayer: server handles timeout
     if (!isLocalMode) return;
 
-    if (selectedAnswer !== null) return; // already answered
+    // Solo: LEFT player already answered. Splitscreen: both already answered.
+    const soloAnswered = isSoloMode && selectedAnswerLeft !== null;
+    const splitAnswered = !isSoloMode && selectedAnswerLeft !== null && selectedAnswerRight !== null;
+    if (soloAnswered || splitAnswered) return;
 
     const currentQ =
       questionsRef.current[(currentRound - 1) % questionsRef.current.length];
@@ -410,10 +421,13 @@ export default function GameScreen() {
     };
     setRoundResult(result);
     setShowResult(true);
+    setAllAnswered(true);
 
     endRound(currentRound + 1, teamScores.left, teamScores.right);
   }, [
-    selectedAnswer,
+    isSoloMode,
+    selectedAnswerLeft,
+    selectedAnswerRight,
     currentRound,
     teamScores,
     resetStreak,
@@ -429,12 +443,23 @@ export default function GameScreen() {
 
   const handleAnswer = useCallback(
     (answerIndex: number, teamSide: "LEFT" | "RIGHT") => {
-      if (selectedAnswer !== null) return;
-      setSelectedAnswer(answerIndex);
+      // Per-side guard: each player can only answer once per round
+      if (teamSide === "LEFT" && selectedAnswerLeft !== null) return;
+      if (teamSide === "RIGHT" && selectedAnswerRight !== null) return;
+      if (teamSide === "LEFT") setSelectedAnswerLeft(answerIndex);
+      else setSelectedAnswerRight(answerIndex);
 
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
+      // In solo mode stop the timer immediately. In splitscreen keep it running
+      // so the other player still has a chance to answer before time runs out.
+      const isSecondSplitscreenAnswer =
+        !isSoloMode &&
+        ((teamSide === "LEFT" && selectedAnswerRight !== null) ||
+          (teamSide === "RIGHT" && selectedAnswerLeft !== null));
+      if (isSoloMode || isSecondSplitscreenAnswer) {
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+        }
       }
 
       const currentQ =
@@ -442,13 +467,17 @@ export default function GameScreen() {
       const isCorrect = answerIndex === currentQ.correctIndex;
 
       // Persist answer to backend (best-effort, non-blocking)
-      // Use team-specific playerId for splitscreen so analytics separate both sides
+      // Use real player names as playerIds for splitscreen analytics
       if (matchId) {
         const playerId = isSoloMode
           ? "mock-player"
-          : teamSide === "LEFT"
-            ? "player-red"
-            : "player-blue";
+          : isSplitscreen
+            ? (teamSide === "LEFT"
+                ? ((p1Name as string) || "player-red")
+                : ((p2Name as string) || "player-blue"))
+            : teamSide === "LEFT"
+              ? "player-red"
+              : "player-blue";
         apiService
           .submitAnswer(matchId as string, {
             playerId,
@@ -456,6 +485,7 @@ export default function GameScreen() {
             answerIndex,
             responseTime: (30 - timeRemaining) * 1000,
             questionId: currentQ.id,
+            isCorrect,
           })
           .catch(() => {
             /* best-effort */
@@ -519,16 +549,24 @@ export default function GameScreen() {
       setRoundResult(result);
       setShowResult(true);
 
-      endRound(currentRound + 1, newLeftScore, newRightScore);
+      // Solo: end round immediately. Splitscreen: end only when both players answered.
+      if (isSoloMode || isSecondSplitscreenAnswer) {
+        setAllAnswered(true);
+        endRound(currentRound + 1, newLeftScore, newRightScore);
+      }
     },
     [
-      selectedAnswer,
+      selectedAnswerLeft,
+      selectedAnswerRight,
       timeRemaining,
       currentRound,
       currentMatch,
       matchId,
       teamScores,
       isSoloMode,
+      isSplitscreen,
+      p1Name,
+      p2Name,
       endRound,
       updateTeamScore,
       incrementStreak,
@@ -575,7 +613,9 @@ export default function GameScreen() {
     correctCountRef.current = { left: 0, right: 0 };
     setShowGameEnd(false);
     setCurrentRound(1);
-    setSelectedAnswer(null);
+    setSelectedAnswerLeft(null);
+    setSelectedAnswerRight(null);
+    setAllAnswered(false);
     setShowResult(false);
     setTeamScores({ left: 0, right: 0 });
     resetStreak();
@@ -584,6 +624,239 @@ export default function GameScreen() {
     startTimerRef.current?.();
   };
 
+  // ─── Splitscreen portrait top/bottom layout (Army of Two style) ─────────
+  // Portrait orientation, phone lying between two players on a table.
+  // P1 sits at the TOP end → top half, normal orientation.
+  // P2 sits at the BOTTOM end → bottom half, rotated 180° so they read it right-side-up.
+  if (isSplitscreen) {
+    return (
+      <SafeAreaView
+        edges={["top", "bottom", "left", "right"]}
+        style={{ flex: 1, backgroundColor: "#0D0B14" }}
+      >
+        <ConnectionStatus />
+        <View style={{ flex: 1, flexDirection: "column" }}>
+
+          {/* ── P1 TOP HALF ── normal orientation */}
+          <View style={{ flex: 1, flexDirection: "column" }}>
+            {/* P1 score header */}
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                paddingHorizontal: 14,
+                paddingVertical: 8,
+              }}
+            >
+              <Text
+                style={{
+                  color: "#EF4444",
+                  fontSize: 13,
+                  fontFamily: FONTS.bodyBold,
+                }}
+              >
+                {(p1Name as string) || "Red Team"}
+              </Text>
+              <View style={{ position: "relative" }}>
+                {scorePopKey.left > 0 && (
+                  <ScorePop key={`left-${scorePopKey.left}`} side="left" />
+                )}
+                <Text
+                  style={{
+                    color: "#FFFFFF",
+                    fontSize: 20,
+                    fontFamily: "Bungee_400Regular",
+                  }}
+                >
+                  {teamScores.left}
+                </Text>
+              </View>
+            </View>
+            {/* P1 question card */}
+            <View style={{ flex: 1, padding: 8 }}>
+              <QuestionCard
+                question={currentQuestion}
+                selectedAnswer={selectedAnswerLeft}
+                correctIndex={allAnswered ? currentQuestion?.correctIndex : undefined}
+                roundResult={null}
+                onAnswer={(index: number) => handleAnswer(index, "LEFT")}
+                teamSide="LEFT"
+                teamColor="#EF4444"
+              />
+            </View>
+          </View>
+
+          {/* ── CENTER DIVIDER ── horizontal strip, visible to both */}
+          <View
+            style={{
+              height: 64,
+              backgroundColor: "#130F1A",
+              borderTopWidth: 1,
+              borderBottomWidth: 1,
+              borderColor: "#2A1F38",
+              flexDirection: "row",
+              alignItems: "center",
+              paddingHorizontal: 14,
+              gap: 10,
+            }}
+          >
+            {/* Quit button */}
+            <Pressable
+              onPress={handleAbandon}
+              style={{
+                width: 28,
+                height: 28,
+                backgroundColor: "#1A1520",
+                borderRadius: 14,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text
+                style={{ color: "#7B6B8A", fontSize: 13, fontWeight: "bold" }}
+              >
+                {"\u2715"}
+              </Text>
+            </Pressable>
+
+            {/* Timer countdown — large, readable from both ends */}
+            <Text
+              style={{
+                color: timeRemaining <= 5 ? "#EF4444" : "#A78BFA",
+                fontSize: 28,
+                fontFamily: "Bungee_400Regular",
+                minWidth: 36,
+                textAlign: "center",
+              }}
+            >
+              {timeRemaining}
+            </Text>
+
+            {/* Horizontal dominance bar — RED (P1) left, BLUE (P2) right */}
+            <View
+              style={{
+                flex: 1,
+                height: 10,
+                borderRadius: 5,
+                overflow: "hidden",
+                flexDirection: "row",
+              }}
+            >
+              <View
+                style={{
+                  flex: Math.max(teamScores.left, 1),
+                  backgroundColor: "#EF4444",
+                }}
+              />
+              <View
+                style={{
+                  flex: Math.max(teamScores.right, 1),
+                  backgroundColor: "#3B82F6",
+                }}
+              />
+            </View>
+
+            {/* Round counter */}
+            <Text
+              style={{
+                color: "#7B6B8A",
+                fontSize: 10,
+                fontFamily: FONTS.bodySemiBold,
+                textAlign: "center",
+              }}
+            >
+              {currentRound}/{currentMatch?.maxRounds || 10}
+            </Text>
+          </View>
+
+          {/* ── P2 BOTTOM HALF ── rotated 180° for the player at the bottom end */}
+          <View
+            style={{
+              flex: 1,
+              flexDirection: "column",
+              transform: [{ rotate: "180deg" }],
+            }}
+          >
+            {/* P2 score header */}
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                paddingHorizontal: 14,
+                paddingVertical: 8,
+              }}
+            >
+              <Text
+                style={{
+                  color: "#3B82F6",
+                  fontSize: 13,
+                  fontFamily: FONTS.bodyBold,
+                }}
+              >
+                {(p2Name as string) || "Blue Team"}
+              </Text>
+              <View style={{ position: "relative" }}>
+                {scorePopKey.right > 0 && (
+                  <ScorePop key={`right-${scorePopKey.right}`} side="right" />
+                )}
+                <Text
+                  style={{
+                    color: "#FFFFFF",
+                    fontSize: 20,
+                    fontFamily: "Bungee_400Regular",
+                  }}
+                >
+                  {teamScores.right}
+                </Text>
+              </View>
+            </View>
+            {/* P2 question card */}
+            <View style={{ flex: 1, padding: 8 }}>
+              <QuestionCard
+                question={currentQuestion}
+                selectedAnswer={selectedAnswerRight}
+                correctIndex={allAnswered ? currentQuestion?.correctIndex : undefined}
+                roundResult={null}
+                onAnswer={(index: number) => handleAnswer(index, "RIGHT")}
+                teamSide="RIGHT"
+                teamColor="#3B82F6"
+              />
+            </View>
+          </View>
+
+        </View>
+
+        {/* Shared overlays */}
+        {showGameEnd && gameEndResult && (
+          <GameEndOverlay
+            result={gameEndResult}
+            onPlayAgain={handlePlayAgain}
+            onExit={() => router.back()}
+            onReview={() =>
+              router.push({
+                pathname: "/match-review" as any,
+                params: {
+                  matchId: matchId as string,
+                  childId: (p1Name as string) || "player-red",
+                  subject: currentMatch?.subject || "",
+                },
+              })
+            }
+          />
+        )}
+        <MascotBuddy
+          message={buddyMessage}
+          visible={buddyVisible}
+          onHide={() => setBuddyVisible(false)}
+          displayDurationMs={2500}
+        />
+      </SafeAreaView>
+    );
+  }
+
+  // ─── Solo / remote-multiplayer layout ────────────────────────────────────
   return (
     <SafeAreaView className="flex-1 bg-game-bg">
       <ConnectionStatus />
@@ -796,7 +1069,7 @@ export default function GameScreen() {
             }}
           />
         </View>
-        {/* Score dominance bar (split screen only) */}
+        {/* Score dominance bar (multiplayer only) */}
         {!isSoloMode && (
           <View>
             <View
@@ -868,7 +1141,7 @@ export default function GameScreen() {
       >
         <QuestionCard
           question={currentQuestion}
-          selectedAnswer={selectedAnswer}
+          selectedAnswer={selectedAnswerLeft}
           correctIndex={isSoloMode ? currentQuestion?.correctIndex : undefined}
           roundResult={showResult ? roundResult : null}
           onAnswer={(index: number) => handleAnswer(index, "LEFT")}
@@ -878,7 +1151,7 @@ export default function GameScreen() {
         {!isSoloMode && !isChildDevice && (
           <QuestionCard
             question={currentQuestion}
-            selectedAnswer={selectedAnswer}
+            selectedAnswer={selectedAnswerRight}
             roundResult={showResult ? roundResult : null}
             onAnswer={(index: number) => handleAnswer(index, "RIGHT")}
             teamSide="RIGHT"
