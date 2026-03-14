@@ -166,6 +166,7 @@ export default function SoloMatchScreen() {
 
       {/* Start Game button */}
       <View
+        className="border"
         style={{
           position: "absolute",
           bottom: 0,
@@ -178,7 +179,7 @@ export default function SoloMatchScreen() {
         }}
       >
         <Button
-          className="w-full"
+          className="min-w-full"
           onPress={handleStart}
           label={t("match:solo.startButton")}
           icon={<PlayIcon />}

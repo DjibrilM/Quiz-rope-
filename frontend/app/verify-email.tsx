@@ -9,12 +9,20 @@ import { apiService } from "../src/services/api";
 import { useGameStore } from "../src/stores/gameStore";
 import { BackButton, AnimatedLoader } from "../src/components/common";
 import { FONTS } from "../src/constants/theme";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Svg, { Path, Circle } from "react-native-svg";
 
 function EmailIcon() {
   return (
     <Svg width={64} height={64} viewBox="0 0 24 24" fill="none">
-      <Circle cx="12" cy="12" r="11" fill="#1A1520" stroke="#6C5CE7" strokeWidth="1.5" />
+      <Circle
+        cx="12"
+        cy="12"
+        r="11"
+        fill="#1A1520"
+        stroke="#6C5CE7"
+        strokeWidth="1.5"
+      />
       <Path
         d="M4 8l8 5 8-5"
         stroke="#9B59B6"
@@ -37,6 +45,7 @@ export default function VerifyEmailScreen() {
   const { email } = useLocalSearchParams<{ email: string }>();
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
+  const [verifying, setVerifying] = useState(false);
   const [error, setError] = useState("");
   const [resendSuccess, setResendSuccess] = useState(false);
   const { setAuth } = useGameStore();
@@ -48,18 +57,29 @@ export default function VerifyEmailScreen() {
   useEffect(() => {
     const tryAutoVerify = async () => {
       if (navigatedRef.current) return;
+      setVerifying(true);
+      setError("");
       try {
         await firebaseAuthService.reloadUser();
-        if (!firebaseAuthService.isEmailVerified()) return;
-        navigatedRef.current = true;
+        if (!firebaseAuthService.isEmailVerified()) {
+          // Not yet verified — stop spinner, let user wait
+          setVerifying(false);
+          return;
+        }
         const idToken = await firebaseAuthService.getIdToken();
         const result = await apiService.login(idToken);
+        navigatedRef.current = true;
         apiService.setToken(result.token);
         const user = result.user as unknown as Record<string, unknown>;
-        setAuth({ ...result.user, ...user }, result.mockMode ?? false, result.token);
+        setAuth(
+          { ...result.user, ...user },
+          result.mockMode ?? false,
+          result.token,
+        );
         router.replace("/home");
       } catch {
-        // silently ignore — user can tap the button manually
+        // Backend rejects if not yet verified — stop spinner, let user wait
+        setVerifying(false);
       }
     };
 
@@ -94,19 +114,27 @@ export default function VerifyEmailScreen() {
     setLoading(true);
     setError("");
     try {
+      // reloadUser() forces a fresh token from Firebase's servers — the
+      // backend's verifyIdToken will then see email_verified: true from the
+      // token claims, which is more reliable than the SDK's cached property.
       await firebaseAuthService.reloadUser();
-      if (!firebaseAuthService.isEmailVerified()) {
-        setError(t("verifyEmail.notVerifiedError"));
-        return;
-      }
       const idToken = await firebaseAuthService.getIdToken();
       const result = await apiService.login(idToken);
       apiService.setToken(result.token);
       const user = result.user as unknown as Record<string, unknown>;
-      setAuth({ ...result.user, ...user }, result.mockMode ?? false, result.token);
+      setAuth(
+        { ...result.user, ...user },
+        result.mockMode ?? false,
+        result.token,
+      );
       router.replace("/home");
-    } catch {
-      setError(t("verifyEmail.notVerifiedError"));
+    } catch (err: any) {
+      const msg = err?.message ?? "";
+      if (msg.includes("email_not_verified")) {
+        setError(t("verifyEmail.notVerifiedError"));
+      } else {
+        setError(t("verifyEmail.notVerifiedError"));
+      }
     } finally {
       setLoading(false);
     }
@@ -130,8 +158,22 @@ export default function VerifyEmailScreen() {
     <SafeAreaView className="flex-1 bg-game-bg">
       <BackButton absolute onPress={() => router.replace("/login")} />
 
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 32 }}>
-        <EmailIcon />
+      <View
+        className="space-y-10"
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          paddingHorizontal: 32,
+        }}
+      >
+        <View className="border-2 mb-4 items-center bg-purple-500/10 justify-center border-purple-500 rounded-full p-6">
+          <MaterialCommunityIcons
+            name="email-fast-outline"
+            size={42}
+            color="#FFFFFF"
+          />
+        </View>
 
         <Text
           style={{
@@ -185,7 +227,30 @@ export default function VerifyEmailScreen() {
           {t("verifyEmail.spamNote")}
         </Text>
 
-        {error ? (
+        {verifying ? (
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 10,
+              paddingVertical: 12,
+              marginBottom: 8,
+            }}
+          >
+            <AnimatedLoader color="#9B59B6" size="sm" />
+            <Text
+              style={{
+                color: "#9B59B6",
+                fontSize: 14,
+                fontFamily: FONTS.bodySemiBold,
+              }}
+            >
+              {t("verifyEmail.checkingVerification", "Checking verification…")}
+            </Text>
+          </View>
+        ) : null}
+
+        {error && !verifying ? (
           <Text
             style={{
               color: "#EF4444",
@@ -215,7 +280,7 @@ export default function VerifyEmailScreen() {
 
         <Pressable
           onPress={handleVerified}
-          disabled={loading}
+          disabled={loading || verifying}
           style={({ pressed }) => ({
             width: "100%",
             backgroundColor: pressed ? "#5B4BD6" : "#6C5CE7",
@@ -223,13 +288,18 @@ export default function VerifyEmailScreen() {
             borderRadius: 20,
             alignItems: "center",
             marginBottom: 12,
-            opacity: loading ? 0.7 : 1,
+            opacity: loading || verifying ? 0.5 : 1,
           })}
         >
           {loading ? (
             <AnimatedLoader color="#FFFFFF" size="sm" />
           ) : (
-            <Text style={{ fontFamily: FONTS.subheading, fontSize: 16, color: "#FFFFFF" }}>
+            <Text
+              style={{
+                fontSize: 16,
+                color: "#FFFFFF",
+              }}
+            >
               {t("verifyEmail.verifiedButton")}
             </Text>
           )}
@@ -243,7 +313,9 @@ export default function VerifyEmailScreen() {
           {resendLoading ? (
             <AnimatedLoader color="#9B59B6" size="sm" />
           ) : (
-            <Text style={{ fontFamily: FONTS.body, fontSize: 14, color: "#9B59B6" }}>
+            <Text
+              style={{ fontFamily: FONTS.body, fontSize: 14, color: "#9B59B6" }}
+            >
               {t("verifyEmail.resendButton")}
             </Text>
           )}

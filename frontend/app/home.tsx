@@ -500,9 +500,7 @@ export default function HomeScreen() {
                   zIndex: -1,
                   transform: [{ rotate: "10deg" }],
                 }}
-              >
-                <BrainMascot size={85} />
-              </View>
+              ></View>
               <MenuItem
                 icon={<IconQuickPlay />}
                 title={t("home:menu.soloPlay")}
@@ -524,9 +522,7 @@ export default function HomeScreen() {
                   zIndex: 10,
                   transform: [{ rotate: "-15deg" }],
                 }}
-              >
-                <BrainMascot size={90} />
-              </View>
+              ></View>
               <MenuItem
                 icon={<IconNewGame />}
                 title={t("home:menu.startNewGame")}

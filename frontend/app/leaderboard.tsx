@@ -17,10 +17,11 @@ import {
   ScreenHeader,
 } from "../src/components/common";
 import { FONTS } from "../src/constants/theme";
-import Svg, { Path, Rect, Defs, LinearGradient, Stop } from "react-native-svg";
+import { getSubjectTheme } from "../src/config/subjectThemes";
+import Svg, { Path, Defs, LinearGradient, Stop } from "react-native-svg";
 import {
   BottomSheetModal,
-  BottomSheetView,
+  BottomSheetScrollView,
   BottomSheetBackdrop,
 } from "@gorhom/bottom-sheet";
 import type { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
@@ -49,14 +50,299 @@ function MedalIcon({ rank }: { rank: number }) {
   );
 }
 
+function SubjectStatRow({
+  subject,
+  correctAnswers,
+  totalQuestions,
+  accuracy,
+}: {
+  subject: string;
+  correctAnswers: number;
+  totalQuestions: number;
+  accuracy: number;
+}) {
+  const theme = getSubjectTheme(subject);
+  const score = correctAnswers * 10;
+  const maxScore = totalQuestions * 10;
+
+  return (
+    <View
+      style={{
+        backgroundColor: "#0D0B14",
+        borderRadius: 12,
+        padding: 14,
+        gap: 8,
+      }}
+    >
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+          <View
+            style={{
+              width: 10,
+              height: 10,
+              borderRadius: 5,
+              backgroundColor: theme.accentColor,
+            }}
+          />
+          <Text
+            style={{
+              fontSize: 14,
+              fontFamily: FONTS.bodyBold,
+              color: "#FFFFFF",
+            }}
+          >
+            {theme.label}
+          </Text>
+        </View>
+        <Text
+          style={{
+            fontSize: 13,
+            fontFamily: FONTS.bodyBold,
+            color: theme.accentColor,
+          }}
+        >
+          {accuracy}%
+        </Text>
+      </View>
+
+      {/* Accuracy bar */}
+      <View
+        style={{
+          height: 6,
+          backgroundColor: "#3D2E4A",
+          borderRadius: 3,
+          overflow: "hidden",
+        }}
+      >
+        <View
+          style={{
+            height: "100%",
+            width: `${Math.max(accuracy, 2)}%`,
+            backgroundColor: theme.accentColor,
+            borderRadius: 3,
+          }}
+        />
+      </View>
+
+      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <Text
+          style={{ fontSize: 12, fontFamily: FONTS.body, color: "#B8A9C9" }}
+        >
+          Score: {score} / {maxScore}
+        </Text>
+        <Text
+          style={{ fontSize: 12, fontFamily: FONTS.body, color: "#7B6B8A" }}
+        >
+          {correctAnswers}/{totalQuestions} correct
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+function ChildDetailSheet({
+  entry,
+  onClose,
+}: {
+  entry: LeaderboardEntry & { avatarUrl?: string };
+  onClose: () => void;
+}) {
+  const { t } = useTranslation(["leaderboard", "common"]);
+  const { data: stats, isLoading } = useQuery({
+    queryKey: ["childStats", entry.playerId],
+    queryFn: () => apiService.getChildStats(entry.playerId),
+  });
+
+  return (
+    <BottomSheetScrollView
+      contentContainerStyle={{
+        paddingHorizontal: 24,
+        paddingBottom: 40,
+        paddingTop: 10,
+      }}
+    >
+      {/* Avatar + name */}
+      <View style={{ alignItems: "center", marginBottom: 20 }}>
+        <View
+          style={{
+            width: 80,
+            height: 80,
+            backgroundColor: "#9B59B6",
+            borderRadius: 40,
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 12,
+            borderWidth: 3,
+            borderColor: "#3D2E4A",
+          }}
+        >
+          <AvatarIcon avatarId={entry.avatarUrl} size={50} />
+        </View>
+        <Text
+          style={{
+            color: "#FFFFFF",
+            fontSize: 24,
+            fontFamily: "LuckiestGuy_400Regular",
+          }}
+        >
+          {entry.displayName}
+        </Text>
+        <Text
+          style={{
+            color: "#B8A9C9",
+            fontSize: 14,
+            fontFamily: FONTS.body,
+            marginTop: 4,
+          }}
+        >
+          {t("leaderboard:gamesPlayed", { count: entry.gamesPlayed })}
+        </Text>
+      </View>
+
+      {/* Global stats */}
+      <View style={{ flexDirection: "row", gap: 12, marginBottom: 24 }}>
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: "#0D0B14",
+            padding: 16,
+            borderRadius: 16,
+            alignItems: "center",
+          }}
+        >
+          <Text
+            style={{
+              color: "#10B981",
+              fontSize: 28,
+              fontFamily: "LuckiestGuy_400Regular",
+            }}
+          >
+            {entry.correctAnswers}
+          </Text>
+          <Text
+            style={{
+              color: "#7B6B8A",
+              fontSize: 12,
+              fontFamily: FONTS.bodySemiBold,
+              textTransform: "uppercase",
+              marginTop: 4,
+            }}
+          >
+            {t("leaderboard:correct")}
+          </Text>
+        </View>
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: "#0D0B14",
+            padding: 16,
+            borderRadius: 16,
+            alignItems: "center",
+          }}
+        >
+          <Text
+            style={{
+              color: "#FFD93D",
+              fontSize: 28,
+              fontFamily: "LuckiestGuy_400Regular",
+            }}
+          >
+            {entry.accuracy}%
+          </Text>
+          <Text
+            style={{
+              color: "#7B6B8A",
+              fontSize: 12,
+              fontFamily: FONTS.bodySemiBold,
+              textTransform: "uppercase",
+              marginTop: 4,
+            }}
+          >
+            {t("leaderboard:accuracy")}
+          </Text>
+        </View>
+      </View>
+
+      {/* Per-subject breakdown */}
+      <Text
+        style={{
+          color: "#7B6B8A",
+          fontSize: 11,
+          fontFamily: FONTS.bodySemiBold,
+          letterSpacing: 1.5,
+          textTransform: "uppercase",
+          marginBottom: 12,
+        }}
+      >
+        By Subject
+      </Text>
+
+      {isLoading && (
+        <View style={{ alignItems: "center", paddingVertical: 20 }}>
+          <AnimatedLoader size="sm" />
+        </View>
+      )}
+
+      {!isLoading && stats && stats.subjectStats.length === 0 && (
+        <Text
+          style={{
+            color: "#7B6B8A",
+            fontSize: 13,
+            fontFamily: FONTS.body,
+            textAlign: "center",
+            paddingVertical: 12,
+          }}
+        >
+          No subject data yet
+        </Text>
+      )}
+
+      {!isLoading && stats && (
+        <View style={{ gap: 10, marginBottom: 24 }}>
+          {stats.subjectStats.map((s) => (
+            <SubjectStatRow
+              key={s.subject}
+              subject={s.subject}
+              correctAnswers={s.correctAnswers}
+              totalQuestions={s.totalQuestions}
+              accuracy={s.accuracy}
+            />
+          ))}
+        </View>
+      )}
+
+      <Button
+        label={t("common:buttons.close")}
+        variant="secondary"
+        className="w-full max-w-none"
+        onPress={onClose}
+      />
+    </BottomSheetScrollView>
+  );
+}
+
 export default function LeaderboardScreen() {
   usePortrait();
   const { t } = useTranslation(["leaderboard", "common"]);
   const { children } = useGameStore();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
-  const [selectedEntry, setSelectedEntry] = useState<LeaderboardEntry | null>(null);
+  const [selectedEntry, setSelectedEntry] = useState<
+    (LeaderboardEntry & { avatarUrl?: string }) | null
+  >(null);
 
-  const { data: rawEntries = [], isLoading, isError, error, refetch } = useQuery({
+  const {
+    data: rawEntries = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ["leaderboard"],
     queryFn: () => apiService.getLeaderboard(),
   });
@@ -84,7 +370,7 @@ export default function LeaderboardScreen() {
     [],
   );
 
-  const handleEntryPress = (entry: LeaderboardEntry) => {
+  const handleEntryPress = (entry: LeaderboardEntry & { avatarUrl?: string }) => {
     setSelectedEntry(entry);
     bottomSheetRef.current?.present();
   };
@@ -142,7 +428,9 @@ export default function LeaderboardScreen() {
                     marginBottom: 12,
                     backgroundColor: "#1A1520",
                     borderWidth: 1,
-                    borderColor: isTop3 ? "rgba(255, 217, 61, 0.3)" : "#3D2E4A",
+                    borderColor: isTop3
+                      ? "rgba(255, 217, 61, 0.3)"
+                      : "#3D2E4A",
                   }}
                 >
                   <View style={{ width: 48, alignItems: "center" }}>
@@ -172,14 +460,9 @@ export default function LeaderboardScreen() {
                       marginHorizontal: 12,
                     }}
                   >
-                    <AvatarIcon
-                      avatarId={
-                        (entry as LeaderboardEntry & { avatarUrl?: string })
-                          .avatarUrl
-                      }
-                      size={30}
-                    />
+                    <AvatarIcon avatarId={entry.avatarUrl} size={30} />
                   </View>
+
                   <View style={{ flex: 1 }}>
                     <Text
                       style={{
@@ -255,8 +538,9 @@ export default function LeaderboardScreen() {
 
       <BottomSheetModal
         ref={bottomSheetRef}
+        snapPoints={["75%"]}
         enablePanDownToClose
-        enableDynamicSizing={true}
+        enableDynamicSizing={false}
         backdropComponent={renderBackdrop}
         backgroundStyle={{
           backgroundColor: "#1A1520",
@@ -269,131 +553,12 @@ export default function LeaderboardScreen() {
           height: 4,
         }}
       >
-        <BottomSheetView
-          style={{ paddingHorizontal: 24, paddingBottom: 40, paddingTop: 10 }}
-        >
-          {selectedEntry && (
-            <View>
-              <View style={{ alignItems: "center", marginBottom: 16 }}>
-                <View
-                  style={{
-                    width: 80,
-                    height: 80,
-                    backgroundColor: "#9B59B6",
-                    borderRadius: 40,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    marginBottom: 12,
-                    borderWidth: 3,
-                    borderColor: "#3D2E4A",
-                  }}
-                >
-                  <AvatarIcon
-                    avatarId={
-                      (
-                        selectedEntry as LeaderboardEntry & {
-                          avatarUrl?: string;
-                        }
-                      ).avatarUrl
-                    }
-                    size={50}
-                  />
-                </View>
-                <Text
-                  style={{
-                    color: "#FFFFFF",
-                    fontSize: 24,
-                    fontFamily: "LuckiestGuy_400Regular",
-                  }}
-                >
-                  {selectedEntry.displayName}
-                </Text>
-                <Text
-                  style={{
-                    color: "#B8A9C9",
-                    fontSize: 14,
-                    fontFamily: FONTS.body,
-                    marginTop: 4,
-                  }}
-                >
-                  {t("leaderboard:gamesPlayed", {
-                    count: selectedEntry.gamesPlayed,
-                  })}
-                </Text>
-              </View>
-
-              <View style={{ flexDirection: "row", gap: 12, marginBottom: 24 }}>
-                <View
-                  style={{
-                    flex: 1,
-                    backgroundColor: "#0D0B14",
-                    padding: 16,
-                    borderRadius: 16,
-                    alignItems: "center",
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: "#10B981",
-                      fontSize: 28,
-                      fontFamily: "LuckiestGuy_400Regular",
-                    }}
-                  >
-                    {selectedEntry.correctAnswers}
-                  </Text>
-                  <Text
-                    style={{
-                      color: "#7B6B8A",
-                      fontSize: 12,
-                      fontFamily: FONTS.bodySemiBold,
-                      textTransform: "uppercase",
-                      marginTop: 4,
-                    }}
-                  >
-                    {t("leaderboard:correct")}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flex: 1,
-                    backgroundColor: "#0D0B14",
-                    padding: 16,
-                    borderRadius: 16,
-                    alignItems: "center",
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: "#FFD93D",
-                      fontSize: 28,
-                      fontFamily: "LuckiestGuy_400Regular",
-                    }}
-                  >
-                    {selectedEntry.accuracy}%
-                  </Text>
-                  <Text
-                    style={{
-                      color: "#7B6B8A",
-                      fontSize: 12,
-                      fontFamily: FONTS.bodySemiBold,
-                      textTransform: "uppercase",
-                      marginTop: 4,
-                    }}
-                  >
-                    {t("leaderboard:accuracy")}
-                  </Text>
-                </View>
-              </View>
-
-              <Button
-                label={t("common:buttons.close")}
-                variant="secondary"
-                className="w-full max-w-none"
-                onPress={() => bottomSheetRef.current?.dismiss()}
-              />
-            </View>
-          )}
-        </BottomSheetView>
+        {selectedEntry && (
+          <ChildDetailSheet
+            entry={selectedEntry}
+            onClose={() => bottomSheetRef.current?.dismiss()}
+          />
+        )}
       </BottomSheetModal>
     </SafeAreaView>
   );

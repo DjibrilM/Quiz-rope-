@@ -84,6 +84,10 @@ class FirebaseAuthService {
     };
   }
 
+  async sendPasswordResetEmail(email: string): Promise<void> {
+    await auth().sendPasswordResetEmail(email);
+  }
+
   async sendEmailVerification(): Promise<void> {
     const user = auth().currentUser;
     if (!user) throw new Error("No user signed in");
@@ -94,6 +98,8 @@ class FirebaseAuthService {
     const user = auth().currentUser;
     if (!user) throw new Error("No user signed in");
     await user.reload();
+    // Force a token refresh so the emailVerified claim is synced from the server
+    await user.getIdToken(true);
   }
 
   isEmailVerified(): boolean {

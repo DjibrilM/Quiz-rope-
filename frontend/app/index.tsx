@@ -249,7 +249,7 @@ export default function RoleSelectScreen() {
       </View>
 
       <ScrollView
-        className="flex-1"
+        className="flex-1 max-h-full"
         contentContainerStyle={{
           flexGrow: 1,
           alignItems: "center",
@@ -266,7 +266,7 @@ export default function RoleSelectScreen() {
         </Animated.View>
 
         <View className="w-full max-w-sm" style={{ gap: 16 }}>
-          <StaggeredList staggerMs={100}>
+          <StaggeredList>
             <ActionCard
               icon={<ParentIcon />}
               title={t("roleSelect.parent")}
