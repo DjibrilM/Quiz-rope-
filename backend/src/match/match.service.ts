@@ -77,7 +77,7 @@ export class MatchService {
 
   async completeMatch(
     matchId: string,
-    data: { winner: string; teamScoreLeft: number; teamScoreRight: number; rounds: number },
+    data: { winner: string; rounds: number },
   ): Promise<Match> {
     if (!Types.ObjectId.isValid(matchId)) {
       throw new BadRequestException('Invalid match ID');
@@ -87,14 +87,12 @@ export class MatchService {
       {
         status: 'COMPLETED',
         winner: data.winner,
-        teamScoreLeft: data.teamScoreLeft,
-        teamScoreRight: data.teamScoreRight,
         rounds: data.rounds,
       },
       { new: true },
     );
     if (!match) throw new NotFoundException('Match not found');
-    this.logger.log(`Match completed: ${matchId} | winner=${data.winner} | score=${data.teamScoreLeft}:${data.teamScoreRight}`);
+    this.logger.log(`Match completed: ${matchId} | winner=${data.winner}`);
     return match;
   }
 
@@ -124,6 +122,7 @@ export class MatchService {
     answerIndex: number,
     responseTime: number,
     questionId?: string,
+    isCorrectOverride?: boolean,
   ): Promise<{
     isCorrect: boolean;
     correctIndex: number;
@@ -155,7 +154,11 @@ export class MatchService {
       throw new NotFoundException('Question not found');
     }
 
-    const isCorrect = answerIndex === currentQuestion.correctIndex;
+    // Trust the client's isCorrect when provided — the frontend shuffles options
+    // and has the correct shuffled correctIndex; the DB stores the original index.
+    const isCorrect = isCorrectOverride !== undefined
+      ? isCorrectOverride
+      : answerIndex === currentQuestion.correctIndex;
 
     // Rope physics (kept for backward compat)
     let ropeMovement = 0;
@@ -537,6 +540,38 @@ export class MatchService {
           didWin: m.winner === stats.teamSide,
         };
       });
+  }
+
+  async getSoloCorrection(matchId: string) {
+    if (!Types.ObjectId.isValid(matchId)) {
+      throw new BadRequestException('Invalid match ID');
+    }
+
+    const match = await this.matchModel.findById(matchId).populate('questions');
+    if (!match) throw new NotFoundException('Match not found');
+
+    const questions = match.questions as any[];
+    if (questions.length === 0) return [];
+
+    const answers = await this.answerModel
+      .find({ matchId: new Types.ObjectId(matchId), playerId: 'mock-player' })
+      .sort({ round: 1 });
+
+    const answerByQuestionId = new Map(
+      answers.map((a) => [a.questionId.toString(), a]),
+    );
+
+    return questions.map((q: any) => {
+      const answer = answerByQuestionId.get(q._id.toString());
+      return {
+        questionText: q.text,
+        options: q.options,
+        correctIndex: q.correctIndex,
+        explanation: q.explanation || '',
+        userAnswerIndex: answer?.answerIndex ?? -1,
+        isCorrect: answer?.isCorrect ?? false,
+      };
+    });
   }
 
   async getMatchAnswerReview(matchId: string, childId: string) {

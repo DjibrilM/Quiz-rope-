@@ -81,7 +81,7 @@ export class MatchController {
   @Post(':id/answer')
   async submitAnswer(
     @Param('id') id: string,
-    @Body() body: { playerId: string; teamSide: string; answerIndex: number; responseTime: number; questionId?: string },
+    @Body() body: { playerId: string; teamSide: string; answerIndex: number; responseTime: number; questionId?: string; isCorrect?: boolean },
   ) {
     if (!body.playerId || typeof body.playerId !== 'string') {
       throw new BadRequestException('playerId is required');
@@ -99,13 +99,14 @@ export class MatchController {
       body.answerIndex,
       body.responseTime ?? 0,
       body.questionId,
+      body.isCorrect,
     );
   }
 
   @Patch(':id/complete')
   async completeMatch(
     @Param('id') id: string,
-    @Body() body: { winner: string; teamScoreLeft: number; teamScoreRight: number; rounds: number },
+    @Body() body: { winner: string; rounds: number },
   ) {
     return this.matchService.completeMatch(id, body);
   }
@@ -118,6 +119,11 @@ export class MatchController {
   @Get(':id/stats')
   async getMatchStats(@Param('id') id: string) {
     return this.matchService.getMatchStats(id);
+  }
+
+  @Get(':id/solo-correction')
+  async getSoloCorrection(@Param('id') id: string) {
+    return this.matchService.getSoloCorrection(id);
   }
 
   @Get(':matchId/review/:childId')

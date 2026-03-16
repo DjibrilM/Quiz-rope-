@@ -30,6 +30,11 @@ export class AuthController {
     const decoded = await this.authService.validateFirebaseToken(
       body.token || "",
     );
+
+    if (this.authService.isFirebaseReady() && decoded.email_verified === false) {
+      throw new UnauthorizedException("email_not_verified");
+    }
+
     const parent = await this.authService.findOrCreateParent({
       email: decoded.email,
       displayName: decoded.name || decoded.email,
