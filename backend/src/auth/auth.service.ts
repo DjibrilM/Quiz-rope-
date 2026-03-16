@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import * as jwt from 'jsonwebtoken';
 import { Parent } from './schemas/parent.schema';
 import { isFirebaseConfigured } from '../config/firebase.config';
+import { EmailService } from '../email/email.service';
 
 const JWT_SECRET =
   process.env.JWT_SECRET || 'dev-jwt-secret-change-in-production';
@@ -15,6 +16,7 @@ export class AuthService {
 
   constructor(
     @InjectModel(Parent.name) private parentModel: Model<Parent>,
+    private readonly emailService: EmailService,
   ) {}
 
   signToken(payload: {
@@ -90,29 +92,41 @@ export class AuthService {
   }
 
   async sendPasswordResetEmail(email: string): Promise<void> {
-    const apiKey = process.env.FIREBASE_WEB_API_KEY;
-
-    if (!apiKey) {
-      this.logger.warn('FIREBASE_WEB_API_KEY not set — password reset unavailable');
-      throw new BadRequestException('Password reset is not configured');
-    }
-
-    const response = await fetch(
-      `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ requestType: 'PASSWORD_RESET', email }),
-      },
-    );
-
-    if (!response.ok) {
-      const body = await response.json() as any;
-      const msg = body?.error?.message ?? 'Failed to send reset email';
-      if (msg === 'EMAIL_NOT_FOUND') {
-        throw new BadRequestException('User not found');
+    if (isFirebaseConfigured) {
+      // Admin SDK available: generate link and send branded email via Nodemailer
+      const admin = require('firebase-admin');
+      let resetLink: string;
+      try {
+        resetLink = await admin.auth().generatePasswordResetLink(email);
+      } catch (error: any) {
+        const code = error?.errorInfo?.code ?? error?.code ?? '';
+        if (code === 'auth/user-not-found') {
+          throw new BadRequestException('User not found');
+        }
+        throw new BadRequestException(error?.message ?? 'Failed to generate reset link');
       }
-      throw new BadRequestException(msg);
+      await this.emailService.sendPasswordReset(email, resetLink);
+    } else {
+      // No Admin SDK: fall back to Firebase Web REST API — Firebase sends its own email
+      const apiKey = process.env.FIREBASE_WEB_API_KEY;
+      if (!apiKey) {
+        this.logger.warn('Neither Firebase Admin nor FIREBASE_WEB_API_KEY configured');
+        throw new BadRequestException('Password reset is not configured');
+      }
+      const response = await fetch(
+        `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ requestType: 'PASSWORD_RESET', email }),
+        },
+      );
+      if (!response.ok) {
+        const body = await response.json() as any;
+        const msg = body?.error?.message ?? 'Failed to send reset email';
+        if (msg === 'EMAIL_NOT_FOUND') throw new BadRequestException('User not found');
+        throw new BadRequestException(msg);
+      }
     }
 
     this.logger.log(`Password reset email sent to ${email}`);

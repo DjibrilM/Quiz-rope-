@@ -7,6 +7,7 @@ import { MatchModule } from './match/match.module';
 import { QuestionModule } from './question/question.module';
 import { RealtimeModule } from './realtime/realtime.module';
 import { SubscriptionModule } from './subscription/subscription.module';
+import { HomeworkModule } from './homework/homework.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -44,6 +45,7 @@ import configuration from './config/configuration';
     QuestionModule,
     RealtimeModule,
     SubscriptionModule,
+    HomeworkModule,
   ],
 })
 export class AppModule {}

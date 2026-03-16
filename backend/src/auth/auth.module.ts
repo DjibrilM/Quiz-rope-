@@ -13,6 +13,7 @@ import {
   GuestLinkSchema,
 } from '../children/schemas/guest-link.schema';
 import { initializeFirebase } from '../config/firebase.config';
+import { EmailService } from '../email/email.service';
 
 @Module({
   imports: [
@@ -23,8 +24,8 @@ import { initializeFirebase } from '../config/firebase.config';
     ]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, FirebaseAuthGuard],
-  exports: [AuthService, FirebaseAuthGuard],
+  providers: [AuthService, FirebaseAuthGuard, EmailService],
+  exports: [AuthService, FirebaseAuthGuard, EmailService],
 })
 export class AuthModule implements OnModuleInit {
   private readonly logger = new Logger(AuthModule.name);
