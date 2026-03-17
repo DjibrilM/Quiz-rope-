@@ -73,10 +73,30 @@ function IconHomework() {
           <Stop offset="1" stopColor="#059669" />
         </LinearGradient>
       </Defs>
-      <Rect x="3" y="2" width="14" height="18" rx="2" stroke="url(#hw)" strokeWidth="2" fill="none" />
-      <Path d="M7 7h6M7 11h6M7 15h4" stroke="#34D399" strokeWidth="1.5" strokeLinecap="round" />
+      <Rect
+        x="3"
+        y="2"
+        width="14"
+        height="18"
+        rx="2"
+        stroke="url(#hw)"
+        strokeWidth="2"
+        fill="none"
+      />
+      <Path
+        d="M7 7h6M7 11h6M7 15h4"
+        stroke="#34D399"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
       <Circle cx="19" cy="17" r="4" fill="#059669" />
-      <Path d="M17.5 17l1 1 2-2" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <Path
+        d="M17.5 17l1 1 2-2"
+        stroke="#fff"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </Svg>
   );
 }
@@ -283,7 +303,9 @@ export default function HomeScreen() {
 
   const isGuest = userRole === "guest";
   const isChild = userRole === "child";
-  const currentChild = isChild ? children.find((c) => c.id === childSession?.childId) : null;
+  const currentChild = isChild
+    ? children.find((c) => c.id === childSession?.childId)
+    : null;
   const logoutSheetRef = useRef<BottomSheetModal>(null);
   const languageSheetRef = useRef<BottomSheetModal>(null);
 
@@ -374,29 +396,34 @@ export default function HomeScreen() {
       {/* Header */}
       <View className="px-6 pt-4 pb-6">
         <View className="flex-row items-center justify-between">
-          <View>
-            <Text
-              className="text-3xl text-white"
-              style={{ fontFamily: "LuckiestGuy_400Regular" }}
-            >
-              {t("home:appName")}
-            </Text>
-            {(isGuest || isChild) && (
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View className="relative bottom-1">
+              <BrainMascot speed={0.7} size={40} variant="headSideBounce" />
+            </View>
+            <View className="">
               <Text
-                style={{
-                  fontSize: 14,
-                  color: "#B8A9C9",
-                  marginTop: 4,
-                  fontFamily: FONTS.body,
-                }}
+                className="text-3xl text-white"
+                style={{ fontFamily: "LuckiestGuy_400Regular" }}
               >
-                {t("home:greeting", {
-                  name: isGuest
-                    ? guestProfile?.displayName || "Player"
-                    : currentChild?.displayName || "Player",
-                })}
+                {t("home:appName")}
               </Text>
-            )}
+              {(isGuest || isChild) && (
+                <Text
+                  style={{
+                    fontSize: 14,
+                    color: "#B8A9C9",
+                    marginTop: 4,
+                    fontFamily: FONTS.body,
+                  }}
+                >
+                  {t("home:greeting", {
+                    name: isGuest
+                      ? guestProfile?.displayName || "Player"
+                      : currentChild?.displayName || "Player",
+                  })}
+                </Text>
+              )}
+            </View>
           </View>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
             <FlashingGlobeButton
@@ -489,7 +516,7 @@ export default function HomeScreen() {
       >
         <StaggeredList staggerMs={80}>
           {/* Quick play / solo — always available */}
-          {isMockMode && !isGuest && (
+          {__DEV__ && isMockMode && !isGuest && (
             <View style={{ position: "relative" }}>
               <View
                 style={{

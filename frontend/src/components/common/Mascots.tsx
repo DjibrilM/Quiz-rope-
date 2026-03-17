@@ -15,6 +15,7 @@ import Animated, {
   withSequence,
   withTiming,
   withDelay,
+  cancelAnimation,
   Easing,
 } from "react-native-reanimated";
 
@@ -23,21 +24,62 @@ const BLINK_INTERVAL = 3000;
 
 interface MascotProps {
   size?: number;
+  variant?: "floatUp" | "headSideBounce";
+  /** Animation speed multiplier. 1 = default, 2 = twice as fast, 0.5 = half speed. */
+  speed?: number;
 }
 
-export function BrainMascot({ size = 150 }: MascotProps) {
+export function BrainMascot({ size = 150, variant = "floatUp", speed = 1 }: MascotProps) {
+  // headSideBounce starts at the left edge so the ping-pong is symmetric
+  const bounceX = useSharedValue(variant === "headSideBounce" ? -8 : 0);
   const bounceY = useSharedValue(0);
+  const rotation = useSharedValue(variant === "headSideBounce" ? -10 : 0);
   const blink = useSharedValue(1);
 
   React.useEffect(() => {
-    bounceY.value = withRepeat(
-      withSequence(
-        withTiming(-5, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
-        withTiming(0, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
-      ),
-      -1,
-      true,
-    );
+    cancelAnimation(bounceX);
+    cancelAnimation(bounceY);
+    cancelAnimation(rotation);
+
+    const s = Math.max(speed, 0.01);
+    if (variant === "headSideBounce") {
+      bounceX.value = -8;
+      rotation.value = -10;
+      const dur = Math.round(900 / s);
+      // Ping-pong: left (-8) ↔ right (8), tilt matches direction
+      bounceX.value = withRepeat(
+        withTiming(8, { duration: dur, easing: Easing.inOut(Easing.ease) }),
+        -1,
+        true,
+      );
+      rotation.value = withRepeat(
+        withTiming(10, { duration: dur, easing: Easing.inOut(Easing.ease) }),
+        -1,
+        true,
+      );
+    } else {
+      bounceX.value = 0;
+      bounceY.value = 0;
+      rotation.value = 0;
+      const dur = Math.round(1500 / s);
+      // Float up and down with a gentle left tilt
+      bounceY.value = withRepeat(
+        withSequence(
+          withTiming(-5, { duration: dur, easing: Easing.inOut(Easing.ease) }),
+          withTiming(0, { duration: dur, easing: Easing.inOut(Easing.ease) }),
+        ),
+        -1,
+        true,
+      );
+      rotation.value = withRepeat(
+        withSequence(
+          withTiming(-8, { duration: dur, easing: Easing.inOut(Easing.ease) }),
+          withTiming(0, { duration: dur, easing: Easing.inOut(Easing.ease) }),
+        ),
+        -1,
+        true,
+      );
+    }
 
     blink.value = withRepeat(
       withSequence(
@@ -48,10 +90,14 @@ export function BrainMascot({ size = 150 }: MascotProps) {
       -1,
       false,
     );
-  }, []);
+  }, [variant, speed]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: bounceY.value }],
+    transform: [
+      { translateX: bounceX.value },
+      { translateY: bounceY.value },
+      { rotate: `${rotation.value}deg` },
+    ],
   }));
 
   const leftEyeProps = useAnimatedProps(() => ({
