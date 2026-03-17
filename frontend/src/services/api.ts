@@ -16,10 +16,13 @@ export interface LeaderboardEntry {
 }
 
 type LogoutCallback = () => void;
+type ApiErrorInfo = { type: 'error' | 'warning'; title: string; message: string; duration?: number };
+type ApiErrorCallback = (info: ApiErrorInfo) => void;
 
 class ApiService {
   private client: AxiosInstance;
   private onUnauthorized: LogoutCallback | null = null;
+  private onApiError: ApiErrorCallback | null = null;
 
   constructor() {
     this.client = axios.create({
@@ -31,14 +34,40 @@ class ApiService {
     this.client.interceptors.response.use(
       (response) => response,
       (error) => {
-        if (error.response?.status === 401 && this.onUnauthorized) {
-          this.onUnauthorized();
-          return Promise.reject(new Error('Session expired. Please log in again.'));
-        }
-        const message =
+        const status: number | undefined = error.response?.status;
+        const message: string =
           error.response?.data?.message ||
           error.message ||
           'Something went wrong';
+
+        if (status === 401 && this.onUnauthorized) {
+          this.onUnauthorized();
+          return Promise.reject(new Error('Session expired. Please log in again.'));
+        }
+
+        if (this.onApiError) {
+          const isNetworkError =
+            !error.response ||
+            error.code === 'ERR_NETWORK' ||
+            error.code === 'ECONNABORTED';
+          const isServerError = status !== undefined && status >= 500;
+
+          if (isNetworkError) {
+            this.onApiError({
+              type: 'error',
+              title: 'No Connection',
+              message: 'Check your internet connection and try again.',
+              duration: 5000,
+            });
+          } else if (isServerError) {
+            this.onApiError({
+              type: 'error',
+              title: 'Server Error',
+              message: 'Something went wrong on our end. Please try again.',
+            });
+          }
+        }
+
         return Promise.reject(new Error(message));
       },
     );
@@ -46,6 +75,10 @@ class ApiService {
 
   setOnUnauthorized(callback: LogoutCallback) {
     this.onUnauthorized = callback;
+  }
+
+  setOnApiError(callback: ApiErrorCallback | null) {
+    this.onApiError = callback;
   }
 
   setToken(token: string | null) {
@@ -122,6 +155,8 @@ class ApiService {
     gameMode?: string;
     context?: string;
     teams: { name: string; color: string; side: string; players?: string[] }[];
+    childIds?: string[];
+    language?: string;
   }): Promise<Match> {
     return this.request('/matches', {
       method: 'POST',
@@ -252,6 +287,43 @@ class ApiService {
     status?: string;
   }> {
     return this.request(`/matches/join/${code.toUpperCase()}`);
+  }
+
+  // Homework Assist
+  async analyzeHomework(imageBase64: string, mimeType = 'image/jpeg', childId?: string): Promise<any> {
+    return this.request('/homework/analyze', {
+      method: 'POST',
+      data: { imageBase64, mimeType, ...(childId ? { childId } : {}) },
+      timeout: 8000,
+    });
+  }
+
+  async getHomeworkSession(id: string): Promise<any> {
+    return this.request(`/homework/session/${id}`);
+  }
+
+  async getHomeworkChatHistory(sessionId: string): Promise<any[]> {
+    return this.request(`/homework/session/${sessionId}/chat`);
+  }
+
+  async getHomeworkSessions(): Promise<any[]> {
+    return this.request('/homework/sessions');
+  }
+
+  async linkHomeworkMatch(sessionId: string, matchId: string): Promise<void> {
+    return this.request(`/homework/session/${sessionId}/link-match`, {
+      method: 'POST',
+      data: { matchId },
+    });
+  }
+
+  async getSoloMatchCorrection(matchId: string): Promise<{ questionText: string; options: string[]; correctIndex: number; explanation: string; userAnswerIndex: number; isCorrect: boolean }[]> {
+    return this.request(`/matches/${matchId}/solo-correction`);
+  }
+
+  getAuthToken(): string | null {
+    const header = this.client.defaults.headers.common['Authorization'];
+    return typeof header === 'string' ? header.replace('Bearer ', '') : null;
   }
 }
 

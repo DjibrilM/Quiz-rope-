@@ -25,6 +25,7 @@ interface AnimatedOptionProps {
   teamColor: string;
   disabled: boolean;
   onPress: () => void;
+  compact?: boolean;
 }
 
 const OPTION_COLORS = [
@@ -72,10 +73,12 @@ export function AnimatedOption({
   variant,
   disabled,
   onPress,
+  compact = false,
 }: AnimatedOptionProps) {
   const scale = useSharedValue(0);
   const translateY = useSharedValue(8);
   const opacity = useSharedValue(0);
+  const dimOpacity = useSharedValue(1);
   const feedbackScale = useSharedValue(1);
   const shakeX = useSharedValue(0);
 
@@ -84,13 +87,21 @@ export function AnimatedOption({
     scale.value = 0;
     translateY.value = 8;
     opacity.value = 0;
+    dimOpacity.value = 1;
     feedbackScale.value = 1;
     shakeX.value = 0;
-    const ease = { duration: 160, easing: Easing.out(Easing.cubic) };
+    const ease = { duration: 80, easing: Easing.out(Easing.cubic) };
     scale.value = withDelay(staggerDelay, withTiming(1, ease));
     translateY.value = withDelay(staggerDelay, withTiming(0, ease));
-    opacity.value = withDelay(staggerDelay, withTiming(1, { duration: 130 }));
+    opacity.value = withDelay(staggerDelay, withTiming(1, { duration: 70 }));
   }, [questionId]);
+
+  // Fade out unchosen options once this player has locked in
+  useEffect(() => {
+    if (disabled && variant === "default") {
+      dimOpacity.value = withTiming(0.3, { duration: 120, easing: Easing.out(Easing.cubic) });
+    }
+  }, [disabled, variant]);
 
   // Instant feedback animations on answer
   useEffect(() => {
@@ -117,7 +128,7 @@ export function AnimatedOption({
       { translateY: translateY.value },
       { translateX: shakeX.value },
     ],
-    opacity: opacity.value,
+    opacity: opacity.value * dimOpacity.value,
   }));
 
   const handlePress = () => {
@@ -163,10 +174,10 @@ export function AnimatedOption({
           backgroundColor: bg,
           borderColor: border,
           borderWidth: 1.5,
-          borderRadius: 14,
-          paddingHorizontal: 14,
-          paddingVertical: 12,
-          gap: 10,
+          borderRadius: compact ? 10 : 14,
+          paddingHorizontal: compact ? 8 : 14,
+          paddingVertical: compact ? 7 : 12,
+          gap: compact ? 6 : 10,
         },
       ]}
       accessibilityRole="button"
@@ -174,9 +185,9 @@ export function AnimatedOption({
     >
       <View
         style={{
-          width: 28,
-          height: 28,
-          borderRadius: 8,
+          width: compact ? 22 : 28,
+          height: compact ? 22 : 28,
+          borderRadius: compact ? 6 : 8,
           backgroundColor: badgeBg,
           alignItems: "center",
           justifyContent: "center",
@@ -185,7 +196,7 @@ export function AnimatedOption({
         <Text
           style={{
             color: "#fff",
-            fontSize: 13,
+            fontSize: compact ? 11 : 13,
             fontFamily: "Bungee_400Regular",
           }}
         >
@@ -195,8 +206,8 @@ export function AnimatedOption({
       <Text
         style={{
           color: textC,
-          fontSize: 15,
-          lineHeight: 21,
+          fontSize: compact ? 12 : 15,
+          lineHeight: compact ? 16 : 21,
           fontFamily: FONTS.bodySemiBold,
           flex: 1,
         }}

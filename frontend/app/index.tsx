@@ -271,7 +271,7 @@ export default function RoleSelectScreen() {
               icon={<ParentIcon />}
               title={t("roleSelect.parent")}
               description={t("roleSelect.parentDesc")}
-              onPress={() => router.push("/login")}
+              onPress={() => router.push("/auth/login")}
               variant="primary"
             />
 
@@ -279,7 +279,7 @@ export default function RoleSelectScreen() {
               icon={<StudentIcon />}
               title={t("roleSelect.player")}
               description={t("roleSelect.playerDesc")}
-              onPress={() => router.push("/child-join")}
+              onPress={() => router.push("/auth/child-join")}
               variant="secondary"
             />
 
@@ -301,7 +301,7 @@ export default function RoleSelectScreen() {
                 <Button
                   label={t("roleSelect.guest")}
                   variant="outline"
-                  onPress={() => router.push("/guest-setup")}
+                  onPress={() => router.push("/auth/guest-setup")}
                   icon={<GuestIcon />}
                 />
               )}

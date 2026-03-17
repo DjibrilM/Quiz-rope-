@@ -18,7 +18,7 @@ export class HomeworkController {
 
   @Post('analyze')
   async analyze(
-    @Body() body: { imageBase64: string; mimeType?: string },
+    @Body() body: { imageBase64: string; mimeType?: string; childId?: string },
     @Req() req,
   ) {
     if (!body.imageBase64) {
@@ -28,6 +28,7 @@ export class HomeworkController {
       req.user._id,
       body.imageBase64,
       body.mimeType || 'image/jpeg',
+      body.childId,
     );
   }
 

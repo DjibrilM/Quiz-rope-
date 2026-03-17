@@ -94,6 +94,7 @@ interface GameState {
   setGameEndResult: (result: GameEndResult | null) => void;
   setChildren: (children: Child[]) => void;
   pushCorrection: (item: CorrectionItem) => void;
+  setCorrections: (items: CorrectionItem[]) => void;
   clearCorrection: () => void;
   resetGame: () => void;
   setHasHydrated: (hydrated: boolean) => void;
@@ -194,6 +195,7 @@ export const useGameStore = create<GameState>()(
       setChildren: (children) => set({ children }),
       pushCorrection: (item) =>
         set((state) => ({ lastMatchCorrection: [...state.lastMatchCorrection, item] })),
+      setCorrections: (items) => set({ lastMatchCorrection: items }),
       clearCorrection: () => set({ lastMatchCorrection: [] }),
       incrementStreak: () =>
         set((state) => ({

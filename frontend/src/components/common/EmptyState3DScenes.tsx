@@ -1,325 +1,288 @@
-import React, { useRef } from "react";
+import React, { useEffect } from "react";
 import { View } from "react-native";
-import { Canvas, useFrame } from "@react-three/fiber/native";
-import * as THREE from "three";
+import Animated, {
+  useSharedValue,
+  withRepeat,
+  withTiming,
+  withSequence,
+  useAnimatedProps,
+  Easing,
+} from "react-native-reanimated";
+import Svg, { G, Circle, Rect, Path, Ellipse } from "react-native-svg";
+
+const AnimatedG = Animated.createAnimatedComponent(G);
 
 // ─────────────────────────────────────────────
 // BABY FACE — noChildren
-// Blinking eyes, pupil look-around, gentle bob
+// Blinking eyes, head sway, gentle bob
 // ─────────────────────────────────────────────
 
-function BabyFace() {
-  const groupRef = useRef<THREE.Group>(null);
-  const leftEyeRef = useRef<THREE.Group>(null);
-  const rightEyeRef = useRef<THREE.Group>(null);
-  const leftPupilRef = useRef<THREE.Mesh>(null);
-  const rightPupilRef = useRef<THREE.Mesh>(null);
-  const blinkVal = useRef(1);
+function BabyFaceSVG() {
+  const bobY = useSharedValue(0);
+  const sway = useSharedValue(0);
+  const blinkScale = useSharedValue(1);
 
-  useFrame(({ clock }, delta) => {
-    const t = clock.getElapsedTime();
-
-    // ── Blink every ~3.5s with occasional double blink ──
-    const cycle = t % 3.5;
-    let targetBlink = 1;
-    if (cycle < 0.06 || (cycle > 0.18 && cycle < 0.24)) {
-      targetBlink = 0.05;
-    }
-    blinkVal.current = THREE.MathUtils.lerp(
-      blinkVal.current,
-      targetBlink,
-      delta * 30,
+  useEffect(() => {
+    bobY.value = withRepeat(
+      withSequence(
+        withTiming(-6, { duration: 1300, easing: Easing.inOut(Easing.sin) }),
+        withTiming(0, { duration: 1300, easing: Easing.inOut(Easing.sin) }),
+      ),
+      -1,
+      false,
     );
-    if (leftEyeRef.current) leftEyeRef.current.scale.y = blinkVal.current;
-    if (rightEyeRef.current) rightEyeRef.current.scale.y = blinkVal.current;
+    sway.value = withRepeat(
+      withSequence(
+        withTiming(-4, { duration: 1800, easing: Easing.inOut(Easing.sin) }),
+        withTiming(4, { duration: 1800, easing: Easing.inOut(Easing.sin) }),
+      ),
+      -1,
+      true,
+    );
+    // Double blink every ~3.5s
+    blinkScale.value = withRepeat(
+      withSequence(
+        withTiming(1, { duration: 3000, easing: Easing.linear }),
+        withTiming(0.06, { duration: 70, easing: Easing.out(Easing.cubic) }),
+        withTiming(1, { duration: 80, easing: Easing.in(Easing.cubic) }),
+        withTiming(0.06, { duration: 70, easing: Easing.out(Easing.cubic) }),
+        withTiming(1, { duration: 80, easing: Easing.in(Easing.cubic) }),
+      ),
+      -1,
+      false,
+    );
+  }, []);
 
-    // ── Pupils look around slowly ──
-    const lookX = Math.sin(t * 0.5) * 0.02;
-    const lookY = Math.cos(t * 0.35) * 0.012;
-    if (leftPupilRef.current) {
-      leftPupilRef.current.position.x = 0.02 + lookX;
-      leftPupilRef.current.position.y = lookY;
-    }
-    if (rightPupilRef.current) {
-      rightPupilRef.current.position.x = -0.02 + lookX;
-      rightPupilRef.current.position.y = lookY;
-    }
+  const groupProps = useAnimatedProps(() => ({
+    transform: `translate(60, ${58 + bobY.value}) rotate(${sway.value}, 0, 0)`,
+  }));
 
-    // ── Gentle bob + sway ──
-    if (groupRef.current) {
-      groupRef.current.position.y = Math.sin(t * 1.2) * 0.06;
-      groupRef.current.rotation.z = Math.sin(t * 0.7) * 0.06;
-    }
-  });
+  const leftEyeProps = useAnimatedProps(() => ({
+    transform: `translate(-14, -6) scale(1, ${blinkScale.value}) translate(14, 6)`,
+  }));
+
+  const rightEyeProps = useAnimatedProps(() => ({
+    transform: `translate(14, -6) scale(1, ${blinkScale.value}) translate(-14, 6)`,
+  }));
 
   return (
-    <group ref={groupRef}>
+    <AnimatedG animatedProps={groupProps}>
       {/* Head */}
-      <mesh>
-        <sphereGeometry args={[0.55, 16, 16]} />
-        <meshToonMaterial color="#f4c28f" />
-      </mesh>
-
+      <Circle cx={0} cy={0} r={36} fill="#f4c28f" />
       {/* Hair poof */}
-      <mesh position={[0, 0.35, 0.05]} scale={[1.15, 0.55, 1]}>
-        <sphereGeometry
-          args={[0.42, 12, 12, 0, Math.PI * 2, 0, Math.PI * 0.55]}
-        />
-        <meshToonMaterial color="#5D3A1A" />
-      </mesh>
-
-      {/* Left eye group (scales for blink) */}
-      <group ref={leftEyeRef} position={[-0.18, 0.06, 0.44]}>
-        {/* White */}
-        <mesh>
-          <sphereGeometry args={[0.11, 8, 8]} />
-          <meshBasicMaterial color="white" />
-        </mesh>
-        {/* Iris */}
-        <mesh ref={leftPupilRef} position={[0.02, 0, 0.07]}>
-          <sphereGeometry args={[0.06, 8, 8]} />
-          <meshBasicMaterial color="#5D4037" />
-        </mesh>
-        {/* Pupil */}
-        <mesh position={[0.02, 0, 0.1]}>
-          <sphereGeometry args={[0.035, 6, 6]} />
-          <meshBasicMaterial color="#1a1a2e" />
-        </mesh>
-        {/* Highlight */}
-        <mesh position={[0.05, 0.03, 0.1]}>
-          <sphereGeometry args={[0.018, 4, 4]} />
-          <meshBasicMaterial color="white" />
-        </mesh>
-      </group>
-
-      {/* Right eye group (scales for blink) */}
-      <group ref={rightEyeRef} position={[0.18, 0.06, 0.44]}>
-        <mesh>
-          <sphereGeometry args={[0.11, 8, 8]} />
-          <meshBasicMaterial color="white" />
-        </mesh>
-        <mesh ref={rightPupilRef} position={[-0.02, 0, 0.07]}>
-          <sphereGeometry args={[0.06, 8, 8]} />
-          <meshBasicMaterial color="#5D4037" />
-        </mesh>
-        <mesh position={[-0.02, 0, 0.1]}>
-          <sphereGeometry args={[0.035, 6, 6]} />
-          <meshBasicMaterial color="#1a1a2e" />
-        </mesh>
-        <mesh position={[-0.0, 0.03, 0.1]}>
-          <sphereGeometry args={[0.018, 4, 4]} />
-          <meshBasicMaterial color="white" />
-        </mesh>
-      </group>
-
+      <Path d="M -34 -14 Q -18 -52 0 -55 Q 18 -52 34 -14" fill="#5D3A1A" />
       {/* Rosy cheeks */}
-      <mesh position={[-0.32, -0.04, 0.34]} scale={[1, 0.55, 0.5]}>
-        <sphereGeometry args={[0.08, 6, 6]} />
-        <meshBasicMaterial color="#FFB5B5" transparent opacity={0.45} />
-      </mesh>
-      <mesh position={[0.32, -0.04, 0.34]} scale={[1, 0.55, 0.5]}>
-        <sphereGeometry args={[0.08, 6, 6]} />
-        <meshBasicMaterial color="#FFB5B5" transparent opacity={0.45} />
-      </mesh>
-
-      {/* Smile (half-torus) */}
-      <mesh position={[0, -0.13, 0.48]} rotation={[Math.PI * 0.5, 0, 0]}>
-        <torusGeometry args={[0.08, 0.016, 6, 12, Math.PI]} />
-        <meshBasicMaterial color="#E85D75" />
-      </mesh>
-    </group>
+      <Ellipse cx={-22} cy={10} rx={9} ry={6} fill="#FFB5B5" opacity={0.45} />
+      <Ellipse cx={22} cy={10} rx={9} ry={6} fill="#FFB5B5" opacity={0.45} />
+      {/* Left eye group */}
+      <AnimatedG animatedProps={leftEyeProps}>
+        <Circle cx={-14} cy={-6} r={8} fill="white" />
+        <Circle cx={-14} cy={-6} r={4.5} fill="#5D4037" />
+        <Circle cx={-14} cy={-6} r={2.8} fill="#1a1a2e" />
+        <Circle cx={-11} cy={-8.5} r={1.3} fill="white" />
+      </AnimatedG>
+      {/* Right eye group */}
+      <AnimatedG animatedProps={rightEyeProps}>
+        <Circle cx={14} cy={-6} r={8} fill="white" />
+        <Circle cx={14} cy={-6} r={4.5} fill="#5D4037" />
+        <Circle cx={14} cy={-6} r={2.8} fill="#1a1a2e" />
+        <Circle cx={17} cy={-8.5} r={1.3} fill="white" />
+      </AnimatedG>
+      {/* Smile */}
+      <Path
+        d="M -11 14 Q 0 22 11 14"
+        stroke="#E85D75"
+        strokeWidth={2.8}
+        fill="none"
+        strokeLinecap="round"
+      />
+    </AnimatedG>
   );
 }
 
 // ─────────────────────────────────────────────
 // TROPHY — noRankings
-// Floating + gentle rotation
+// Floating + gentle rock
 // ─────────────────────────────────────────────
 
-function Trophy() {
-  const groupRef = useRef<THREE.Group>(null);
+function TrophySVG() {
+  const floatY = useSharedValue(0);
+  const rock = useSharedValue(0);
 
-  useFrame(({ clock }) => {
-    const t = clock.getElapsedTime();
-    if (groupRef.current) {
-      groupRef.current.position.y = Math.sin(t * 1.5) * 0.08;
-      groupRef.current.rotation.y = Math.sin(t * 0.5) * 0.35;
-    }
-  });
+  useEffect(() => {
+    floatY.value = withRepeat(
+      withSequence(
+        withTiming(-8, { duration: 1400, easing: Easing.inOut(Easing.sin) }),
+        withTiming(0, { duration: 1400, easing: Easing.inOut(Easing.sin) }),
+      ),
+      -1,
+      false,
+    );
+    rock.value = withRepeat(
+      withSequence(
+        withTiming(-6, { duration: 2000, easing: Easing.inOut(Easing.sin) }),
+        withTiming(6, { duration: 2000, easing: Easing.inOut(Easing.sin) }),
+      ),
+      -1,
+      true,
+    );
+  }, []);
+
+  const groupProps = useAnimatedProps(() => ({
+    transform: `translate(60, ${72 + floatY.value}) rotate(${rock.value}, 0, 0)`,
+  }));
 
   return (
-    <group ref={groupRef}>
+    <AnimatedG animatedProps={groupProps}>
       {/* Cup body */}
-      <mesh position={[0, 0.15, 0]}>
-        <cylinderGeometry args={[0.35, 0.2, 0.5, 12]} />
-        <meshToonMaterial color="#FFD93D" />
-      </mesh>
-
+      <Path d="M -26 0 L -18 -36 L 18 -36 L 26 0 Z" fill="#FFD93D" />
       {/* Rim */}
-      <mesh position={[0, 0.4, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[0.35, 0.03, 8, 16]} />
-        <meshToonMaterial color="#D4A017" />
-      </mesh>
-
+      <Rect x={-20} y={-40} width={40} height={8} rx={4} fill="#D4A017" />
       {/* Left handle */}
-      <mesh position={[-0.44, 0.2, 0]} rotation={[0, Math.PI / 2, 0]}>
-        <torusGeometry args={[0.12, 0.025, 6, 12, Math.PI]} />
-        <meshToonMaterial color="#D4A017" />
-      </mesh>
-
+      <Path
+        d="M -26 -6 Q -42 -18 -26 -30"
+        stroke="#D4A017"
+        strokeWidth={5}
+        fill="none"
+        strokeLinecap="round"
+      />
       {/* Right handle */}
-      <mesh
-        position={[0.44, 0.2, 0]}
-        rotation={[0, -Math.PI / 2, 0]}
-      >
-        <torusGeometry args={[0.12, 0.025, 6, 12, Math.PI]} />
-        <meshToonMaterial color="#D4A017" />
-      </mesh>
-
+      <Path
+        d="M 26 -6 Q 42 -18 26 -30"
+        stroke="#D4A017"
+        strokeWidth={5}
+        fill="none"
+        strokeLinecap="round"
+      />
+      {/* Star on cup */}
+      <Path
+        d="M 0 -22 L 3 -16 L 9 -16 L 4 -12 L 6 -6 L 0 -10 L -6 -6 L -4 -12 L -9 -16 L -3 -16 Z"
+        fill="white"
+        opacity={0.7}
+      />
       {/* Stem */}
-      <mesh position={[0, -0.15, 0]}>
-        <cylinderGeometry args={[0.06, 0.06, 0.2, 8]} />
-        <meshToonMaterial color="#D4A017" />
-      </mesh>
-
+      <Rect x={-4} y={0} width={8} height={14} fill="#D4A017" />
       {/* Base */}
-      <mesh position={[0, -0.3, 0]}>
-        <cylinderGeometry args={[0.25, 0.28, 0.08, 12]} />
-        <meshToonMaterial color="#FFD93D" />
-      </mesh>
-
-      {/* Star decoration */}
-      <mesh position={[0, 0.22, 0.22]}>
-        <sphereGeometry args={[0.055, 5, 5]} />
-        <meshBasicMaterial color="white" />
-      </mesh>
-    </group>
+      <Rect x={-20} y={13} width={40} height={8} rx={4} fill="#FFD93D" />
+    </AnimatedG>
   );
 }
 
 // ─────────────────────────────────────────────
 // GAME BOX — noMatches
-// Gentle tumble rotation
+// Gentle rock
 // ─────────────────────────────────────────────
 
-function GameBox() {
-  const groupRef = useRef<THREE.Group>(null);
+function GameBoxSVG() {
+  const rock = useSharedValue(0);
+  const floatY = useSharedValue(0);
 
-  useFrame(({ clock }) => {
-    const t = clock.getElapsedTime();
-    if (groupRef.current) {
-      groupRef.current.rotation.y = Math.sin(t * 0.6) * 0.4;
-      groupRef.current.rotation.x = Math.sin(t * 0.4) * 0.1;
-      groupRef.current.position.y = Math.sin(t * 1.3) * 0.05;
-    }
-  });
+  useEffect(() => {
+    rock.value = withRepeat(
+      withSequence(
+        withTiming(-12, { duration: 1600, easing: Easing.inOut(Easing.sin) }),
+        withTiming(12, { duration: 1600, easing: Easing.inOut(Easing.sin) }),
+      ),
+      -1,
+      true,
+    );
+    floatY.value = withRepeat(
+      withSequence(
+        withTiming(-5, { duration: 1200, easing: Easing.inOut(Easing.sin) }),
+        withTiming(0, { duration: 1200, easing: Easing.inOut(Easing.sin) }),
+      ),
+      -1,
+      false,
+    );
+  }, []);
+
+  const groupProps = useAnimatedProps(() => ({
+    transform: `translate(60, ${62 + floatY.value}) rotate(${rock.value}, 0, 0)`,
+  }));
 
   return (
-    <group ref={groupRef}>
-      {/* Box */}
-      <mesh>
-        <boxGeometry args={[0.7, 0.7, 0.7]} />
-        <meshToonMaterial color="#9B59B6" />
-      </mesh>
-
-      {/* Plus — horizontal */}
-      <mesh position={[0, 0, 0.36]}>
-        <boxGeometry args={[0.32, 0.08, 0.02]} />
-        <meshBasicMaterial color="#E85D75" />
-      </mesh>
-
-      {/* Plus — vertical */}
-      <mesh position={[0, 0, 0.36]}>
-        <boxGeometry args={[0.08, 0.32, 0.02]} />
-        <meshBasicMaterial color="#E85D75" />
-      </mesh>
-
-      {/* Subtle top highlight */}
-      <mesh position={[0, 0.36, 0]} scale={[1.01, 0.01, 1.01]}>
-        <boxGeometry args={[0.7, 0.7, 0.7]} />
-        <meshBasicMaterial color="#B875D6" transparent opacity={0.4} />
-      </mesh>
-    </group>
+    <AnimatedG animatedProps={groupProps}>
+      {/* Box body */}
+      <Rect x={-28} y={-28} width={56} height={56} rx={8} fill="#9B59B6" />
+      {/* Top highlight */}
+      <Rect x={-28} y={-28} width={56} height={8} rx={4} fill="#B875D6" opacity={0.5} />
+      {/* Plus — horizontal bar */}
+      <Rect x={-18} y={-5} width={36} height={10} rx={5} fill="#E85D75" />
+      {/* Plus — vertical bar */}
+      <Rect x={-5} y={-18} width={10} height={36} rx={5} fill="#E85D75" />
+    </AnimatedG>
   );
 }
 
 // ─────────────────────────────────────────────
 // ERROR CLOUD — error
-// Floating cloud with flashing lightning bolt
+// Floating cloud + flashing lightning bolt
 // ─────────────────────────────────────────────
 
-function ErrorCloud() {
-  const groupRef = useRef<THREE.Group>(null);
-  const lightningRef = useRef<THREE.Group>(null);
+function ErrorCloudSVG() {
+  const floatY = useSharedValue(0);
+  const lightningOpacity = useSharedValue(0);
 
-  useFrame(({ clock }) => {
-    const t = clock.getElapsedTime();
+  useEffect(() => {
+    floatY.value = withRepeat(
+      withSequence(
+        withTiming(-7, { duration: 1500, easing: Easing.inOut(Easing.sin) }),
+        withTiming(0, { duration: 1500, easing: Easing.inOut(Easing.sin) }),
+      ),
+      -1,
+      false,
+    );
+    // Lightning: off 2.5s → flash → flash → pause → repeat
+    lightningOpacity.value = withRepeat(
+      withSequence(
+        withTiming(0, { duration: 2500, easing: Easing.linear }),
+        withTiming(1, { duration: 60 }),
+        withTiming(0, { duration: 80 }),
+        withTiming(1, { duration: 60 }),
+        withTiming(0, { duration: 800 }),
+      ),
+      -1,
+      false,
+    );
+  }, []);
 
-    // Gentle float
-    if (groupRef.current) {
-      groupRef.current.position.y = Math.sin(t * 1.0) * 0.06;
-    }
+  const cloudProps = useAnimatedProps(() => ({
+    transform: `translate(60, ${52 + floatY.value})`,
+  }));
 
-    // Lightning flash pattern
-    const cycle = t % 4;
-    const visible =
-      (cycle > 2.5 && cycle < 2.58) || (cycle > 2.64 && cycle < 2.7);
-    if (lightningRef.current) {
-      lightningRef.current.visible = visible;
-    }
-  });
+  const lightningProps = useAnimatedProps(() => ({
+    opacity: lightningOpacity.value,
+  }));
 
   return (
-    <group ref={groupRef}>
-      {/* Cloud body — overlapping spheres */}
-      <mesh position={[-0.22, 0.15, 0]}>
-        <sphereGeometry args={[0.25, 10, 10]} />
-        <meshToonMaterial color="#5A4B6B" />
-      </mesh>
-      <mesh position={[0.12, 0.22, 0]}>
-        <sphereGeometry args={[0.3, 10, 10]} />
-        <meshToonMaterial color="#5A4B6B" />
-      </mesh>
-      <mesh position={[0.38, 0.12, 0]}>
-        <sphereGeometry args={[0.2, 10, 10]} />
-        <meshToonMaterial color="#5A4B6B" />
-      </mesh>
-      <mesh position={[0, 0.06, 0.1]}>
-        <sphereGeometry args={[0.28, 10, 10]} />
-        <meshToonMaterial color="#6B5C7B" />
-      </mesh>
-
-      {/* Lightning bolt */}
-      <group ref={lightningRef} position={[0.05, -0.28, 0.12]}>
-        <mesh position={[0, 0, 0]} rotation={[0, 0, -0.2]}>
-          <boxGeometry args={[0.06, 0.2, 0.025]} />
-          <meshBasicMaterial color="#FFD93D" />
-        </mesh>
-        <mesh position={[0.06, -0.17, 0]} rotation={[0, 0, 0.3]}>
-          <boxGeometry args={[0.05, 0.18, 0.025]} />
-          <meshBasicMaterial color="#FFD93D" />
-        </mesh>
-      </group>
-    </group>
+    <>
+      <AnimatedG animatedProps={cloudProps}>
+        <Circle cx={-18} cy={8} r={18} fill="#5A4B6B" />
+        <Circle cx={6} cy={2} r={22} fill="#5A4B6B" />
+        <Circle cx={28} cy={10} r={15} fill="#5A4B6B" />
+        <Circle cx={10} cy={14} r={16} fill="#6B5C7B" />
+        <Rect x={-36} y={10} width={72} height={18} fill="#5A4B6B" />
+      </AnimatedG>
+      <AnimatedG animatedProps={lightningProps}>
+        <Path
+          d="M 64 80 L 56 96 L 62 96 L 54 114 L 70 94 L 63 94 Z"
+          fill="#FFD93D"
+        />
+      </AnimatedG>
+    </>
   );
 }
 
 // ─────────────────────────────────────────────
-// CANVAS WRAPPER
+// WRAPPER
 // ─────────────────────────────────────────────
 
 function SceneWrapper({ children }: { children: React.ReactNode }) {
   return (
     <View style={{ width: 120, height: 120 }}>
-      <Canvas
-        gl={{ antialias: true }}
-        frameloop="always"
-        camera={{ position: [0, 0, 2.5], fov: 40 }}
-      >
-        <ambientLight intensity={0.6} />
-        <directionalLight position={[2, 3, 4]} intensity={0.8} />
+      <Svg width={120} height={120} viewBox="0 0 120 120">
         {children}
-      </Canvas>
+      </Svg>
     </View>
   );
 }
@@ -329,7 +292,7 @@ function SceneWrapper({ children }: { children: React.ReactNode }) {
 export function BabyFaceScene() {
   return (
     <SceneWrapper>
-      <BabyFace />
+      <BabyFaceSVG />
     </SceneWrapper>
   );
 }
@@ -337,7 +300,7 @@ export function BabyFaceScene() {
 export function TrophyScene() {
   return (
     <SceneWrapper>
-      <Trophy />
+      <TrophySVG />
     </SceneWrapper>
   );
 }
@@ -345,7 +308,7 @@ export function TrophyScene() {
 export function GameBoxScene() {
   return (
     <SceneWrapper>
-      <GameBox />
+      <GameBoxSVG />
     </SceneWrapper>
   );
 }
@@ -353,7 +316,7 @@ export function GameBoxScene() {
 export function ErrorCloudScene() {
   return (
     <SceneWrapper>
-      <ErrorCloud />
+      <ErrorCloudSVG />
     </SceneWrapper>
   );
 }

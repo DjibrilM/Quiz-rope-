@@ -25,6 +25,8 @@ export class MatchService {
     teams: { name: string; color: string; side: string; players?: string[] }[],
     gameMode: string = 'splitscreen',
     context?: string,
+    childIds?: string[],
+    language?: string,
   ): Promise<Match> {
     // Create match first so we have its _id as the conversation threadId
     const match = await this.matchModel.create({
@@ -42,6 +44,9 @@ export class MatchService {
         players: (t.players || []).map((p) => new Types.ObjectId(p)),
       })),
       questions: [],
+      childIds: (childIds || [])
+        .filter((id) => Types.ObjectId.isValid(id))
+        .map((id) => new Types.ObjectId(id)),
     });
 
     // Generate questions with match ID as threadId for conversation persistence
@@ -51,6 +56,7 @@ export class MatchService {
       maxRounds,
       match._id.toString(),
       context,
+      language,
     );
 
     match.questions = questions.map((q) => q._id) as any;
@@ -193,6 +199,7 @@ export class MatchService {
       responseTime,
       round: match.currentQuestionIndex,
     });
+    this.logger.debug(`submitAnswer saved: matchId=${match._id} playerId=${playerId} teamSide=${teamSide} isCorrect=${isCorrect}`);
 
     // Update match
     match.ropePosition = newRopePosition;
@@ -355,19 +362,20 @@ export class MatchService {
   }
 
   async getChildPerformance(parentId: string, childId: string) {
-    const matches = await this.matchModel
-      .find({ hostParentId: new Types.ObjectId(parentId) })
-      .select('_id');
-    const matchIds = matches.map((m) => m._id);
+    const [parentMatchDocs, child] = await Promise.all([
+      this.matchModel
+        .find({ hostParentId: new Types.ObjectId(parentId) })
+        .select('_id')
+        .lean(),
+      this.childModel.findById(childId).select('displayName').lean(),
+    ]);
 
-    const child = await this.childModel
-      .findById(childId)
-      .select('displayName');
+    const matchIds = parentMatchDocs.map((m) => m._id);
 
     if (matchIds.length === 0) {
       return {
         childId,
-        displayName: child?.displayName || '',
+        displayName: (child as any)?.displayName || '',
         totalMatches: 0,
         totalQuestions: 0,
         overallAccuracy: 0,
@@ -377,14 +385,37 @@ export class MatchService {
       };
     }
 
-    const [subjectStats, childMatchIds] = await Promise.all([
+    // Include display name in player ID filter to catch games played without
+    // selecting the child chip (where name string was used as playerId).
+    const playerIds: string[] = [childId];
+    if ((child as any)?.displayName) playerIds.push((child as any).displayName);
+
+    // Run all three aggregations in parallel for performance
+    const [rawTotals, childMatchIds, subjectStats] = await Promise.all([
+      // Step 1: exact totals straight from answers — no question lookup,
+      // so no rows are silently dropped by $unwind
       this.answerModel.aggregate([
+        { $match: { matchId: { $in: matchIds }, playerId: { $in: playerIds } } },
         {
-          $match: {
-            matchId: { $in: matchIds },
-            playerId: childId,
+          $group: {
+            _id: null,
+            totalQuestions: { $sum: 1 },
+            totalCorrect: { $sum: { $cond: ['$isCorrect', 1, 0] } },
           },
         },
+      ]),
+
+      // Step 2: distinct match count
+      this.answerModel.distinct('matchId', {
+        matchId: { $in: matchIds },
+        playerId: { $in: playerIds },
+      }),
+
+      // Step 3: per-subject breakdown (requires question lookup for subject name).
+      // Use preserveNullAndEmptyArrays so unresolved questions don't vanish;
+      // group them under a temporary "__unknown" bucket which we strip at the end.
+      this.answerModel.aggregate([
+        { $match: { matchId: { $in: matchIds }, playerId: { $in: playerIds } } },
         {
           $lookup: {
             from: 'questions',
@@ -393,10 +424,15 @@ export class MatchService {
             as: 'question',
           },
         },
-        { $unwind: '$question' },
+        {
+          $unwind: {
+            path: '$question',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
         {
           $group: {
-            _id: '$question.subject',
+            _id: { $ifNull: ['$question.subject', '__unknown'] },
             totalQuestions: { $sum: 1 },
             correctAnswers: { $sum: { $cond: ['$isCorrect', 1, 0] } },
             totalTime: { $sum: '$responseTime' },
@@ -429,10 +465,7 @@ export class MatchService {
               $cond: [
                 { $gt: ['$totalQuestions', 0] },
                 {
-                  $round: [
-                    { $divide: ['$totalTime', '$totalQuestions'] },
-                    0,
-                  ],
+                  $round: [{ $divide: ['$totalTime', '$totalQuestions'] }, 0],
                 },
                 0,
               ],
@@ -442,36 +475,27 @@ export class MatchService {
         },
         { $sort: { accuracy: -1 as const } },
       ]),
-      this.answerModel.distinct('matchId', {
-        matchId: { $in: matchIds },
-        playerId: childId,
-      }),
     ]);
 
-    const totalQuestions = subjectStats.reduce(
-      (sum, s) => sum + s.totalQuestions,
-      0,
-    );
-    const totalCorrect = subjectStats.reduce(
-      (sum, s) => sum + s.correctAnswers,
-      0,
-    );
-    const best = subjectStats.length > 0 ? subjectStats[0] : null;
-    const weakest =
-      subjectStats.length > 1
-        ? subjectStats[subjectStats.length - 1]
-        : null;
+    // Use the direct counts — not the subject aggregate — for global totals
+    const totalQuestions = rawTotals[0]?.totalQuestions ?? 0;
+    const totalCorrect = rawTotals[0]?.totalCorrect ?? 0;
+
+    // Strip the __unknown bucket from the public list
+    const validStats = subjectStats.filter((s) => s.subject !== '__unknown');
+    const best = validStats.length > 0 ? validStats[0] : null;
+    const weakest = validStats.length > 1 ? validStats[validStats.length - 1] : null;
 
     return {
       childId,
-      displayName: child?.displayName || '',
+      displayName: (child as any)?.displayName || '',
       totalMatches: childMatchIds.length,
       totalQuestions,
       overallAccuracy:
         totalQuestions > 0
           ? Math.round((totalCorrect / totalQuestions) * 100)
           : 0,
-      subjectStats: subjectStats.map((s) => ({
+      subjectStats: validStats.map((s) => ({
         subject: s.subject,
         totalQuestions: s.totalQuestions,
         correctAnswers: s.correctAnswers,
@@ -485,59 +509,87 @@ export class MatchService {
   }
 
   async getChildMatches(parentId: string, childId: string) {
-    const matches = await this.matchModel
-      .find({
-        hostParentId: new Types.ObjectId(parentId),
-        status: 'COMPLETED',
-      })
-      .sort({ createdAt: -1 });
+    if (!Types.ObjectId.isValid(childId)) {
+      throw new BadRequestException('Invalid child ID');
+    }
 
-    if (matches.length === 0) return [];
-
-    const matchIds = matches.map((m) => m._id);
-
-    const answerStats = await this.answerModel.aggregate([
-      {
-        $match: {
-          matchId: { $in: matchIds },
-          playerId: childId,
-        },
-      },
-      {
-        $group: {
-          _id: '$matchId',
-          correctAnswers: { $sum: { $cond: ['$isCorrect', 1, 0] } },
-          totalQuestions: { $sum: 1 },
-          teamSide: { $first: '$teamSide' },
-        },
-      },
+    // Step 1: all matches owned by this parent + child's display name for fuzzy matching
+    const [parentMatches, childDoc] = await Promise.all([
+      this.matchModel
+        .find({ hostParentId: new Types.ObjectId(parentId) })
+        .select('_id subject difficulty gameMode maxRounds winner createdAt')
+        .sort({ createdAt: -1 })
+        .lean(),
+      this.childModel.findById(childId).select('displayName').lean(),
     ]);
+
+    if (parentMatches.length === 0) return [];
+
+    const parentMatchIds = parentMatches.map((m) => m._id);
+
+    // Match by both the child's MongoDB ID AND their display name — catches games
+    // where the parent typed the name instead of selecting the child chip.
+    const playerIds: string[] = [childId];
+    if (childDoc?.displayName) playerIds.push(childDoc.displayName);
+
+    // Step 2: find matches where the child actually has recorded answers
+    const [childMatchIdDocs, answerStats] = await Promise.all([
+      this.answerModel.distinct('matchId', {
+        matchId: { $in: parentMatchIds },
+        playerId: { $in: playerIds },
+      }),
+      this.answerModel.aggregate([
+        {
+          $match: {
+            matchId: { $in: parentMatchIds },
+            playerId: { $in: playerIds },
+          },
+        },
+        {
+          $group: {
+            _id: '$matchId',
+            correctAnswers: { $sum: { $cond: ['$isCorrect', 1, 0] } },
+            totalQuestions: { $sum: 1 },
+            teamSide: { $first: '$teamSide' },
+          },
+        },
+      ]),
+    ]);
+
+    if (childMatchIdDocs.length === 0) return [];
+
+    const childMatchIdSet = new Set(
+      childMatchIdDocs.map((id) => id.toString()),
+    );
 
     const statsMap = new Map(
       answerStats.map((s) => [s._id.toString(), s]),
     );
 
-    return matches
-      .filter((m) => statsMap.has(m._id.toString()))
+    // Step 3: filter + map, preserving createdAt desc order from the initial sort
+    return parentMatches
+      .filter((m) => childMatchIdSet.has(m._id.toString()))
       .map((m) => {
-        const stats = statsMap.get(m._id.toString())!;
+        const stats = statsMap.get(m._id.toString());
+        const correctAnswers = stats?.correctAnswers ?? 0;
+        const totalQuestions = stats?.totalQuestions ?? (m as any).maxRounds;
         const accuracy =
-          stats.totalQuestions > 0
-            ? Math.round(
-                (stats.correctAnswers / stats.totalQuestions) * 100,
-              )
+          totalQuestions > 0
+            ? Math.round((correctAnswers / totalQuestions) * 100)
             : 0;
         return {
           matchId: m._id.toString(),
-          subject: m.subject,
-          difficulty: m.difficulty,
+          subject: (m as any).subject,
+          difficulty: (m as any).difficulty,
+          gameMode: (m as any).gameMode,
           date: (m as any).createdAt?.toISOString() || '',
-          correctAnswers: stats.correctAnswers,
-          totalQuestions: stats.totalQuestions,
+          correctAnswers,
+          totalQuestions,
           accuracy,
-          winner: m.winner,
-          childTeamSide: stats.teamSide,
-          didWin: m.winner === stats.teamSide,
+          winner: (m as any).winner,
+          childTeamSide: stats?.teamSide ?? null,
+          didWin:
+            !!(m as any).winner && (m as any).winner === stats?.teamSide,
         };
       });
   }

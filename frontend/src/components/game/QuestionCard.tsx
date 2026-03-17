@@ -27,6 +27,7 @@ interface QuestionCardProps {
   onAnswer: (index: number) => void;
   teamSide: "LEFT" | "RIGHT";
   teamColor: string;
+  compact?: boolean;
 }
 
 const OPTION_LABELS = ["A", "B", "C", "D"];
@@ -39,6 +40,7 @@ export function QuestionCard({
   onAnswer,
   teamSide,
   teamColor,
+  compact = false,
 }: QuestionCardProps) {
   const { t } = useTranslation("common");
 
@@ -50,8 +52,8 @@ export function QuestionCard({
     questionScale.value = 0.95;
     questionOpacity.value = 0;
     // Snappier spring for faster question reveal
-    questionScale.value = withSpring(1, { damping: 28, stiffness: 300 });
-    questionOpacity.value = withSpring(1, { damping: 28, stiffness: 300 });
+    questionScale.value = withSpring(1, { damping: 30, stiffness: 600 });
+    questionOpacity.value = withSpring(1, { damping: 30, stiffness: 600 });
   }, [question?.id]);
 
   const questionAnimatedStyle = useAnimatedStyle(() => ({
@@ -99,13 +101,13 @@ export function QuestionCard({
         style={[
           questionAnimatedStyle,
           {
-            marginHorizontal: 10,
-            marginTop: 10,
-            marginBottom: 8,
+            marginHorizontal: compact ? 6 : 10,
+            marginTop: compact ? 6 : 10,
+            marginBottom: compact ? 4 : 8,
             backgroundColor: "#0D0B14",
             borderRadius: 12,
-            paddingHorizontal: 14,
-            paddingVertical: 10,
+            paddingHorizontal: compact ? 10 : 14,
+            paddingVertical: compact ? 6 : 10,
           },
         ]}
       >
@@ -123,9 +125,9 @@ export function QuestionCard({
         <Text
           style={{
             color: "#ffffff",
-            fontSize: 17,
+            fontSize: compact ? 13 : 17,
             fontFamily: FONTS.bodySemiBold,
-            lineHeight: 24,
+            lineHeight: compact ? 18 : 24,
             textAlign: "center",
           }}
         >
@@ -134,8 +136,8 @@ export function QuestionCard({
       </Animated.View>
 
       {/* 2x2 Keypad */}
-      <View style={{ paddingHorizontal: 10, paddingBottom: 14, paddingTop: 4, gap: 8 }}>
-        <View style={{ flexDirection: "row", gap: 8 }}>
+      <View style={{ paddingHorizontal: compact ? 6 : 10, paddingBottom: compact ? 8 : 14, paddingTop: compact ? 2 : 4, gap: compact ? 5 : 8 }}>
+        <View style={{ flexDirection: "row", gap: compact ? 5 : 8 }}>
           {question.options.slice(0, 2).map((option, i) => (
             <AnimatedOption
               key={i}
@@ -143,15 +145,16 @@ export function QuestionCard({
               optionText={option}
               index={i}
               questionId={question.id}
-              staggerDelay={i * 35}
+              staggerDelay={i * 15}
               variant={getVariant(i)}
               teamColor={teamColor}
               disabled={selectedAnswer !== null}
               onPress={() => onAnswer(i)}
+              compact={compact}
             />
           ))}
         </View>
-        <View style={{ flexDirection: "row", gap: 8 }}>
+        <View style={{ flexDirection: "row", gap: compact ? 5 : 8 }}>
           {question.options.slice(2, 4).map((option, ci) => {
             const i = ci + 2;
             return (
@@ -161,11 +164,12 @@ export function QuestionCard({
                 optionText={option}
                 index={i}
                 questionId={question.id}
-                staggerDelay={i * 35}
+                staggerDelay={i * 15}
                 variant={getVariant(i)}
                 teamColor={teamColor}
                 disabled={selectedAnswer !== null}
                 onPress={() => onAnswer(i)}
+                compact={compact}
               />
             );
           })}

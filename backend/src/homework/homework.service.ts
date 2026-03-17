@@ -24,9 +24,12 @@ Analyze the homework image carefully and respond ONLY with valid JSON — no mar
 For answers_markdown:
 - Use ## for each question number
 - Use **bold** for the final answer
+- Break down every single concept into an extremely detailed, step-by-step educational explanation
+- Assume the student is K-12 and needs to be taught the fundamentals behind the problem
+- Make the explanations LONG and thorough. Do not just give the answer; teach the lesson.
 - Use numbered lists for step-by-step reasoning
-- Keep language simple and age-appropriate
-- Be thorough — explain WHY each answer is correct`;
+- Use simple, encouraging, and age-appropriate language
+- Explain WHY each answer is correct and HOW to solve similar problems in the future`;
 
 interface GeminiHomeworkResult {
   title: string;
@@ -50,9 +53,11 @@ export class HomeworkService {
     parentId: string,
     imageBase64: string,
     mimeType: string,
+    childId?: string,
   ): Promise<HomeworkSession> {
     const session = await this.sessionModel.create({
       parentId: new Types.ObjectId(parentId),
+      ...(childId && Types.ObjectId.isValid(childId) ? { childId: new Types.ObjectId(childId) } : {}),
       imageBase64,
       imageMimeType: mimeType,
       status: 'PROCESSING',
@@ -175,6 +180,86 @@ export class HomeworkService {
       role,
       content,
     });
+  }
+
+  /**
+   * Summarizes a batch of older messages and appends to the session's chatSummary.
+   * This implements "Context Engineering" to prevent linear prompt scaling while
+   * retaining infinite memory of the conversation.
+   */
+  async summarizeConversationContext(sessionId: string): Promise<void> {
+    const session = await this.getSessionRaw(sessionId);
+    const history = await this.getChatHistory(sessionId);
+
+    const KEEP_UNSUMMARIZED_BUFFER = 6;
+    const SUMMARY_BATCH_SIZE = 10;
+    
+    // Total number of messages that theoretically *can* be summarized right now
+    const summarizeableCount = history.length - KEEP_UNSUMMARIZED_BUFFER;
+    
+    // We only trigger a summary if we have accumulated enough unsummarized messages
+    const unsummarizedCount = summarizeableCount - (session.summarizedMessageCount || 0);
+
+    if (unsummarizedCount < SUMMARY_BATCH_SIZE) {
+      return; // Not enough new messages to justify a summary pass yet
+    }
+
+    // Grab the exact slice of messages to summarize (from last summary point to the buffer)
+    const startIndex = session.summarizedMessageCount || 0;
+    const endIndex = startIndex + unsummarizedCount;
+    const messagesToSummarize = history.slice(startIndex, endIndex);
+
+    if (messagesToSummarize.length === 0) return;
+
+    this.logger.log(`Summarizing ${messagesToSummarize.length} messages for session ${sessionId}...`);
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      this.logger.warn('Skipping summarization: GEMINI_API_KEY not configured');
+      return;
+    }
+
+    const model = new ChatGoogleGenerativeAI({
+      model: GEMINI_MODEL,
+      apiKey,
+      maxOutputTokens: 1024, // High level abstract summary
+      temperature: 0.1, // Keep it deterministic and factual
+    });
+
+    const conversationText = messagesToSummarize
+      .map((m) => `${m.role === 'user' ? 'Student' : 'Tutor'}: ${m.content}`)
+      .join('\n\n');
+
+    let summaryPrompt = `You are a conversation summarizer. 
+Compress the following exchange between a Student and a Tutor into a dense, factual summary.
+Keep absolutely all important facts, concepts discussed, and the student's current level of understanding.
+Do NOT output conversational filler.`;
+
+    if (session.chatSummary) {
+      summaryPrompt += `\n\nThere is already an existing summary of previous messages. Update and append to this existing summary based on the new exchange.
+      
+EXISTING SUMMARY:
+${session.chatSummary}`;
+    }
+
+    summaryPrompt += `\n\nNEW CONVERSATION TO SUMMARIZE:
+${conversationText}`;
+
+    try {
+      const response = await model.invoke([new HumanMessage(summaryPrompt)]);
+      const newSummaryText = typeof response.content === 'string' 
+        ? response.content 
+        : JSON.stringify(response.content);
+
+      await this.sessionModel.findByIdAndUpdate(sessionId, {
+        chatSummary: newSummaryText.trim(),
+        summarizedMessageCount: endIndex,
+      });
+
+      this.logger.log(`Successfully updated conversation summary for session ${sessionId} (Count: ${endIndex})`);
+    } catch (error) {
+      this.logger.error(`Context summarization failed for session ${sessionId}:`, error.message);
+    }
   }
 
   async linkMatch(sessionId: string, matchId: string): Promise<void> {

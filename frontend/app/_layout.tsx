@@ -3,7 +3,7 @@ import "../src/i18n";
 import { Stack, router, useSegments } from "expo-router";
 import { FONTS, FORTNITE_COLORS } from "../src/constants/theme";
 import { StatusBar } from "expo-status-bar";
-import { I18nManager, Platform } from "react-native";
+import { I18nManager } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
@@ -27,19 +27,26 @@ import { ErrorBoundary } from "../src/components/common/ErrorBoundary";
 import { useGameStore } from "../src/stores/gameStore";
 import { apiService } from "../src/services/api";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ToastProvider, useToast } from "../src/context/ToastContext";
 
 const queryClient = new QueryClient();
+
+function ApiToastBridge() {
+  const { showToast } = useToast();
+  useEffect(() => {
+    apiService.setOnApiError(showToast);
+    return () => {
+      apiService.setOnApiError(null);
+    };
+  }, [showToast]);
+  return null;
+}
 
 SplashScreen.preventAutoHideAsync();
 
 const PUBLIC_ROUTES = [
   "index",
-  "login",
-  "signup",
-  "child-join",
-  "forgot-password",
-  "guest-setup",
-  "verify-email",
+  "auth", // covers auth/login, auth/signup, auth/child-join, auth/forgot-password, auth/guest-setup, auth/verify-email
 ];
 
 function useLocaleSync() {
@@ -82,7 +89,8 @@ function useProtectedRoute(isLayoutReady: boolean) {
     // Debounce to avoid double navigation
     if (hasNavigated.current) return;
 
-    if (isAuthenticated && isPublicRoute && currentRoute !== "child-join") {
+    const isChildJoin = segments[0] === "auth" && segments[1] === "child-join";
+    if (isAuthenticated && isPublicRoute && !isChildJoin) {
       hasNavigated.current = true;
       router.replace("/home");
       setTimeout(() => {
@@ -158,26 +166,26 @@ export default function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
           <SafeAreaProvider>
-            <BottomSheetModalProvider>
-              <StatusBar style="light" />
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                  headerStyle: { backgroundColor: FORTNITE_COLORS.bgDark },
-                  headerTitleStyle: {
-                    fontFamily: FONTS.heading,
-                    fontSize: 20,
-                    color: FORTNITE_COLORS.textPrimary,
-                  },
-                  headerTintColor: FORTNITE_COLORS.textPrimary,
-                  headerShadowVisible: false,
-                  headerBlurEffect:
-                    Platform.OS === "ios" ? "regular" : undefined,
-                  headerTransparent: Platform.OS === "ios",
-                  contentStyle: { backgroundColor: FORTNITE_COLORS.bgDark },
-                }}
-              />
-            </BottomSheetModalProvider>
+            <ToastProvider>
+              <ApiToastBridge />
+              <BottomSheetModalProvider>
+                <StatusBar style="light" />
+                <Stack
+                  screenOptions={{
+                    headerShown: false,
+                    headerStyle: { backgroundColor: FORTNITE_COLORS.bgDark },
+                    headerTitleStyle: {
+                      fontFamily: FONTS.heading,
+                      fontSize: 20,
+                      color: FORTNITE_COLORS.textPrimary,
+                    },
+                    headerTintColor: FORTNITE_COLORS.textPrimary,
+                    headerShadowVisible: false,
+                    contentStyle: { backgroundColor: FORTNITE_COLORS.bgDark },
+                  }}
+                />
+              </BottomSheetModalProvider>
+            </ToastProvider>
           </SafeAreaProvider>
         </GestureHandlerRootView>
       </QueryClientProvider>

@@ -42,6 +42,15 @@ export class HomeworkSession extends Document {
 
   @Prop({ default: false })
   quizTaken: boolean;
+
+  @Prop({ type: Types.ObjectId, ref: 'Child' })
+  childId: Types.ObjectId;
+
+  @Prop({ default: '' })
+  chatSummary: string;
+
+  @Prop({ default: 0 })
+  summarizedMessageCount: number;
 }
 
 export const HomeworkSessionSchema =
