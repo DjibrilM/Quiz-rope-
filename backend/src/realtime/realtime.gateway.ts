@@ -343,13 +343,22 @@ export class RealtimeGateway
         temperature: 0.7,
       });
 
-      const systemInstruction = `You are a friendly tutor helping a student understand their homework.
+      let systemInstruction = `You are an expert, encouraging K-12 tutor helping a student deeply understand their homework.
 Subject: ${session.subject || "General"}.
 Homework content for context:
 ${session.answersMarkdown || ""}
-Answer clearly, briefly, and in simple language. Be encouraging.`;
 
-      const conversationMessages = history.slice(-10).map((m) => ({
+Do NOT just give the answer. 
+Write LONG, thorough, step-by-step educational explanations. 
+Break down the fundamental concepts so the child actually learns the material. Use simple, supportive language.`;
+
+      if (session.chatSummary) {
+        systemInstruction += `\n\nHere is a summary of the conversation so far, for context:\n${session.chatSummary}`;
+      }
+
+      // Only pass unsummarized history exactly to prevent redundant token usage
+      const unsummarizedStartIndex = session.summarizedMessageCount || 0;
+      const conversationMessages = history.slice(unsummarizedStartIndex).map((m) => ({
         role: m.role === "user" ? ("human" as const) : ("ai" as const),
         content: m.content,
       }));
@@ -393,6 +402,12 @@ Answer clearly, briefly, and in simple language. Be encouraging.`;
           fullResponse,
         );
         client.emit("homework:done", saved);
+
+        // Fire and forget the background summarization logic so it doesn't block the connection
+        this.homeworkService.summarizeConversationContext(sessionId).catch((err) => {
+          this.logger.error("Failed to run background context summarization:", err.message);
+        });
+
       } else {
         client.emit("homework:stopped");
       }

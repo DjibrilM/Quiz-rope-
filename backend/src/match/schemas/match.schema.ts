@@ -62,6 +62,9 @@ export class Match extends Document {
 
   @Prop({ default: '' })
   winner: string;
+
+  @Prop({ type: [Types.ObjectId], ref: 'Child', default: [] })
+  childIds: Types.ObjectId[];
 }
 
 export const MatchSchema = SchemaFactory.createForClass(Match);

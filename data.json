@@ -1,0 +1,1583 @@
+[
+  {
+    "_id": "69b2042162f4867fa9f97149",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "MATH",
+    "difficulty": "HARD",
+    "teams": [
+      {
+        "name": "Milles",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69b2042162f4867fa9f9714a"
+      },
+      {
+        "name": "Milles",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69b2042162f4867fa9f9714b"
+      }
+    ],
+    "ropePosition": 0.5,
+    "gameMode": "splitscreen",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69b2042662f4867fa9f9714d",
+      "69b2042662f4867fa9f9714e",
+      "69b2042662f4867fa9f9714f",
+      "69b2042662f4867fa9f97150",
+      "69b2042662f4867fa9f97151"
+    ],
+    "status": "COMPLETED",
+    "rounds": 5,
+    "maxRounds": 5,
+    "teamScoreLeft": 20,
+    "teamScoreRight": 0,
+    "winner": "LEFT",
+    "createdAt": "2026-03-12T00:09:05.034Z",
+    "updatedAt": "2026-03-12T00:10:06.798Z",
+    "__v": 1
+  },
+  {
+    "_id": "69b202fd62f4867fa9f97073",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "MATH",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69b202fd62f4867fa9f97074"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69b202fd62f4867fa9f97075"
+      }
+    ],
+    "ropePosition": 1,
+    "gameMode": "solo",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69b2030162f4867fa9f97077",
+      "69b2030162f4867fa9f97078",
+      "69b2030162f4867fa9f97079",
+      "69b2030162f4867fa9f9707a",
+      "69b2030162f4867fa9f9707b"
+    ],
+    "status": "COMPLETED",
+    "rounds": 5,
+    "maxRounds": 5,
+    "teamScoreLeft": 50,
+    "teamScoreRight": 0,
+    "winner": "LEFT",
+    "createdAt": "2026-03-12T00:04:13.177Z",
+    "updatedAt": "2026-03-12T00:05:08.730Z",
+    "__v": 1
+  },
+  {
+    "_id": "69b2025162f4867fa9f96f8a",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "MATH",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69b2025162f4867fa9f96f8b"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69b2025162f4867fa9f96f8c"
+      }
+    ],
+    "ropePosition": 1,
+    "gameMode": "solo",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69b2025662f4867fa9f96f8e",
+      "69b2025662f4867fa9f96f8f",
+      "69b2025662f4867fa9f96f90",
+      "69b2025662f4867fa9f96f91",
+      "69b2025662f4867fa9f96f92"
+    ],
+    "status": "COMPLETED",
+    "rounds": 5,
+    "maxRounds": 5,
+    "teamScoreLeft": 40,
+    "teamScoreRight": 0,
+    "winner": "LEFT",
+    "createdAt": "2026-03-12T00:01:21.241Z",
+    "updatedAt": "2026-03-12T00:02:01.686Z",
+    "__v": 1
+  },
+  {
+    "_id": "69ac29da2c17eb38c278f2f7",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "SCIENCE",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69ac29da2c17eb38c278f2f8"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69ac29da2c17eb38c278f2f9"
+      }
+    ],
+    "ropePosition": -2.5,
+    "gameMode": "solo",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69ac29e02c17eb38c278f2fb",
+      "69ac29e02c17eb38c278f2fc",
+      "69ac29e02c17eb38c278f2fd",
+      "69ac29e02c17eb38c278f2fe",
+      "69ac29e02c17eb38c278f2ff",
+      "69ac29e02c17eb38c278f300",
+      "69ac29e02c17eb38c278f301",
+      "69ac29e02c17eb38c278f302",
+      "69ac29e02c17eb38c278f303",
+      "69ac29e02c17eb38c278f304"
+    ],
+    "status": "COMPLETED",
+    "rounds": 10,
+    "maxRounds": 10,
+    "teamScoreLeft": 40,
+    "teamScoreRight": 0,
+    "winner": "LEFT",
+    "createdAt": "2026-03-07T13:36:26.720Z",
+    "updatedAt": "2026-03-07T13:37:01.343Z",
+    "__v": 1
+  },
+  {
+    "_id": "69ac26f42c17eb38c278f125",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "MATH",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69ac26f42c17eb38c278f126"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69ac26f42c17eb38c278f127"
+      }
+    ],
+    "ropePosition": -1,
+    "gameMode": "solo",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69ac26f92c17eb38c278f129",
+      "69ac26f92c17eb38c278f12a",
+      "69ac26f92c17eb38c278f12b",
+      "69ac26f92c17eb38c278f12c",
+      "69ac26f92c17eb38c278f12d",
+      "69ac26f92c17eb38c278f12e",
+      "69ac26f92c17eb38c278f12f",
+      "69ac26f92c17eb38c278f130",
+      "69ac26f92c17eb38c278f131",
+      "69ac26f92c17eb38c278f132"
+    ],
+    "status": "COMPLETED",
+    "rounds": 10,
+    "maxRounds": 10,
+    "teamScoreLeft": 40,
+    "teamScoreRight": 0,
+    "winner": "LEFT",
+    "createdAt": "2026-03-07T13:24:04.032Z",
+    "updatedAt": "2026-03-07T13:24:36.878Z",
+    "__v": 1
+  },
+  {
+    "_id": "69ac26ab2c17eb38c278f073",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "MATH",
+    "difficulty": "MEDIUM",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69ac26ab2c17eb38c278f074"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69ac26ab2c17eb38c278f075"
+      }
+    ],
+    "ropePosition": -2.5,
+    "gameMode": "solo",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69ac26b32c17eb38c278f077",
+      "69ac26b32c17eb38c278f078",
+      "69ac26b32c17eb38c278f079",
+      "69ac26b32c17eb38c278f07a",
+      "69ac26b32c17eb38c278f07b",
+      "69ac26b32c17eb38c278f07c",
+      "69ac26b32c17eb38c278f07d",
+      "69ac26b32c17eb38c278f07e",
+      "69ac26b32c17eb38c278f07f",
+      "69ac26b32c17eb38c278f080"
+    ],
+    "status": "COMPLETED",
+    "rounds": 10,
+    "maxRounds": 10,
+    "teamScoreLeft": 30,
+    "teamScoreRight": 0,
+    "winner": "LEFT",
+    "createdAt": "2026-03-07T13:22:51.532Z",
+    "updatedAt": "2026-03-07T13:23:26.107Z",
+    "__v": 1
+  },
+  {
+    "_id": "69ac24602c17eb38c278ee1f",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "MATH",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69ac24602c17eb38c278ee20"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69ac24602c17eb38c278ee21"
+      }
+    ],
+    "ropePosition": -1,
+    "gameMode": "solo",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69ac24652c17eb38c278ee23",
+      "69ac24652c17eb38c278ee24",
+      "69ac24652c17eb38c278ee25",
+      "69ac24652c17eb38c278ee26",
+      "69ac24652c17eb38c278ee27",
+      "69ac24652c17eb38c278ee28",
+      "69ac24652c17eb38c278ee29",
+      "69ac24652c17eb38c278ee2a",
+      "69ac24652c17eb38c278ee2b",
+      "69ac24652c17eb38c278ee2c"
+    ],
+    "status": "COMPLETED",
+    "rounds": 10,
+    "maxRounds": 10,
+    "teamScoreLeft": 30,
+    "teamScoreRight": 0,
+    "winner": "LEFT",
+    "createdAt": "2026-03-07T13:13:04.258Z",
+    "updatedAt": "2026-03-07T13:13:38.838Z",
+    "__v": 1
+  },
+  {
+    "_id": "69ac22122c17eb38c278ed71",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "GEOGRAPHY",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69ac22122c17eb38c278ed72"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69ac22122c17eb38c278ed73"
+      }
+    ],
+    "ropePosition": -5,
+    "gameMode": "solo",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69ac22182c17eb38c278ed75",
+      "69ac22182c17eb38c278ed76",
+      "69ac22182c17eb38c278ed77",
+      "69ac22182c17eb38c278ed78",
+      "69ac22182c17eb38c278ed79",
+      "69ac22182c17eb38c278ed7a",
+      "69ac22182c17eb38c278ed7b",
+      "69ac22182c17eb38c278ed7c",
+      "69ac22182c17eb38c278ed7d",
+      "69ac22182c17eb38c278ed7e"
+    ],
+    "status": "COMPLETED",
+    "rounds": 10,
+    "maxRounds": 10,
+    "teamScoreLeft": 80,
+    "teamScoreRight": 0,
+    "winner": "LEFT",
+    "createdAt": "2026-03-07T13:03:14.422Z",
+    "updatedAt": "2026-03-07T13:03:52.057Z",
+    "__v": 1
+  },
+  {
+    "_id": "69ac1ee2faf624e6a89252db",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "MATH",
+    "difficulty": "HARD",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69ac1ee2faf624e6a89252dc"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69ac1ee2faf624e6a89252dd"
+      }
+    ],
+    "ropePosition": -2,
+    "gameMode": "solo",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69ac1eeafaf624e6a89252df",
+      "69ac1eeafaf624e6a89252e0",
+      "69ac1eeafaf624e6a89252e1",
+      "69ac1eeafaf624e6a89252e2",
+      "69ac1eeafaf624e6a89252e3",
+      "69ac1eeafaf624e6a89252e4",
+      "69ac1eeafaf624e6a89252e5",
+      "69ac1eeafaf624e6a89252e6",
+      "69ac1eeafaf624e6a89252e7",
+      "69ac1eeafaf624e6a89252e8",
+      "69ac1eeafaf624e6a89252e9",
+      "69ac1eeafaf624e6a89252ea",
+      "69ac1eeafaf624e6a89252eb",
+      "69ac1eeafaf624e6a89252ec",
+      "69ac1eeafaf624e6a89252ed"
+    ],
+    "status": "COMPLETED",
+    "rounds": 15,
+    "maxRounds": 15,
+    "teamScoreLeft": 90,
+    "teamScoreRight": 0,
+    "winner": "LEFT",
+    "createdAt": "2026-03-07T12:49:38.372Z",
+    "updatedAt": "2026-03-07T12:54:26.375Z",
+    "__v": 1
+  },
+  {
+    "_id": "69ac0ce94f2de193ce9af963",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "SCIENCE",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69ac0ce94f2de193ce9af964"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69ac0ce94f2de193ce9af965"
+      }
+    ],
+    "ropePosition": 0,
+    "gameMode": "solo",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69ac0ced4f2de193ce9af967",
+      "69ac0ced4f2de193ce9af968",
+      "69ac0ced4f2de193ce9af969",
+      "69ac0ced4f2de193ce9af96a",
+      "69ac0ced4f2de193ce9af96b"
+    ],
+    "status": "COMPLETED",
+    "rounds": 5,
+    "maxRounds": 5,
+    "teamScoreLeft": 20,
+    "teamScoreRight": 0,
+    "winner": "LEFT",
+    "createdAt": "2026-03-07T11:32:57.857Z",
+    "updatedAt": "2026-03-07T11:33:19.168Z",
+    "__v": 1
+  },
+  {
+    "_id": "69ac0a784f2de193ce9af8d3",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "ENGLISH",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69ac0a784f2de193ce9af8d4"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69ac0a784f2de193ce9af8d5"
+      }
+    ],
+    "ropePosition": 0,
+    "gameMode": "solo",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69ac0a814f2de193ce9af8d7",
+      "69ac0a814f2de193ce9af8d8",
+      "69ac0a814f2de193ce9af8d9",
+      "69ac0a814f2de193ce9af8da",
+      "69ac0a814f2de193ce9af8db",
+      "69ac0a814f2de193ce9af8dc",
+      "69ac0a814f2de193ce9af8dd",
+      "69ac0a814f2de193ce9af8de",
+      "69ac0a814f2de193ce9af8df",
+      "69ac0a814f2de193ce9af8e0"
+    ],
+    "status": "COMPLETED",
+    "rounds": 10,
+    "maxRounds": 10,
+    "teamScoreLeft": 30,
+    "teamScoreRight": 0,
+    "winner": "LEFT",
+    "createdAt": "2026-03-07T11:22:32.548Z",
+    "updatedAt": "2026-03-07T11:23:21.124Z",
+    "__v": 1
+  },
+  {
+    "_id": "69ac088f4f2de193ce9af885",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "MATH",
+    "difficulty": "HARD",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69ac088f4f2de193ce9af886"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69ac088f4f2de193ce9af887"
+      }
+    ],
+    "ropePosition": 0,
+    "gameMode": "solo",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69ac089f4f2de193ce9af889",
+      "69ac089f4f2de193ce9af88a",
+      "69ac089f4f2de193ce9af88b",
+      "69ac089f4f2de193ce9af88c",
+      "69ac089f4f2de193ce9af88d",
+      "69ac089f4f2de193ce9af88e",
+      "69ac089f4f2de193ce9af88f",
+      "69ac089f4f2de193ce9af890",
+      "69ac089f4f2de193ce9af891",
+      "69ac089f4f2de193ce9af892"
+    ],
+    "status": "IN_PROGRESS",
+    "rounds": 0,
+    "maxRounds": 10,
+    "teamScoreLeft": 0,
+    "teamScoreRight": 0,
+    "winner": "",
+    "createdAt": "2026-03-07T11:14:23.973Z",
+    "updatedAt": "2026-03-07T11:14:39.786Z",
+    "__v": 1
+  },
+  {
+    "_id": "69abda714bebf19e4dbf2a77",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "MATH",
+    "difficulty": "HARD",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69abda714bebf19e4dbf2a78"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69abda714bebf19e4dbf2a79"
+      }
+    ],
+    "ropePosition": 0,
+    "gameMode": "solo",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69abda794bebf19e4dbf2a7b",
+      "69abda794bebf19e4dbf2a7c",
+      "69abda794bebf19e4dbf2a7d",
+      "69abda794bebf19e4dbf2a7e",
+      "69abda794bebf19e4dbf2a7f",
+      "69abda794bebf19e4dbf2a80",
+      "69abda794bebf19e4dbf2a81",
+      "69abda794bebf19e4dbf2a82",
+      "69abda794bebf19e4dbf2a83",
+      "69abda794bebf19e4dbf2a84"
+    ],
+    "status": "COMPLETED",
+    "rounds": 10,
+    "maxRounds": 10,
+    "teamScoreLeft": 60,
+    "teamScoreRight": 0,
+    "winner": "LEFT",
+    "createdAt": "2026-03-07T07:57:37.638Z",
+    "updatedAt": "2026-03-07T07:58:47.864Z",
+    "__v": 1
+  },
+  {
+    "_id": "69abcbdb2b21db0970e1adf5",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "MATH",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69abcbdb2b21db0970e1adf6"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69abcbdb2b21db0970e1adf7"
+      }
+    ],
+    "ropePosition": 0,
+    "gameMode": "splitscreen",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69abcbdf2b21db0970e1adf9",
+      "69abcbdf2b21db0970e1adfa",
+      "69abcbdf2b21db0970e1adfb",
+      "69abcbdf2b21db0970e1adfc",
+      "69abcbdf2b21db0970e1adfd"
+    ],
+    "status": "WAITING",
+    "rounds": 0,
+    "maxRounds": 5,
+    "teamScoreLeft": 0,
+    "teamScoreRight": 0,
+    "winner": "",
+    "createdAt": "2026-03-07T06:55:23.828Z",
+    "updatedAt": "2026-03-07T06:55:27.388Z",
+    "__v": 1
+  },
+  {
+    "_id": "69abc7ef2b21db0970e1ad8a",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "ENGLISH",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69abc7ef2b21db0970e1ad8b"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69abc7ef2b21db0970e1ad8c"
+      }
+    ],
+    "ropePosition": 0,
+    "gameMode": "splitscreen",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69abc7f62b21db0970e1ad8e",
+      "69abc7f62b21db0970e1ad8f",
+      "69abc7f62b21db0970e1ad90",
+      "69abc7f62b21db0970e1ad91",
+      "69abc7f62b21db0970e1ad92",
+      "69abc7f62b21db0970e1ad93",
+      "69abc7f62b21db0970e1ad94",
+      "69abc7f62b21db0970e1ad95",
+      "69abc7f62b21db0970e1ad96",
+      "69abc7f62b21db0970e1ad97"
+    ],
+    "status": "WAITING",
+    "rounds": 0,
+    "maxRounds": 10,
+    "teamScoreLeft": 0,
+    "teamScoreRight": 0,
+    "winner": "",
+    "createdAt": "2026-03-07T06:38:39.130Z",
+    "updatedAt": "2026-03-07T06:38:46.194Z",
+    "__v": 1
+  },
+  {
+    "_id": "69abc5802b21db0970e1ad5c",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "SCIENCE",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69abc5802b21db0970e1ad5d"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69abc5802b21db0970e1ad5e"
+      }
+    ],
+    "ropePosition": 0,
+    "gameMode": "splitscreen",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69abc5862b21db0970e1ad60",
+      "69abc5862b21db0970e1ad61",
+      "69abc5862b21db0970e1ad62",
+      "69abc5862b21db0970e1ad63",
+      "69abc5862b21db0970e1ad64",
+      "69abc5862b21db0970e1ad65",
+      "69abc5862b21db0970e1ad66",
+      "69abc5862b21db0970e1ad67",
+      "69abc5862b21db0970e1ad68",
+      "69abc5862b21db0970e1ad69"
+    ],
+    "status": "WAITING",
+    "rounds": 0,
+    "maxRounds": 10,
+    "teamScoreLeft": 0,
+    "teamScoreRight": 0,
+    "winner": "",
+    "createdAt": "2026-03-07T06:28:16.723Z",
+    "updatedAt": "2026-03-07T06:28:22.236Z",
+    "__v": 1
+  },
+  {
+    "_id": "69abbdcd2b21db0970e1ad38",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "MATH",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69abbdcd2b21db0970e1ad39"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69abbdcd2b21db0970e1ad3a"
+      }
+    ],
+    "ropePosition": 0,
+    "gameMode": "splitscreen",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69abbdd02b21db0970e1ad3c",
+      "69abbdd02b21db0970e1ad3d",
+      "69abbdd02b21db0970e1ad3e",
+      "69abbdd02b21db0970e1ad3f",
+      "69abbdd02b21db0970e1ad40"
+    ],
+    "status": "WAITING",
+    "rounds": 0,
+    "maxRounds": 5,
+    "teamScoreLeft": 0,
+    "teamScoreRight": 0,
+    "winner": "",
+    "createdAt": "2026-03-07T05:55:25.456Z",
+    "updatedAt": "2026-03-07T05:55:28.460Z",
+    "__v": 1
+  },
+  {
+    "_id": "69abbdb22b21db0970e1ad1c",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "MATH",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69abbdb22b21db0970e1ad1d"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69abbdb22b21db0970e1ad1e"
+      }
+    ],
+    "ropePosition": 0,
+    "gameMode": "splitscreen",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69abbdb72b21db0970e1ad20",
+      "69abbdb72b21db0970e1ad21",
+      "69abbdb72b21db0970e1ad22",
+      "69abbdb72b21db0970e1ad23",
+      "69abbdb72b21db0970e1ad24",
+      "69abbdb72b21db0970e1ad25",
+      "69abbdb72b21db0970e1ad26",
+      "69abbdb72b21db0970e1ad27",
+      "69abbdb72b21db0970e1ad28",
+      "69abbdb72b21db0970e1ad29"
+    ],
+    "status": "WAITING",
+    "rounds": 0,
+    "maxRounds": 10,
+    "teamScoreLeft": 0,
+    "teamScoreRight": 0,
+    "winner": "",
+    "createdAt": "2026-03-07T05:54:58.330Z",
+    "updatedAt": "2026-03-07T05:55:03.514Z",
+    "__v": 1
+  },
+  {
+    "_id": "69abbd0d2b21db0970e1acfc",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "SCIENCE",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69abbd0d2b21db0970e1acfd"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69abbd0d2b21db0970e1acfe"
+      }
+    ],
+    "ropePosition": 0,
+    "gameMode": "splitscreen",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69abbd132b21db0970e1ad00",
+      "69abbd132b21db0970e1ad01",
+      "69abbd132b21db0970e1ad02",
+      "69abbd132b21db0970e1ad03",
+      "69abbd132b21db0970e1ad04",
+      "69abbd132b21db0970e1ad05",
+      "69abbd132b21db0970e1ad06",
+      "69abbd132b21db0970e1ad07",
+      "69abbd132b21db0970e1ad08",
+      "69abbd132b21db0970e1ad09"
+    ],
+    "status": "WAITING",
+    "rounds": 0,
+    "maxRounds": 10,
+    "teamScoreLeft": 0,
+    "teamScoreRight": 0,
+    "winner": "",
+    "createdAt": "2026-03-07T05:52:13.231Z",
+    "updatedAt": "2026-03-07T05:52:19.459Z",
+    "__v": 1
+  },
+  {
+    "_id": "69abb8722b21db0970e1ace2",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "SCIENCE",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69abb8722b21db0970e1ace3"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69abb8722b21db0970e1ace4"
+      }
+    ],
+    "ropePosition": 0,
+    "gameMode": "splitscreen",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69abb8762b21db0970e1ace6",
+      "69abb8762b21db0970e1ace7",
+      "69abb8762b21db0970e1ace8",
+      "69abb8762b21db0970e1ace9",
+      "69abb8762b21db0970e1acea"
+    ],
+    "status": "WAITING",
+    "rounds": 0,
+    "maxRounds": 5,
+    "teamScoreLeft": 0,
+    "teamScoreRight": 0,
+    "winner": "",
+    "createdAt": "2026-03-07T05:32:34.392Z",
+    "updatedAt": "2026-03-07T05:32:38.661Z",
+    "__v": 1
+  },
+  {
+    "_id": "69abb3f72b21db0970e1accc",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "MATH",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69abb3f72b21db0970e1accd"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69abb3f72b21db0970e1acce"
+      }
+    ],
+    "ropePosition": 0,
+    "gameMode": "splitscreen",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69abb3fc2b21db0970e1acd0",
+      "69abb3fc2b21db0970e1acd1",
+      "69abb3fc2b21db0970e1acd2",
+      "69abb3fc2b21db0970e1acd3",
+      "69abb3fc2b21db0970e1acd4"
+    ],
+    "status": "WAITING",
+    "rounds": 0,
+    "maxRounds": 5,
+    "teamScoreLeft": 0,
+    "teamScoreRight": 0,
+    "winner": "",
+    "createdAt": "2026-03-07T05:13:27.408Z",
+    "updatedAt": "2026-03-07T05:13:32.819Z",
+    "__v": 1
+  },
+  {
+    "_id": "69abaf802b21db0970e1acae",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "ENGLISH",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69abaf802b21db0970e1acaf"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69abaf802b21db0970e1acb0"
+      }
+    ],
+    "ropePosition": 0,
+    "gameMode": "splitscreen",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69abaf842b21db0970e1acb2",
+      "69abaf842b21db0970e1acb3",
+      "69abaf842b21db0970e1acb4",
+      "69abaf842b21db0970e1acb5",
+      "69abaf842b21db0970e1acb6",
+      "69abaf842b21db0970e1acb7",
+      "69abaf842b21db0970e1acb8",
+      "69abaf842b21db0970e1acb9",
+      "69abaf842b21db0970e1acba",
+      "69abaf842b21db0970e1acbb"
+    ],
+    "status": "WAITING",
+    "rounds": 0,
+    "maxRounds": 10,
+    "teamScoreLeft": 0,
+    "teamScoreRight": 0,
+    "winner": "",
+    "createdAt": "2026-03-07T04:54:24.818Z",
+    "updatedAt": "2026-03-07T04:54:28.412Z",
+    "__v": 1
+  },
+  {
+    "_id": "69abaf522b21db0970e1ac8a",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "SCIENCE",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69abaf522b21db0970e1ac8b"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69abaf522b21db0970e1ac8c"
+      }
+    ],
+    "ropePosition": 0,
+    "gameMode": "splitscreen",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69abaf572b21db0970e1ac8e",
+      "69abaf572b21db0970e1ac8f",
+      "69abaf572b21db0970e1ac90",
+      "69abaf572b21db0970e1ac91",
+      "69abaf572b21db0970e1ac92",
+      "69abaf572b21db0970e1ac93",
+      "69abaf572b21db0970e1ac94",
+      "69abaf572b21db0970e1ac95",
+      "69abaf572b21db0970e1ac96",
+      "69abaf572b21db0970e1ac97",
+      "69abaf572b21db0970e1ac98",
+      "69abaf572b21db0970e1ac99",
+      "69abaf572b21db0970e1ac9a",
+      "69abaf572b21db0970e1ac9b",
+      "69abaf572b21db0970e1ac9c"
+    ],
+    "status": "WAITING",
+    "rounds": 0,
+    "maxRounds": 15,
+    "teamScoreLeft": 0,
+    "teamScoreRight": 0,
+    "winner": "",
+    "createdAt": "2026-03-07T04:53:38.784Z",
+    "updatedAt": "2026-03-07T04:53:43.338Z",
+    "__v": 1
+  },
+  {
+    "_id": "69abaf142b21db0970e1ac64",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "ENGLISH",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69abaf142b21db0970e1ac65"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69abaf142b21db0970e1ac66"
+      }
+    ],
+    "ropePosition": -1,
+    "gameMode": "splitscreen",
+    "currentQuestionIndex": 1,
+    "questions": [
+      "69abaf172b21db0970e1ac68",
+      "69abaf172b21db0970e1ac69",
+      "69abaf172b21db0970e1ac6a",
+      "69abaf172b21db0970e1ac6b",
+      "69abaf172b21db0970e1ac6c",
+      "69abaf172b21db0970e1ac6d",
+      "69abaf172b21db0970e1ac6e",
+      "69abaf172b21db0970e1ac6f",
+      "69abaf172b21db0970e1ac70",
+      "69abaf172b21db0970e1ac71"
+    ],
+    "status": "WAITING",
+    "rounds": 1,
+    "maxRounds": 10,
+    "teamScoreLeft": 10,
+    "teamScoreRight": 0,
+    "winner": "",
+    "createdAt": "2026-03-07T04:52:36.538Z",
+    "updatedAt": "2026-03-07T04:53:16.282Z",
+    "__v": 1
+  },
+  {
+    "_id": "69abaecb2b21db0970e1ac48",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "MATH",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69abaecb2b21db0970e1ac49"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69abaecb2b21db0970e1ac4a"
+      }
+    ],
+    "ropePosition": 0.5,
+    "gameMode": "splitscreen",
+    "currentQuestionIndex": 1,
+    "questions": [
+      "69abaed02b21db0970e1ac4c",
+      "69abaed02b21db0970e1ac4d",
+      "69abaed02b21db0970e1ac4e",
+      "69abaed02b21db0970e1ac4f",
+      "69abaed02b21db0970e1ac50"
+    ],
+    "status": "WAITING",
+    "rounds": 1,
+    "maxRounds": 5,
+    "teamScoreLeft": 0,
+    "teamScoreRight": 0,
+    "winner": "",
+    "createdAt": "2026-03-07T04:51:23.674Z",
+    "updatedAt": "2026-03-07T04:52:04.468Z",
+    "__v": 1
+  },
+  {
+    "_id": "69abad972b21db0970e1ac38",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "MATH",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69abad972b21db0970e1ac39"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69abad972b21db0970e1ac3a"
+      }
+    ],
+    "ropePosition": 0,
+    "gameMode": "splitscreen",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69abad992b21db0970e1ac3c",
+      "69abad992b21db0970e1ac3d",
+      "69abad992b21db0970e1ac3e",
+      "69abad992b21db0970e1ac3f",
+      "69abad992b21db0970e1ac40"
+    ],
+    "status": "WAITING",
+    "rounds": 0,
+    "maxRounds": 5,
+    "teamScoreLeft": 0,
+    "teamScoreRight": 0,
+    "winner": "",
+    "createdAt": "2026-03-07T04:46:15.864Z",
+    "updatedAt": "2026-03-07T04:46:17.556Z",
+    "__v": 1
+  },
+  {
+    "_id": "69abad932b21db0970e1ac28",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "MATH",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69abad932b21db0970e1ac29"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69abad932b21db0970e1ac2a"
+      }
+    ],
+    "ropePosition": 0,
+    "gameMode": "splitscreen",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69abad972b21db0970e1ac2c",
+      "69abad972b21db0970e1ac2d",
+      "69abad972b21db0970e1ac2e",
+      "69abad972b21db0970e1ac2f",
+      "69abad972b21db0970e1ac30"
+    ],
+    "status": "WAITING",
+    "rounds": 0,
+    "maxRounds": 5,
+    "teamScoreLeft": 0,
+    "teamScoreRight": 0,
+    "winner": "",
+    "createdAt": "2026-03-07T04:46:11.677Z",
+    "updatedAt": "2026-03-07T04:46:15.819Z",
+    "__v": 1
+  },
+  {
+    "_id": "69ab8e5eba010ea2cc5063b6",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "MATH",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69ab8e5eba010ea2cc5063b7"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69ab8e5eba010ea2cc5063b8"
+      }
+    ],
+    "ropePosition": 0,
+    "gameMode": "splitscreen",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69ab8e61ba010ea2cc5063ba",
+      "69ab8e61ba010ea2cc5063bb",
+      "69ab8e61ba010ea2cc5063bc",
+      "69ab8e61ba010ea2cc5063bd",
+      "69ab8e61ba010ea2cc5063be",
+      "69ab8e61ba010ea2cc5063bf",
+      "69ab8e61ba010ea2cc5063c0",
+      "69ab8e61ba010ea2cc5063c1",
+      "69ab8e61ba010ea2cc5063c2",
+      "69ab8e61ba010ea2cc5063c3"
+    ],
+    "status": "WAITING",
+    "rounds": 0,
+    "maxRounds": 10,
+    "teamScoreLeft": 0,
+    "teamScoreRight": 0,
+    "winner": "",
+    "createdAt": "2026-03-07T02:33:02.215Z",
+    "updatedAt": "2026-03-07T02:33:05.998Z",
+    "__v": 1
+  },
+  {
+    "_id": "69ab8ca5ba010ea2cc50637b",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "GEOGRAPHY",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69ab8ca5ba010ea2cc50637c"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69ab8ca5ba010ea2cc50637d"
+      }
+    ],
+    "ropePosition": -1,
+    "gameMode": "splitscreen",
+    "currentQuestionIndex": 1,
+    "questions": [
+      "69ab8ca8ba010ea2cc50638a",
+      "69ab8ca8ba010ea2cc50638b",
+      "69ab8ca8ba010ea2cc50638c",
+      "69ab8ca8ba010ea2cc50638d",
+      "69ab8ca8ba010ea2cc50638e"
+    ],
+    "status": "WAITING",
+    "rounds": 1,
+    "maxRounds": 5,
+    "teamScoreLeft": 10,
+    "teamScoreRight": 0,
+    "winner": "",
+    "createdAt": "2026-03-07T02:25:41.228Z",
+    "updatedAt": "2026-03-07T02:26:14.870Z",
+    "__v": 1
+  },
+  {
+    "_id": "69ab8ca5ba010ea2cc506377",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "GEOGRAPHY",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69ab8ca5ba010ea2cc506378"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69ab8ca5ba010ea2cc506379"
+      }
+    ],
+    "ropePosition": 0,
+    "gameMode": "splitscreen",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69ab8ca7ba010ea2cc50637f",
+      "69ab8ca7ba010ea2cc506380",
+      "69ab8ca7ba010ea2cc506381",
+      "69ab8ca7ba010ea2cc506382",
+      "69ab8ca7ba010ea2cc506383"
+    ],
+    "status": "WAITING",
+    "rounds": 0,
+    "maxRounds": 5,
+    "teamScoreLeft": 0,
+    "teamScoreRight": 0,
+    "winner": "",
+    "createdAt": "2026-03-07T02:25:41.218Z",
+    "updatedAt": "2026-03-07T02:25:43.778Z",
+    "__v": 1
+  },
+  {
+    "_id": "69ab88ffba010ea2cc506332",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "SCIENCE",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69ab88ffba010ea2cc506333"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69ab88ffba010ea2cc506334"
+      }
+    ],
+    "ropePosition": -0.5,
+    "gameMode": "splitscreen",
+    "currentQuestionIndex": 2,
+    "questions": [
+      "69ab8901ba010ea2cc506336",
+      "69ab8901ba010ea2cc506337",
+      "69ab8901ba010ea2cc506338",
+      "69ab8901ba010ea2cc506339",
+      "69ab8901ba010ea2cc50633a"
+    ],
+    "status": "WAITING",
+    "rounds": 2,
+    "maxRounds": 5,
+    "teamScoreLeft": 10,
+    "teamScoreRight": 0,
+    "winner": "",
+    "createdAt": "2026-03-07T02:10:07.254Z",
+    "updatedAt": "2026-03-07T02:10:27.203Z",
+    "__v": 1
+  },
+  {
+    "_id": "69ab88c9ba010ea2cc506315",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "SCIENCE",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69ab88c9ba010ea2cc506316"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69ab88c9ba010ea2cc506317"
+      }
+    ],
+    "ropePosition": 0,
+    "gameMode": "splitscreen",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69ab88ccba010ea2cc506324",
+      "69ab88ccba010ea2cc506325",
+      "69ab88ccba010ea2cc506326",
+      "69ab88ccba010ea2cc506327",
+      "69ab88ccba010ea2cc506328"
+    ],
+    "status": "WAITING",
+    "rounds": 0,
+    "maxRounds": 5,
+    "teamScoreLeft": 0,
+    "teamScoreRight": 0,
+    "winner": "",
+    "createdAt": "2026-03-07T02:09:13.934Z",
+    "updatedAt": "2026-03-07T02:09:16.631Z",
+    "__v": 1
+  },
+  {
+    "_id": "69ab88c6ba010ea2cc506310",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "SCIENCE",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69ab88c6ba010ea2cc506311"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69ab88c6ba010ea2cc506312"
+      }
+    ],
+    "ropePosition": 0,
+    "gameMode": "splitscreen",
+    "currentQuestionIndex": 0,
+    "questions": [
+      "69ab88caba010ea2cc506319",
+      "69ab88caba010ea2cc50631a",
+      "69ab88caba010ea2cc50631b",
+      "69ab88caba010ea2cc50631c",
+      "69ab88caba010ea2cc50631d"
+    ],
+    "status": "WAITING",
+    "rounds": 0,
+    "maxRounds": 5,
+    "teamScoreLeft": 0,
+    "teamScoreRight": 0,
+    "winner": "",
+    "createdAt": "2026-03-07T02:09:11.009Z",
+    "updatedAt": "2026-03-07T02:09:14.986Z",
+    "__v": 1
+  },
+  {
+    "_id": "69ab87ac7cecce7c9713fb76",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "SCIENCE",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69ab87ac7cecce7c9713fb77"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69ab87ac7cecce7c9713fb78"
+      }
+    ],
+    "ropePosition": 0.5,
+    "gameMode": "splitscreen",
+    "currentQuestionIndex": 1,
+    "questions": [
+      "69ab87ad7cecce7c9713fb7a",
+      "69ab87ad7cecce7c9713fb7b",
+      "69ab87ad7cecce7c9713fb7c",
+      "69ab87ad7cecce7c9713fb7d",
+      "69ab87ad7cecce7c9713fb7e",
+      "69ab87ad7cecce7c9713fb7f",
+      "69ab87ad7cecce7c9713fb80",
+      "69ab87ad7cecce7c9713fb81",
+      "69ab87ad7cecce7c9713fb82",
+      "69ab87ad7cecce7c9713fb83"
+    ],
+    "status": "WAITING",
+    "rounds": 1,
+    "maxRounds": 10,
+    "teamScoreLeft": 0,
+    "teamScoreRight": 0,
+    "winner": "",
+    "createdAt": "2026-03-07T02:04:28.245Z",
+    "updatedAt": "2026-03-07T02:04:36.835Z",
+    "__v": 1
+  },
+  {
+    "_id": "69ab87727cecce7c9713fb4e",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "HISTORY",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69ab87727cecce7c9713fb4f"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69ab87727cecce7c9713fb50"
+      }
+    ],
+    "ropePosition": -1,
+    "gameMode": "splitscreen",
+    "currentQuestionIndex": 1,
+    "questions": [
+      "69ab87737cecce7c9713fb52",
+      "69ab87737cecce7c9713fb53",
+      "69ab87737cecce7c9713fb54",
+      "69ab87737cecce7c9713fb55",
+      "69ab87737cecce7c9713fb56",
+      "69ab87737cecce7c9713fb57",
+      "69ab87737cecce7c9713fb58",
+      "69ab87737cecce7c9713fb59",
+      "69ab87737cecce7c9713fb5a",
+      "69ab87737cecce7c9713fb5b"
+    ],
+    "status": "WAITING",
+    "rounds": 1,
+    "maxRounds": 10,
+    "teamScoreLeft": 10,
+    "teamScoreRight": 0,
+    "winner": "",
+    "createdAt": "2026-03-07T02:03:30.425Z",
+    "updatedAt": "2026-03-07T02:04:18.819Z",
+    "__v": 1
+  },
+  {
+    "_id": "69ab874b7cecce7c9713fb30",
+    "hostParentId": "69924a6a02046a2222309c2c",
+    "subject": "MATH",
+    "difficulty": "EASY",
+    "teams": [
+      {
+        "name": "Red Team",
+        "players": [],
+        "color": "#EF4444",
+        "side": "LEFT",
+        "_id": "69ab874b7cecce7c9713fb31"
+      },
+      {
+        "name": "Blue Team",
+        "players": [],
+        "color": "#3B82F6",
+        "side": "RIGHT",
+        "_id": "69ab874b7cecce7c9713fb32"
+      }
+    ],
+    "ropePosition": 0.5,
+    "gameMode": "splitscreen",
+    "currentQuestionIndex": 1,
+    "questions": [
+      "69ab874d7cecce7c9713fb34",
+      "69ab874d7cecce7c9713fb35",
+      "69ab874d7cecce7c9713fb36",
+      "69ab874d7cecce7c9713fb37",
+      "69ab874d7cecce7c9713fb38"
+    ],
+    "status": "WAITING",
+    "rounds": 1,
+    "maxRounds": 5,
+    "teamScoreLeft": 0,
+    "teamScoreRight": 0,
+    "winner": "",
+    "createdAt": "2026-03-07T02:02:51.892Z",
+    "updatedAt": "2026-03-07T02:03:02.676Z",
+    "__v": 1
+  }
+]

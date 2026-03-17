@@ -24,6 +24,7 @@ export class QuestionProviderService {
     count: number = 10,
     threadId?: string,
     context?: string,
+    language?: string,
   ): Promise<Question[]> {
     if (context?.trim() && isGeminiConfigured) {
       const verdict = await validateContext(subject, context.trim());
@@ -34,7 +35,7 @@ export class QuestionProviderService {
 
     if (isGeminiConfigured) {
       try {
-        return await this.generateWithGraph(subject, difficulty, count, threadId, context);
+        return await this.generateWithGraph(subject, difficulty, count, threadId, context, language);
       } catch (error) {
         if (error instanceof BadRequestException) throw error;
         this.logger.error(
@@ -54,11 +55,12 @@ export class QuestionProviderService {
     count: number,
     threadId?: string,
     context?: string,
+    language?: string,
   ): Promise<Question[]> {
     // Use match ID as thread, or generate a one-off thread
     const thread = threadId || `oneoff-${Date.now()}`;
 
-    const parsed = await invokeQuestionGraph(subject, difficulty, count, thread, context);
+    const parsed = await invokeQuestionGraph(subject, difficulty, count, thread, context, language);
 
     const questions = await Promise.all(
       parsed.map((q: any) =>

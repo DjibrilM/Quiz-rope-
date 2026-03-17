@@ -1,6 +1,7 @@
 import { View, Text, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useRef, useCallback } from "react";
+import { router } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { usePortrait } from "../src/hooks/useOrientation";
@@ -18,6 +19,7 @@ import {
 } from "../src/components/common";
 import { FONTS } from "../src/constants/theme";
 import { getSubjectTheme } from "../src/config/subjectThemes";
+import type { ChildMatchSummary } from "@shared/types/analytics.types";
 import Svg, { Path, Defs, LinearGradient, Stop } from "react-native-svg";
 import {
   BottomSheetModal,
@@ -146,6 +148,58 @@ function SubjectStatRow({
   );
 }
 
+function MatchHistoryRow({ summary }: { summary: ChildMatchSummary }) {
+  const theme = getSubjectTheme(summary.subject);
+  const date = new Date(summary.date).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+  });
+  const outcomeColor = summary.didWin ? "#10B981" : "#EF4444";
+
+  return (
+    <View
+      style={{
+        backgroundColor: "#0D0B14",
+        borderRadius: 12,
+        padding: 12,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 10,
+      }}
+    >
+      <View
+        style={{
+          width: 8,
+          height: 8,
+          borderRadius: 4,
+          backgroundColor: theme.accentColor,
+          flexShrink: 0,
+        }}
+      />
+      <View style={{ flex: 1 }}>
+        <Text style={{ color: "#FFFFFF", fontSize: 13, fontFamily: FONTS.bodyBold }}>
+          {theme.label}
+        </Text>
+        <Text style={{ color: "#7B6B8A", fontSize: 11, fontFamily: FONTS.body, marginTop: 1 }}>
+          {date} · {summary.accuracy}% accuracy
+        </Text>
+      </View>
+      <View
+        style={{
+          backgroundColor: `${outcomeColor}20`,
+          borderRadius: 8,
+          paddingHorizontal: 8,
+          paddingVertical: 3,
+        }}
+      >
+        <Text style={{ color: outcomeColor, fontSize: 11, fontFamily: FONTS.bodyBold }}>
+          {summary.didWin ? "Won" : "Lost"}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
 function ChildDetailSheet({
   entry,
   onClose,
@@ -154,10 +208,22 @@ function ChildDetailSheet({
   onClose: () => void;
 }) {
   const { t } = useTranslation(["leaderboard", "common"]);
-  const { data: stats, isLoading } = useQuery({
+  const { children } = useGameStore();
+
+  const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ["childStats", entry.playerId],
     queryFn: () => apiService.getChildStats(entry.playerId),
   });
+
+  const { data: matchHistory = [], isLoading: historyLoading } = useQuery<ChildMatchSummary[]>({
+    queryKey: ["childMatchHistory", entry.playerId],
+    queryFn: () => apiService.getChildMatchHistory(entry.playerId),
+  });
+
+  // Check if this child belongs to the current parent
+  const ownChild = children.find((c) => c.id === entry.playerId);
+
+  const recentMatches = matchHistory.slice(0, 5);
 
   return (
     <BottomSheetScrollView
@@ -269,6 +335,49 @@ function ChildDetailSheet({
         </View>
       </View>
 
+      {/* Recent match history */}
+      <Text
+        style={{
+          color: "#7B6B8A",
+          fontSize: 11,
+          fontFamily: FONTS.bodySemiBold,
+          letterSpacing: 1.5,
+          textTransform: "uppercase",
+          marginBottom: 12,
+        }}
+      >
+        Recent Matches
+      </Text>
+
+      {historyLoading && (
+        <View style={{ alignItems: "center", paddingVertical: 16 }}>
+          <AnimatedLoader size="sm" />
+        </View>
+      )}
+
+      {!historyLoading && recentMatches.length === 0 && (
+        <Text
+          style={{
+            color: "#7B6B8A",
+            fontSize: 13,
+            fontFamily: FONTS.body,
+            textAlign: "center",
+            paddingVertical: 12,
+            marginBottom: 16,
+          }}
+        >
+          No matches played yet
+        </Text>
+      )}
+
+      {!historyLoading && recentMatches.length > 0 && (
+        <View style={{ gap: 8, marginBottom: 24 }}>
+          {recentMatches.map((m) => (
+            <MatchHistoryRow key={m.matchId} summary={m} />
+          ))}
+        </View>
+      )}
+
       {/* Per-subject breakdown */}
       <Text
         style={{
@@ -283,13 +392,13 @@ function ChildDetailSheet({
         By Subject
       </Text>
 
-      {isLoading && (
+      {statsLoading && (
         <View style={{ alignItems: "center", paddingVertical: 20 }}>
           <AnimatedLoader size="sm" />
         </View>
       )}
 
-      {!isLoading && stats && stats.subjectStats.length === 0 && (
+      {!statsLoading && stats && stats.subjectStats.length === 0 && (
         <Text
           style={{
             color: "#7B6B8A",
@@ -303,7 +412,7 @@ function ChildDetailSheet({
         </Text>
       )}
 
-      {!isLoading && stats && (
+      {!statsLoading && stats && (
         <View style={{ gap: 10, marginBottom: 24 }}>
           {stats.subjectStats.map((s) => (
             <SubjectStatRow
@@ -315,6 +424,22 @@ function ChildDetailSheet({
             />
           ))}
         </View>
+      )}
+
+      {/* View full profile — only for parent's own children */}
+      {ownChild && (
+        <Button
+          label="View Full Profile"
+          variant="primary"
+          className="w-full max-w-none mb-3"
+          onPress={() => {
+            onClose();
+            router.push({
+              pathname: "/child/stats" as any,
+              params: { childId: entry.playerId },
+            });
+          }}
+        />
       )}
 
       <Button

@@ -103,12 +103,25 @@ export async function validateContext(
   }
 }
 
+const LANGUAGE_NAMES: Record<string, string> = {
+  zh: "Chinese (Simplified)",
+  hi: "Hindi",
+  es: "Spanish",
+  fr: "French",
+  ar: "Arabic",
+  bn: "Bengali",
+  pt: "Portuguese",
+  ru: "Russian",
+  ja: "Japanese",
+};
+
 export async function invokeQuestionGraph(
   subject: string,
   difficulty: string,
   count: number,
   threadId: string,
   context?: string,
+  language?: string,
 ): Promise<any[]> {
   if (!compiledGraph) {
     compiledGraph = workflow.compile();
@@ -125,12 +138,17 @@ export async function invokeQuestionGraph(
     ? `\n\nPlayer's specific focus: "${context}"\nAll ${count} questions MUST directly address this focus — do not generate generic ${subject} questions.`
     : "";
 
+  const languageName = language && LANGUAGE_NAMES[language];
+  const languageLine = languageName
+    ? `\n\nIMPORTANT: Generate ALL content — question text, answer options, and explanations — in ${languageName}. Do not use English for any of these fields.`
+    : "";
+
   const systemMsg = new SystemMessage(
     `You are an educational quiz generator for children. You create fun, age-appropriate multiple choice questions. Always respond with valid JSON only — no surrounding markdown code fences. IMPORTANT: Never repeat a question you already generated in this conversation.`,
   );
 
   const humanMsg = new HumanMessage(
-    `Generate ${count} NEW multiple choice questions about ${subject} at ${difficulty} difficulty (for ${ageRange}).${contextLine}
+    `Generate ${count} NEW multiple choice questions about ${subject} at ${difficulty} difficulty (for ${ageRange}).${contextLine}${languageLine}
 
 Return ONLY a JSON array:
 [{ "text": "question", "options": ["a","b","c","d"], "correctIndex": 0, "explanation": "markdown explanation" }]

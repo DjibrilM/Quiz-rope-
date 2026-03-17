@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, ScrollView } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -61,6 +62,7 @@ export function GameEndOverlay({
   onReview,
 }: GameEndOverlayProps) {
   const { t } = useTranslation(["game", "common"]);
+  const insets = useSafeAreaInsets();
   const currentMatch = useGameStore((s) => s.currentMatch);
   const isSoloMode = currentMatch?.gameMode === "solo";
   const titleScale = useSharedValue(0);
@@ -111,7 +113,11 @@ export function GameEndOverlay({
     >
       <ConfettiOverlay visible={true} />
 
-      <View style={{ width: "100%", maxWidth: 500, alignItems: "center" }}>
+      <ScrollView
+        style={{ width: "100%", maxWidth: 500 }}
+        contentContainerStyle={{ alignItems: "center", paddingTop: insets.top + 16, paddingBottom: insets.bottom + 16 }}
+        showsVerticalScrollIndicator={false}
+      >
         <TrophyIcon />
 
         <Animated.View
@@ -452,7 +458,7 @@ export function GameEndOverlay({
             </Pressable>
           )}
         </Animated.View>
-      </View>
+      </ScrollView>
     </Animated.View>
   );
 }

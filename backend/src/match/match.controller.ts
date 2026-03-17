@@ -23,6 +23,8 @@ export class MatchController {
       gameMode?: string;
       context?: string;
       teams: { name: string; color: string; side: string; players?: string[] }[];
+      childIds?: string[];
+      language?: string;
     },
   ) {
     if (!body.subject || !VALID_SUBJECTS.includes(body.subject.toUpperCase())) {
@@ -51,6 +53,8 @@ export class MatchController {
       ],
       gameMode,
       body.context,
+      body.childIds,
+      body.language,
     );
   }
 

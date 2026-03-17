@@ -60,9 +60,11 @@
       <true/>
     </dict>
     <key>NSCameraUsageDescription</key>
-    <string>Allow QuizRope to scan QR codes</string>
+    <string>QuizRope uses your camera to scan QR codes when joining a quiz match and to photograph homework assignments for AI-powered step-by-step explanations.</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your microphone</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>QuizRope uses your photo library so you can upload a photo of your homework and receive AI-powered step-by-step explanations to help you learn.</string>
     <key>NSUserActivityTypes</key>
     <array>
       <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>

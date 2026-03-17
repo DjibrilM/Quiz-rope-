@@ -38,7 +38,21 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow QuizRope to scan QR codes"
+          "cameraPermission": "QuizRope uses your camera to scan QR codes when joining a quiz match and to photograph homework assignments for AI-powered step-by-step explanations."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "QuizRope uses your photo library so you can upload a photo of your homework and receive AI-powered step-by-step explanations to help you learn.",
+          "colors": {
+            "cropToolbarColor": "#000000"
+          },
+          "dark": {
+            "colors": {
+              "cropToolbarColor": "#000000"
+            }
+          }
         }
       ],
       "expo-asset",
@@ -51,11 +65,7 @@
           "ios": {
             "useFrameworks": "static",
             "buildReactNativeFromSource": true,
-            "forceStaticLinking": [
-              "RNFBApp",
-              "RNFBAuth",
-              "RNFBFirestore"
-            ]
+            "forceStaticLinking": ["RNFBApp", "RNFBAuth", "RNFBFirestore"]
           }
         }
       ],

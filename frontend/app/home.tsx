@@ -64,6 +64,23 @@ function IconNewGame() {
   );
 }
 
+function IconHomework() {
+  return (
+    <Svg width={32} height={32} viewBox="0 0 24 24" fill="none">
+      <Defs>
+        <LinearGradient id="hw" x1="0" y1="0" x2="1" y2="1">
+          <Stop offset="0" stopColor="#34D399" />
+          <Stop offset="1" stopColor="#059669" />
+        </LinearGradient>
+      </Defs>
+      <Rect x="3" y="2" width="14" height="18" rx="2" stroke="url(#hw)" strokeWidth="2" fill="none" />
+      <Path d="M7 7h6M7 11h6M7 15h4" stroke="#34D399" strokeWidth="1.5" strokeLinecap="round" />
+      <Circle cx="19" cy="17" r="4" fill="#059669" />
+      <Path d="M17.5 17l1 1 2-2" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}
+
 function IconConnectDevice() {
   return (
     <Svg width={32} height={32} viewBox="0 0 24 24" fill="none">
@@ -260,9 +277,13 @@ export default function HomeScreen() {
     logout,
     setCurrentMatch,
     setChildren,
+    childSession,
+    children,
   } = useGameStore();
 
   const isGuest = userRole === "guest";
+  const isChild = userRole === "child";
+  const currentChild = isChild ? children.find((c) => c.id === childSession?.childId) : null;
   const logoutSheetRef = useRef<BottomSheetModal>(null);
   const languageSheetRef = useRef<BottomSheetModal>(null);
 
@@ -333,7 +354,7 @@ export default function HomeScreen() {
       createdAt: new Date(),
     };
     setCurrentMatch(match as any);
-    router.push({ pathname: "/game", params: { matchId: match.id } });
+    router.push({ pathname: "/match/game", params: { matchId: match.id } });
   };
 
   const handleLogout = async () => {
@@ -360,20 +381,22 @@ export default function HomeScreen() {
             >
               {t("home:appName")}
             </Text>
-            <Text
-              style={{
-                fontSize: 14,
-                color: "#B8A9C9",
-                marginTop: 4,
-                fontFamily: FONTS.body,
-              }}
-            >
-              {t("home:greeting", {
-                name: isGuest
-                  ? guestProfile?.displayName || "Player"
-                  : parentUser?.displayName || "Player",
-              })}
-            </Text>
+            {(isGuest || isChild) && (
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: "#B8A9C9",
+                  marginTop: 4,
+                  fontFamily: FONTS.body,
+                }}
+              >
+                {t("home:greeting", {
+                  name: isGuest
+                    ? guestProfile?.displayName || "Player"
+                    : currentChild?.displayName || "Player",
+                })}
+              </Text>
+            )}
           </View>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
             <FlashingGlobeButton
@@ -406,7 +429,7 @@ export default function HomeScreen() {
       {isGuest && guestProfile && (
         <Pressable
           className="mb-2"
-          onPress={() => router.push("/link-to-parent")}
+          onPress={() => router.push("/child/link-to-parent")}
           style={{
             marginHorizontal: 24,
             marginBottom: 4,
@@ -505,7 +528,7 @@ export default function HomeScreen() {
                 icon={<IconQuickPlay />}
                 title={t("home:menu.soloPlay")}
                 subtitle={t("home:menu.soloPlayDesc")}
-                onPress={() => router.push("/create-match")}
+                onPress={() => router.push("/match/create")}
                 highlight
               />
             </View>
@@ -527,18 +550,25 @@ export default function HomeScreen() {
                 icon={<IconNewGame />}
                 title={t("home:menu.startNewGame")}
                 subtitle={t("home:menu.startNewGameDesc")}
-                onPress={() => router.push("/create-match")}
+                onPress={() => router.push("/match/create")}
                 highlight
               />
             </View>
           )}
+
+          <MenuItem
+            icon={<IconHomework />}
+            title="Homework Assist"
+            subtitle="Photograph homework and get AI explanations"
+            onPress={() => router.push("/homework" as any)}
+          />
 
           {userRole !== "child" && !isGuest && (
             <MenuItem
               icon={<IconChildren />}
               title={t("home:menu.myChildren")}
               subtitle={t("home:menu.myChildrenDesc")}
-              onPress={() => router.push("/children")}
+              onPress={() => router.push("/child")}
             />
           )}
 
@@ -546,7 +576,7 @@ export default function HomeScreen() {
             icon={<IconMatchHistory />}
             title={t("home:menu.matchHistory")}
             subtitle={t("home:menu.matchHistoryDesc")}
-            onPress={() => router.push("/match-history" as any)}
+            onPress={() => router.push("/match/history" as any)}
           />
 
           <MenuItem
@@ -562,7 +592,7 @@ export default function HomeScreen() {
               icon={<IconChildren />}
               title={t("home:guest.linkMenuItem")}
               subtitle={t("home:guest.linkMenuItemDesc")}
-              onPress={() => router.push("/link-to-parent")}
+              onPress={() => router.push("/child/link-to-parent")}
             />
           )}
         </StaggeredList>

@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, Pressable, Platform } from "react-native";
 import { router, Stack } from "expo-router";
-import Svg, { Path } from "react-native-svg";
+import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 
 interface ScreenHeaderProps {
@@ -23,6 +23,21 @@ export function ScreenHeader({
         options={{
           headerShown: true,
           title,
+          ...(showBack && {
+            headerLeft: () => (
+              <Pressable
+                onPress={() => router.back()}
+                style={({ pressed }) => ({
+                  padding: 4,
+                  opacity: pressed ? 0.6 : 1,
+                })}
+                accessibilityRole="button"
+                accessibilityLabel={t("accessibility.goBack")}
+              >
+                <Ionicons name="chevron-back" size={26} color="#FFFFFF" />
+              </Pressable>
+            ),
+          }),
           ...(rightElement && { headerRight: () => rightElement }),
         }}
       />
@@ -56,15 +71,7 @@ export function ScreenHeader({
             accessibilityRole="button"
             accessibilityLabel={t("accessibility.goBack")}
           >
-            <Svg width={22} height={22} viewBox="0 0 24 24" fill="none">
-              <Path
-                d="M15 19l-7-7 7-7"
-                stroke="#FFFFFF"
-                strokeWidth={2.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </Svg>
+            <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
           </Pressable>
         )}
       </View>

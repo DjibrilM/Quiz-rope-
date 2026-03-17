@@ -30,7 +30,7 @@ export function useGameOrientation() {
   const gameMode = useGameStore((s) => s.currentMatch?.gameMode);
 
   useEffect(() => {
-    const wantPortrait = userRole === "child" || userRole === "guest" || gameMode === "solo" || gameMode === "splitscreen";
+    const wantPortrait = gameMode !== "splitscreen" && (userRole === "child" || userRole === "guest" || gameMode === "solo");
     const lock = wantPortrait
       ? ScreenOrientation.OrientationLock.PORTRAIT_UP
       : ScreenOrientation.OrientationLock.LANDSCAPE;

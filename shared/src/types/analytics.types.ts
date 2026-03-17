@@ -29,6 +29,7 @@ export interface ChildMatchSummary {
   winner: string;
   childTeamSide: string;
   didWin: boolean;
+  gameMode: string;
 }
 
 export interface AnswerDetail {
