@@ -34,6 +34,7 @@ import {
   BouncePress,
   Button,
   ActionCard,
+  AnimatedLoader,
 } from "../src/components/common";
 import { AvatarIcon } from "../src/components/common/AvatarIcons";
 import { FONTS } from "../src/constants/theme";
@@ -196,8 +197,32 @@ export default function RoleSelectScreen() {
   const langSheetRef = useRef<BottomSheetModal>(null);
   const [isMockMode, setIsMockMode] = useState(false);
   const [devLoading, setDevLoading] = useState(false);
-  const { setAuth, guestProfile, loginAsGuest } = useGameStore();
+  const { setAuth, guestProfile, loginAsGuest, _hasHydrated, isAuthenticated } = useGameStore();
   usePortrait();
+
+  // Show a loader while the persisted auth state is being rehydrated from
+  // AsyncStorage. This prevents the role-select cards from flashing before
+  // the redirect to /home fires for already-authenticated users.
+  if (!_hasHydrated) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "#0D0B14",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <AnimatedLoader size="lg" />
+      </View>
+    );
+  }
+
+  // Store is hydrated and user is authenticated — redirect is firing, show
+  // nothing to avoid a flash of the role-select UI.
+  if (isAuthenticated) {
+    return <View style={{ flex: 1, backgroundColor: "#0D0B14" }} />;
+  }
 
   useEffect(() => {
     apiService
