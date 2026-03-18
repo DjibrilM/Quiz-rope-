@@ -15,6 +15,7 @@ import { router, Stack, useLocalSearchParams } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import { apiService } from "../../src/services/api";
+import { useGameStore } from "../../src/stores/gameStore";
 import { AnimatedLoader, Button } from "../../src/components/common";
 import { FONTS } from "../../src/constants/theme";
 
@@ -46,6 +47,7 @@ async function incrementDailyCount(): Promise<void> {
 
 export default function CaptureScreen() {
   const { childId } = useLocalSearchParams<{ childId?: string }>();
+  const { userRole } = useGameStore();
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<CameraView>(null);
   const [capturedUri, setCapturedUri] = useState<string | null>(null);
@@ -100,7 +102,9 @@ export default function CaptureScreen() {
 
     setUploading(true);
     try {
-      const session = await apiService.analyzeHomework(capturedBase64, undefined, childId);
+      const session = userRole === "guest"
+        ? await apiService.analyzeGhostHomework(capturedBase64)
+        : await apiService.analyzeHomework(capturedBase64, undefined, childId);
       await incrementDailyCount();
       router.replace(`/homework/processing?sessionId=${session._id}` as any);
     } catch (err: any) {

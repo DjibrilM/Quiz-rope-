@@ -23,6 +23,7 @@ class ApiService {
   private client: AxiosInstance;
   private onUnauthorized: LogoutCallback | null = null;
   private onApiError: ApiErrorCallback | null = null;
+  private ghostToken: string | null = null;
 
   constructor() {
     this.client = axios.create({
@@ -324,6 +325,93 @@ class ApiService {
   getAuthToken(): string | null {
     const header = this.client.defaults.headers.common['Authorization'];
     return typeof header === 'string' ? header.replace('Bearer ', '') : null;
+  }
+
+  /** Store the ghost JWT for use with ghost-only endpoints. */
+  setGhostToken(token: string | null) {
+    this.ghostToken = token;
+  }
+
+  /** Register a ghost profile and get a ghost JWT. */
+  async registerGhost(guestId: string, displayName: string): Promise<{ token: string }> {
+    return this.request('/auth/ghost-token', {
+      method: 'POST',
+      data: { guestId, displayName },
+    });
+  }
+
+  /**
+   * Migrate all ghost data to the linked child account.
+   * Must be called AFTER setToken(childJwt) so the child JWT is in the header.
+   */
+  async migrateGuestData(guestId: string): Promise<{ answersMigrated: number; matchesMigrated: number; homeworkMigrated: number }> {
+    return this.request('/auth/ghost-migrate', {
+      method: 'POST',
+      data: { guestId },
+    });
+  }
+
+  /** Create a match as a ghost user (uses ghost JWT). */
+  async createGhostMatch(data: {
+    subject: string;
+    difficulty: string;
+    maxRounds?: number;
+    gameMode?: string;
+    context?: string;
+    language?: string;
+  }): Promise<Match> {
+    if (!this.ghostToken) throw new Error('Ghost token not set');
+    const savedToken = this.client.defaults.headers.common['Authorization'];
+    this.client.defaults.headers.common['Authorization'] = `Bearer ${this.ghostToken}`;
+    try {
+      return await this.request('/matches/ghost', {
+        method: 'POST',
+        data: data as unknown as Record<string, unknown>,
+        timeout: 60000,
+      });
+    } finally {
+      if (savedToken) {
+        this.client.defaults.headers.common['Authorization'] = savedToken;
+      } else {
+        delete this.client.defaults.headers.common['Authorization'];
+      }
+    }
+  }
+
+  /** Analyze homework as a ghost user (uses ghost JWT). */
+  async analyzeGhostHomework(imageBase64: string, mimeType = 'image/jpeg'): Promise<any> {
+    if (!this.ghostToken) throw new Error('Ghost token not set');
+    const savedToken = this.client.defaults.headers.common['Authorization'];
+    this.client.defaults.headers.common['Authorization'] = `Bearer ${this.ghostToken}`;
+    try {
+      return await this.request('/homework/ghost-analyze', {
+        method: 'POST',
+        data: { imageBase64, mimeType },
+        timeout: 8000,
+      });
+    } finally {
+      if (savedToken) {
+        this.client.defaults.headers.common['Authorization'] = savedToken;
+      } else {
+        delete this.client.defaults.headers.common['Authorization'];
+      }
+    }
+  }
+
+  /** List homework sessions for a ghost user (uses ghost JWT). */
+  async getGhostHomeworkSessions(): Promise<any[]> {
+    if (!this.ghostToken) return [];
+    const savedToken = this.client.defaults.headers.common['Authorization'];
+    this.client.defaults.headers.common['Authorization'] = `Bearer ${this.ghostToken}`;
+    try {
+      return await this.request('/homework/ghost-sessions');
+    } finally {
+      if (savedToken) {
+        this.client.defaults.headers.common['Authorization'] = savedToken;
+      } else {
+        delete this.client.defaults.headers.common['Authorization'];
+      }
+    }
   }
 }
 

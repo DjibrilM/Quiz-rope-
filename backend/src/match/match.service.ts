@@ -66,6 +66,47 @@ export class MatchService {
     return match;
   }
 
+  async createGhostMatch(
+    guestId: string,
+    subject: string,
+    difficulty: string,
+    maxRounds: number,
+    gameMode: string = 'solo',
+    context?: string,
+    language?: string,
+  ): Promise<Match> {
+    const teams = [
+      { name: 'Red Team', color: '#EF4444', side: 'LEFT', players: [] },
+      { name: 'Blue Team', color: '#3B82F6', side: 'RIGHT', players: [] },
+    ];
+
+    const match = await this.matchModel.create({
+      guestOwnerId: guestId,
+      subject,
+      difficulty,
+      maxRounds,
+      gameMode,
+      status: 'IN_PROGRESS',
+      teams,
+      questions: [],
+    });
+
+    const questions = await this.questionProvider.getQuestions(
+      subject,
+      difficulty,
+      maxRounds,
+      match._id.toString(),
+      context,
+      language,
+    );
+
+    match.questions = questions.map((q) => q._id) as any;
+    await match.save();
+
+    this.logger.log(`Ghost match created: ${match._id} for guestId=${guestId}`);
+    return match;
+  }
+
   async getMatch(matchId: string): Promise<Match> {
     if (!Types.ObjectId.isValid(matchId)) {
       throw new BadRequestException('Invalid match ID');

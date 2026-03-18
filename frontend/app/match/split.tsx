@@ -83,7 +83,7 @@ export default function SplitMatchScreen() {
   const [contextError, setContextError] = useState("");
   const { t } = useTranslation(["match", "common"]);
   const { subject } = useLocalSearchParams<{ subject: string }>();
-  const { setCurrentMatch, children, childSession, locale } = useGameStore();
+  const { setCurrentMatch, children, childSession, locale, userRole } = useGameStore();
   const [player1Id, setPlayer1Id] = useState<string | null>(childSession?.childId ?? null);
   const [player2Id, setPlayer2Id] = useState<string | null>(null);
   const [ageGroup, setAgeGroup] = useState<"EASY" | "MEDIUM" | "HARD">("MEDIUM");
@@ -104,16 +104,25 @@ export default function SplitMatchScreen() {
         { name: p2, color: "#3B82F6", side: "RIGHT" },
       ];
 
-      const created = await apiService.createMatch({
-        subject: subject!,
-        difficulty: ageGroup,
-        maxRounds,
-        gameMode: "splitscreen",
-        context: context.trim() || undefined,
-        teams,
-        childIds: [player1Id, player2Id].filter(Boolean) as string[],
-        language: locale,
-      });
+      const created = userRole === "guest"
+        ? await apiService.createGhostMatch({
+            subject: subject!,
+            difficulty: ageGroup,
+            maxRounds,
+            gameMode: "splitscreen",
+            context: context.trim() || undefined,
+            language: locale,
+          })
+        : await apiService.createMatch({
+            subject: subject!,
+            difficulty: ageGroup,
+            maxRounds,
+            gameMode: "splitscreen",
+            context: context.trim() || undefined,
+            teams,
+            childIds: [player1Id, player2Id].filter(Boolean) as string[],
+            language: locale,
+          });
 
       const match = {
         ...(created as any),

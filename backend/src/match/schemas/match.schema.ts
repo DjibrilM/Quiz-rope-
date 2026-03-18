@@ -18,8 +18,12 @@ export class TeamSubDoc {
 
 @Schema({ timestamps: true })
 export class Match extends Document {
-  @Prop({ type: Types.ObjectId, ref: 'Parent', required: true })
+  @Prop({ type: Types.ObjectId, ref: 'Parent' })
   hostParentId: Types.ObjectId;
+
+  /** Set when the match was created by a ghost (guest) user. Cleared after migration. */
+  @Prop()
+  guestOwnerId: string;
 
   @Prop({ required: true })
   subject: string;

@@ -269,4 +269,47 @@ ${conversationText}`;
       $addToSet: { linkedMatchIds: new Types.ObjectId(matchId) },
     });
   }
+
+  /** Create a homework session for a ghost (guest) user — no parent account needed. */
+  async analyzeForGuest(
+    guestId: string,
+    imageBase64: string,
+    mimeType: string,
+  ): Promise<HomeworkSession> {
+    const session = await this.sessionModel.create({
+      guestId,
+      imageBase64,
+      imageMimeType: mimeType,
+      status: 'PROCESSING',
+    });
+
+    this.runAnalysis(session._id.toString(), imageBase64, mimeType).catch(
+      async (err) => {
+        this.logger.error(`Ghost homework analysis failed for ${session._id}:`, err.message);
+        await this.sessionModel.findByIdAndUpdate(session._id, {
+          status: 'FAILED',
+          errorMessage: err.message,
+        });
+      },
+    );
+
+    return session;
+  }
+
+  /** Retrieve homework sessions for a ghost user by guestId. */
+  async getGhostSessions(guestId: string): Promise<HomeworkSession[]> {
+    return this.sessionModel
+      .find({ guestId })
+      .sort({ createdAt: -1 })
+      .select('-imageBase64')
+      .lean<HomeworkSession[]>();
+  }
+
+  /** Retrieve a single ghost session (no parentId check). */
+  async getGhostSession(sessionId: string, guestId: string): Promise<HomeworkSession> {
+    if (!Types.ObjectId.isValid(sessionId)) throw new NotFoundException();
+    const session = await this.sessionModel.findOne({ _id: sessionId, guestId });
+    if (!session) throw new NotFoundException('Session not found');
+    return session;
+  }
 }
