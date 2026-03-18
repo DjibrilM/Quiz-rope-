@@ -22,7 +22,7 @@ export default function LinkToParentScreen() {
   const { t } = useTranslation(["auth", "common"]);
   usePortrait();
 
-  const { setChildSession, clearGuestProfile } = useGameStore();
+  const { setChildSession, clearGuestProfile, guestProfile } = useGameStore();
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -49,6 +49,12 @@ export default function LinkToParentScreen() {
         childId: result.childId,
         jwtToken: result.token,
       });
+
+      // Migrate all ghost data (answers, matches, homework) to the real child account.
+      // The child JWT is now in the header — migration happens silently.
+      if (guestProfile?.guestId) {
+        apiService.migrateGuestData(guestProfile.guestId).catch(() => {});
+      }
 
       // Remove guest profile — they're now a real child account
       clearGuestProfile();

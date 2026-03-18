@@ -154,4 +154,59 @@ export class AuthController {
     await this.authService.sendPasswordResetEmail(body.email);
     return { success: true, message: "Password reset email sent." };
   }
+
+  /**
+   * Ghost (guest) device registers its local guestId and gets a ghost JWT.
+   * No authentication required — used immediately after guest profile creation.
+   */
+  @Post("ghost-token")
+  ghostToken(@Body() body: { guestId: string; displayName: string }) {
+    if (!body.guestId) {
+      throw new BadRequestException("guestId is required");
+    }
+    const token = this.authService.signToken({
+      sub: body.guestId,
+      role: "ghost" as any,
+      guestId: body.guestId,
+    } as any);
+    return { token };
+  }
+
+  /**
+   * After a ghost links to a child account, migrate all ghost data to the real child.
+   * Requires the child JWT (obtained from guest-token) in the Authorization header.
+   */
+  @Post("ghost-migrate")
+  async ghostMigrate(
+    @Body() body: { guestId: string },
+    @Req() req,
+  ) {
+    if (!body.guestId) {
+      throw new BadRequestException("guestId is required");
+    }
+
+    const authHeader = req.headers.authorization as string | undefined;
+    if (!authHeader?.startsWith("Bearer ")) {
+      throw new UnauthorizedException("Child token required");
+    }
+
+    let decoded: any;
+    try {
+      decoded = this.authService.verifyToken(authHeader.split("Bearer ")[1]);
+    } catch {
+      throw new UnauthorizedException("Invalid token");
+    }
+
+    if (decoded.role !== "child" || !decoded.parentId || !decoded.childId) {
+      throw new UnauthorizedException("Valid child token required");
+    }
+
+    const result = await this.authService.migrateGuestData(
+      body.guestId,
+      decoded.parentId,
+      decoded.childId,
+    );
+
+    return result;
+  }
 }

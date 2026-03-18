@@ -28,7 +28,7 @@ export default function SoloMatchScreen() {
   const [contextError, setContextError] = useState("");
   const { t } = useTranslation(["match", "common"]);
   const { subject } = useLocalSearchParams<{ subject: string }>();
-  const { setCurrentMatch, children, childSession, locale } = useGameStore();
+  const { setCurrentMatch, children, childSession, locale, userRole } = useGameStore();
   const [difficulty, setDifficulty] = useState("EASY");
   const [maxRounds, setMaxRounds] = useState(10);
   // Pre-select the child if playing from their own device
@@ -49,16 +49,25 @@ export default function SoloMatchScreen() {
         { name: "Blue Team", color: "#3B82F6", side: "RIGHT" },
       ];
 
-      const created = await apiService.createMatch({
-        subject: subject!,
-        difficulty,
-        maxRounds,
-        gameMode: "solo",
-        context: context.trim() || undefined,
-        teams,
-        childIds: selectedChildId ? [selectedChildId] : [],
-        language: locale,
-      });
+      const created = userRole === "guest"
+        ? await apiService.createGhostMatch({
+            subject: subject!,
+            difficulty,
+            maxRounds,
+            gameMode: "solo",
+            context: context.trim() || undefined,
+            language: locale,
+          })
+        : await apiService.createMatch({
+            subject: subject!,
+            difficulty,
+            maxRounds,
+            gameMode: "solo",
+            context: context.trim() || undefined,
+            teams,
+            childIds: selectedChildId ? [selectedChildId] : [],
+            language: locale,
+          });
 
       const match = {
         ...(created as any),

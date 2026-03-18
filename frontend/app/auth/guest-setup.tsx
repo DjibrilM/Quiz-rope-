@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import * as Crypto from "expo-crypto";
 import { usePortrait } from "../../src/hooks/useOrientation";
 import { useGameStore } from "../../src/stores/gameStore";
+import { apiService } from "../../src/services/api";
 import { hapticsService } from "../../src/services/haptics";
 import { AVATARS } from "../../src/config/avatars";
 import { AvatarIcon } from "../../src/components/common/AvatarIcons";
@@ -25,7 +26,7 @@ export default function GuestSetupScreen() {
   const { t } = useTranslation(["common", "auth"]);
   usePortrait();
 
-  const { setGuestProfile } = useGameStore();
+  const { setGuestProfile, setGhostToken } = useGameStore();
   const [name, setName] = useState("");
   const [selectedAvatar, setSelectedAvatar] = useState(RANDOM_AVATAR);
   const [nameError, setNameError] = useState("");
@@ -49,6 +50,14 @@ export default function GuestSetupScreen() {
     ).then((h) => h.slice(0, 16));
 
     setGuestProfile({ guestId, displayName: trimmed, avatarId: selectedAvatar });
+
+    // Register the ghost profile with the backend to get a ghost JWT for API access.
+    // Fire-and-forget — if it fails, ghost mode still works but won't store server-side data.
+    apiService.registerGhost(guestId, trimmed).then(({ token }) => {
+      setGhostToken(token);
+      apiService.setGhostToken(token);
+    }).catch(() => {});
+
     router.replace("/home");
   };
 

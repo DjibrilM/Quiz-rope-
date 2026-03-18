@@ -1,6 +1,7 @@
 import { Controller, Post, Get, Patch, Body, Param, Req, UseGuards, BadRequestException } from '@nestjs/common';
 import { MatchService } from './match.service';
 import { FirebaseAuthGuard } from '../auth/guards/firebase-auth.guard';
+import { GhostAuthGuard } from '../auth/guards/ghost-auth.guard';
 
 const VALID_SUBJECTS = ['MATH', 'SCIENCE', 'ENGLISH', 'HISTORY', 'GEOGRAPHY'];
 const VALID_DIFFICULTIES = ['EASY', 'MEDIUM', 'HARD'];
@@ -54,6 +55,47 @@ export class MatchController {
       gameMode,
       body.context,
       body.childIds,
+      body.language,
+    );
+  }
+
+  /** Ghost (guest) creates a match — no parent account required. */
+  @Post('ghost')
+  @UseGuards(GhostAuthGuard)
+  async createGhostMatch(
+    @Req() req,
+    @Body()
+    body: {
+      subject: string;
+      difficulty: string;
+      maxRounds?: number;
+      gameMode?: string;
+      context?: string;
+      language?: string;
+    },
+  ) {
+    if (!body.subject || !VALID_SUBJECTS.includes(body.subject.toUpperCase())) {
+      throw new BadRequestException(`subject must be one of: ${VALID_SUBJECTS.join(', ')}`);
+    }
+    if (!body.difficulty || !VALID_DIFFICULTIES.includes(body.difficulty.toUpperCase())) {
+      throw new BadRequestException(`difficulty must be one of: ${VALID_DIFFICULTIES.join(', ')}`);
+    }
+    const maxRounds = body.maxRounds || 10;
+    if (maxRounds < 1 || maxRounds > 30) {
+      throw new BadRequestException('maxRounds must be between 1 and 30');
+    }
+    const gameMode = body.gameMode || 'solo';
+    if (!VALID_GAME_MODES.includes(gameMode)) {
+      throw new BadRequestException(`gameMode must be one of: ${VALID_GAME_MODES.join(', ')}`);
+    }
+
+    return this.matchService.createGhostMatch(
+      req.ghost.guestId,
+      body.subject.toUpperCase(),
+      body.difficulty.toUpperCase(),
+      maxRounds,
+      gameMode,
+      body.context,
       body.language,
     );
   }

@@ -55,6 +55,8 @@ interface GameState {
   childSession: ChildSession | null;
   /** Persisted local guest profile — survives logouts and app restarts. */
   guestProfile: GuestProfile | null;
+  /** JWT for ghost (guest) API access. Persisted alongside guestProfile. */
+  ghostToken: string | null;
   currentMatch: Match | null;
   ropePosition: number;
   teamScores: { left: number; right: number };
@@ -79,6 +81,8 @@ interface GameState {
   setGuestProfile: (profile: GuestProfile) => void;
   /** Re-authenticate an existing guest profile without changing it. */
   loginAsGuest: () => void;
+  /** Set the ghost JWT received from POST /auth/ghost-token. */
+  setGhostToken: (token: string | null) => void;
   /** Clear guest identity entirely (used when the guest links to a real account). */
   clearGuestProfile: () => void;
   setLocale: (locale: SupportedLanguage) => void;
@@ -113,6 +117,7 @@ export const useGameStore = create<GameState>()(
       userRole: null,
       childSession: null,
       guestProfile: null,
+      ghostToken: null,
       currentMatch: null,
       ropePosition: 0,
       teamScores: { left: 0, right: 0 },
@@ -148,8 +153,11 @@ export const useGameStore = create<GameState>()(
       loginAsGuest: () =>
         set({ userRole: 'guest', isAuthenticated: true }),
 
+      setGhostToken: (token) =>
+        set({ ghostToken: token }),
+
       clearGuestProfile: () =>
-        set({ guestProfile: null }),
+        set({ guestProfile: null, ghostToken: null }),
 
       setLocale: (locale) => {
         i18n.changeLanguage(locale);
@@ -228,6 +236,7 @@ export const useGameStore = create<GameState>()(
         userRole: state.userRole,
         childSession: state.childSession,
         guestProfile: state.guestProfile,
+        ghostToken: state.ghostToken,
         locale: state.locale,
         subscriptionStatus: state.subscriptionStatus,
         subscriptionExpiresAt: state.subscriptionExpiresAt,

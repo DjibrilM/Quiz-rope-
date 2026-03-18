@@ -1,10 +1,13 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import * as jwt from 'jsonwebtoken';
 import { Parent } from './schemas/parent.schema';
 import { isFirebaseConfigured } from '../config/firebase.config';
 import { EmailService } from '../email/email.service';
+import { Match } from '../match/schemas/match.schema';
+import { Answer } from '../match/schemas/answer.schema';
+import { HomeworkSession } from '../homework/schemas/homework-session.schema';
 
 const JWT_SECRET =
   process.env.JWT_SECRET || 'dev-jwt-secret-change-in-production';
@@ -16,15 +19,19 @@ export class AuthService {
 
   constructor(
     @InjectModel(Parent.name) private parentModel: Model<Parent>,
+    @InjectModel(Match.name) private matchModel: Model<Match>,
+    @InjectModel(Answer.name) private answerModel: Model<Answer>,
+    @InjectModel(HomeworkSession.name) private homeworkModel: Model<HomeworkSession>,
     private readonly emailService: EmailService,
   ) {}
 
   signToken(payload: {
     sub: string;
-    role: 'parent' | 'child';
+    role: 'parent' | 'child' | 'ghost';
     email?: string;
     parentId?: string;
     childId?: string;
+    guestId?: string;
   }): string {
     return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
   }
@@ -130,5 +137,44 @@ export class AuthService {
     }
 
     this.logger.log(`Password reset email sent to ${email}`);
+  }
+
+  /**
+   * Migrates all ghost data (answers, matches, homework) to a real child account.
+   * Called after a ghost user redeems a parent-generated link code.
+   */
+  async migrateGuestData(
+    guestId: string,
+    parentId: string,
+    childId: string,
+  ): Promise<{ answersMigrated: number; matchesMigrated: number; homeworkMigrated: number }> {
+    const parentOid = new Types.ObjectId(parentId);
+    const [answersResult, matchesResult, homeworkResult] = await Promise.all([
+      this.answerModel.updateMany({ playerId: guestId }, { playerId: childId }),
+      this.matchModel.updateMany(
+        { guestOwnerId: guestId },
+        { hostParentId: parentOid, $unset: { guestOwnerId: 1 } },
+      ),
+      this.homeworkModel.updateMany(
+        { guestId },
+        {
+          parentId: parentOid,
+          childId: new Types.ObjectId(childId),
+          $unset: { guestId: 1 },
+        },
+      ),
+    ]);
+
+    this.logger.log(
+      `Ghost migration: guestId=${guestId} → childId=${childId} | ` +
+        `answers=${answersResult.modifiedCount}, matches=${matchesResult.modifiedCount}, ` +
+        `homework=${homeworkResult.modifiedCount}`,
+    );
+
+    return {
+      answersMigrated: answersResult.modifiedCount,
+      matchesMigrated: matchesResult.modifiedCount,
+      homeworkMigrated: homeworkResult.modifiedCount,
+    };
   }
 }
