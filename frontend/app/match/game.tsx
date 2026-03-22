@@ -8,6 +8,7 @@ import { socketService } from "../../src/services/socket";
 import { soundService } from "../../src/services/sound";
 import { hapticsService } from "../../src/services/haptics";
 import { apiService } from "../../src/services/api";
+import * as guestDb from "../../src/services/guestDb";
 import { SplitscreenLayout } from "../../src/components/game/SplitscreenLayout";
 import { SoloMultiplayerLayout } from "../../src/components/game/SoloMultiplayerLayout";
 import type {
@@ -86,7 +87,7 @@ export default function GameScreen() {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
-    const duration = 15;
+    const duration = 30;
     let t = duration;
     setTimeRemaining(duration);
     timerRef.current = setInterval(() => {
@@ -140,19 +141,37 @@ export default function GameScreen() {
       const loadQuestionsAndStart = async () => {
         try {
           if (matchId) {
-            const match = (await apiService.getMatch(matchId as string)) as any;
-            const fetched: StoreQuestion[] = (match?.questions || [])
-              .filter((q: any) => q?.text && Array.isArray(q.options))
-              .map((q: any) =>
-                shuffleOptions({
-                  id: q._id || q.id || "",
-                  text: q.text,
-                  options: q.options,
-                  correctIndex: q.correctIndex,
-                  explanation: q.explanation || "",
-                  subject: q.subject || "",
-                }),
-              );
+            // Guest: questions are already in the store (set by solo.tsx/split.tsx)
+            const storeQuestions = (currentMatch as any)?.questions;
+            let fetched: StoreQuestion[];
+            if (isChildDevice && storeQuestions?.length > 0) {
+              fetched = storeQuestions
+                .filter((q: any) => q?.text && Array.isArray(q.options))
+                .map((q: any) =>
+                  shuffleOptions({
+                    id: q._id || q.id || "",
+                    text: q.text,
+                    options: q.options,
+                    correctIndex: q.correctIndex,
+                    explanation: q.explanation || "",
+                    subject: q.subject || "",
+                  }),
+                );
+            } else {
+              const match = (await apiService.getMatch(matchId as string)) as any;
+              fetched = (match?.questions || [])
+                .filter((q: any) => q?.text && Array.isArray(q.options))
+                .map((q: any) =>
+                  shuffleOptions({
+                    id: q._id || q.id || "",
+                    text: q.text,
+                    options: q.options,
+                    correctIndex: q.correctIndex,
+                    explanation: q.explanation || "",
+                    subject: q.subject || "",
+                  }),
+                );
+            }
             if (fetched.length > 0) {
               questionsRef.current = fetched;
               setCurrentQuestion(fetched[0]);
@@ -204,9 +223,16 @@ export default function GameScreen() {
 
         if (matchId) {
           const winner = newLeftScore >= newRightScore ? "LEFT" : "RIGHT";
-          apiService
-            .completeMatch(matchId as string, { winner, rounds: nextRound - 1 })
-            .catch((e) => console.warn("[game] completeMatch failed:", e?.message ?? e));
+          if (isChildDevice) {
+            guestDb.updateMatch(matchId as string, {
+              status: "COMPLETED", winner, roundsPlayed: nextRound - 1,
+              scoreLeft: newLeftScore, scoreRight: newRightScore,
+            }).catch(() => { /* best-effort */ });
+          } else {
+            apiService
+              .completeMatch(matchId as string, { winner, rounds: nextRound - 1 })
+              .catch((e) => console.warn("[game] completeMatch failed:", e?.message ?? e));
+          }
         }
 
         const totalRounds = nextRound - 1;
@@ -287,6 +313,20 @@ export default function GameScreen() {
       isCorrect: false,
     } as CorrectionItem);
 
+    if (isChildDevice && matchId) {
+      guestDb.saveCorrection({
+        id: `${matchId}-corr-${currentRound}-timeout`,
+        matchId: matchId as string,
+        round: currentRound,
+        questionText: currentQ.text,
+        options: currentQ.options,
+        correctIndex: currentQ.correctIndex,
+        explanation: currentQ.explanation || "",
+        userAnswerIndex: -1,
+        isCorrect: false,
+      }).catch(() => {});
+    }
+
     if (Math.random() > 0.5) {
       setBuddyMessage(t("game:buddy.timeout", "Too slow! Let's get the next one! ⏰"));
       setBuddyVisible(true);
@@ -337,16 +377,32 @@ export default function GameScreen() {
                 ? ((p1Id as string) || (p1Name as string) || "player-red")
                 : ((p2Id as string) || (p2Name as string) || "player-blue"))
             : teamSide === "LEFT" ? "player-red" : "player-blue";
-        apiService
-          .submitAnswer(matchId as string, {
+
+        if (isChildDevice) {
+          guestDb.saveAnswer({
+            id: `${matchId}-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+            matchId: matchId as string,
+            questionId: currentQ.id || undefined,
             playerId,
             teamSide,
             answerIndex,
-            responseTime: (15 - timeRemaining) * 1000,
-            questionId: currentQ.id,
             isCorrect,
-          })
-          .catch(() => { /* best-effort */ });
+            responseTime: (30 - timeRemaining) * 1000,
+            round: currentRound,
+            createdAt: Date.now(),
+          }).catch(() => { /* best-effort */ });
+        } else {
+          apiService
+            .submitAnswer(matchId as string, {
+              playerId,
+              teamSide,
+              answerIndex,
+              responseTime: (30 - timeRemaining) * 1000,
+              questionId: currentQ.id,
+              isCorrect,
+            })
+            .catch(() => { /* best-effort */ });
+        }
       }
 
       pushCorrection({
@@ -357,6 +413,20 @@ export default function GameScreen() {
         userAnswerIndex: answerIndex,
         isCorrect,
       } as CorrectionItem);
+
+      if (isChildDevice && matchId) {
+        guestDb.saveCorrection({
+          id: `${matchId}-corr-${currentRound}`,
+          matchId: matchId as string,
+          round: currentRound,
+          questionText: currentQ.text,
+          options: currentQ.options,
+          correctIndex: currentQ.correctIndex,
+          explanation: currentQ.explanation || "",
+          userAnswerIndex: answerIndex,
+          isCorrect,
+        }).catch(() => {});
+      }
 
       if (isCorrect) {
         const side = teamSide.toLowerCase() as "left" | "right";
@@ -418,13 +488,19 @@ export default function GameScreen() {
           if (!isSoloMode) {
             socketService.getSocket()?.emit("game:abandon", { matchId, playerId: "mock-player" });
           }
+          const roundsPlayed = currentRound - 1;
+          if (isChildDevice && matchId) {
+            guestDb.updateMatch(matchId as string, { status: 'ABANDONED', roundsPlayed }).catch(() => {});
+          } else if (!isChildDevice && matchId) {
+            apiService.abandonMatch(matchId as string, roundsPlayed).catch(() => {});
+          }
           resetGame();
           hapticsService.medium();
           router.back();
         },
       },
     ]);
-  }, [matchId, resetGame, t]);
+  }, [matchId, resetGame, t, isSoloMode, isChildDevice, currentRound]);
 
   const handlePlayAgain = () => {
     if (resultTimeoutRef.current) { clearTimeout(resultTimeoutRef.current); resultTimeoutRef.current = null; }
@@ -504,7 +580,7 @@ export default function GameScreen() {
       onExit={() => router.back()}
       onReview={() =>
         isSoloMode
-          ? router.push("/match/correction" as any)
+          ? router.push({ pathname: "/match/correction" as any, params: { matchId: matchId as string } })
           : router.push({
               pathname: "/match/review" as any,
               params: { matchId: matchId as string, childId: "mock-player", subject },

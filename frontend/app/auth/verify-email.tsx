@@ -7,7 +7,7 @@ import { usePortrait } from "../../src/hooks/useOrientation";
 import { firebaseAuthService } from "../../src/services/firebase";
 import { apiService } from "../../src/services/api";
 import { useGameStore } from "../../src/stores/gameStore";
-import { BackButton, AnimatedLoader } from "../../src/components/common";
+import { ScreenHeader, AnimatedLoader } from "../../src/components/common";
 import { FONTS } from "../../src/constants/theme";
 import { useToast } from "../../src/context/ToastContext";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
@@ -147,7 +147,7 @@ export default function VerifyEmailScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-game-bg">
-      <BackButton absolute onPress={() => router.replace("/auth/login" as any)} />
+      <ScreenHeader title={t("verifyEmail.title")} />
 
       <View
         className="space-y-10"

@@ -8,11 +8,17 @@
     "userInterfaceStyle": "dark",
     "scheme": "quizrope",
     "splash": {
-      "backgroundColor": "#0F172A"
+      "imageWidth": 300,
+      "image": "./assets/splashscreen_logo.png",
+      "backgroundColor": "#0D0B14"
     },
     "android": {
       "package": "com.quizrope.app",
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png", // 1024×1024, with transparency OK
+        "backgroundColor": "#FFFFFF" // or your brand color
+      }
     },
     "ios": {
       "bundleIdentifier": "com.quizrope.app",

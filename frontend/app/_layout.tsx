@@ -26,6 +26,7 @@ import { soundService } from "../src/services/sound";
 import { ErrorBoundary } from "../src/components/common/ErrorBoundary";
 import { useGameStore } from "../src/stores/gameStore";
 import { apiService } from "../src/services/api";
+import { initGuestDb, clearAllGuestData } from "../src/services/guestDb";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ToastProvider, useToast } from "../src/context/ToastContext";
 
@@ -56,6 +57,7 @@ function useLocaleSync() {
   useEffect(() => {
     if (!_hasHydrated || hasSynced.current) return;
     hasSynced.current = true;
+    initGuestDb().catch(() => {});
 
     if (locale && locale !== i18n.language) {
       i18n.changeLanguage(locale);
@@ -127,8 +129,10 @@ export default function RootLayout() {
   useEffect(() => {
     apiService.setOnUnauthorized(() => {
       const store = useGameStore.getState();
+      clearAllGuestData().catch(() => {});
       apiService.clearToken();
       store.logout();
+      queryClient.clear();
     });
   }, []);
 

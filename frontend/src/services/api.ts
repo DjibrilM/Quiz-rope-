@@ -188,6 +188,13 @@ class ApiService {
     });
   }
 
+  async abandonMatch(id: string, roundsPlayed: number): Promise<void> {
+    return this.request(`/matches/${id}/abandon`, {
+      method: 'PATCH',
+      data: { roundsPlayed },
+    });
+  }
+
   async getMatchStats(id: string): Promise<PlayerStats[]> {
     return this.request(`/matches/${id}/stats`);
   }
@@ -303,8 +310,8 @@ class ApiService {
     return this.request(`/homework/session/${id}`);
   }
 
-  async getHomeworkChatHistory(sessionId: string): Promise<any[]> {
-    return this.request(`/homework/session/${sessionId}/chat`);
+  async getHomeworkChatHistory(sessionId: string, skip = 0, limit = 500): Promise<any[]> {
+    return this.request(`/homework/session/${sessionId}/chat?skip=${skip}&limit=${limit}`);
   }
 
   async getHomeworkSessions(): Promise<any[]> {
@@ -405,6 +412,75 @@ class ApiService {
     this.client.defaults.headers.common['Authorization'] = `Bearer ${this.ghostToken}`;
     try {
       return await this.request('/homework/ghost-sessions');
+    } finally {
+      if (savedToken) {
+        this.client.defaults.headers.common['Authorization'] = savedToken;
+      } else {
+        delete this.client.defaults.headers.common['Authorization'];
+      }
+    }
+  }
+
+  // ─── Stateless Guest Endpoints (no auth, no DB) ──────────────────────────────
+
+  /** Generate questions for a guest match — no auth, no DB writes. */
+  async generateGuestMatch(data: {
+    subject: string;
+    difficulty: string;
+    maxRounds: number;
+    context?: string;
+    language?: string;
+  }): Promise<{ questions: { text: string; options: string[]; correctIndex: number; subject: string; difficulty: string; explanation: string }[] }> {
+    return this.request('/matches/questions-only', {
+      method: 'POST',
+      data: data as unknown as Record<string, unknown>,
+      timeout: 60000,
+    });
+  }
+
+  /** Analyze homework synchronously for a guest — no auth, no DB writes. */
+  async analyzeGuestHomework(imageBase64: string, mimeType = 'image/jpeg'): Promise<{
+    title: string; subject: string; topics: string[]; answersMarkdown: string; status: string;
+  }> {
+    return this.request('/homework/analyze-guest', {
+      method: 'POST',
+      data: { imageBase64, mimeType },
+      timeout: 90000,
+    });
+  }
+
+  /** Single-turn guest chat — no auth, no DB writes. */
+  async guestChat(
+    sessionContext: string,
+    history: { role: 'user' | 'model'; content: string }[],
+    message: string,
+  ): Promise<{ response: string }> {
+    return this.request('/homework/guest-chat', {
+      method: 'POST',
+      data: { sessionContext, history, message },
+      timeout: 30000,
+    });
+  }
+
+  /** Migrate local SQLite guest data to MongoDB — requires child JWT. */
+  async migrateLocalGuestData(
+    payload: {
+      matches: any[];
+      questions: any[];
+      answers: any[];
+      homeworkSessions: any[];
+      chats: any[];
+    },
+    childToken: string,
+  ): Promise<{ matchesMigrated: number; homeworkMigrated: number; answersMigrated: number }> {
+    const savedToken = this.client.defaults.headers.common['Authorization'];
+    this.client.defaults.headers.common['Authorization'] = `Bearer ${childToken}`;
+    try {
+      return await this.request('/auth/migrate-local', {
+        method: 'POST',
+        data: payload as unknown as Record<string, unknown>,
+        timeout: 60000,
+      });
     } finally {
       if (savedToken) {
         this.client.defaults.headers.common['Authorization'] = savedToken;

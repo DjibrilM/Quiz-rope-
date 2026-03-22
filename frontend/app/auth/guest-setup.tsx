@@ -19,6 +19,7 @@ import { hapticsService } from "../../src/services/haptics";
 import { AVATARS } from "../../src/config/avatars";
 import { AvatarIcon } from "../../src/components/common/AvatarIcons";
 import { FONTS } from "../../src/constants/theme";
+import { Button, ScreenHeader } from "@/components/common";
 
 const RANDOM_AVATAR = AVATARS[Math.floor(Math.random() * AVATARS.length)].id;
 
@@ -49,20 +50,28 @@ export default function GuestSetupScreen() {
       `guest-${Date.now()}-${Math.random()}`,
     ).then((h) => h.slice(0, 16));
 
-    setGuestProfile({ guestId, displayName: trimmed, avatarId: selectedAvatar });
+    setGuestProfile({
+      guestId,
+      displayName: trimmed,
+      avatarId: selectedAvatar,
+    });
 
     // Register the ghost profile with the backend to get a ghost JWT for API access.
     // Fire-and-forget — if it fails, ghost mode still works but won't store server-side data.
-    apiService.registerGhost(guestId, trimmed).then(({ token }) => {
-      setGhostToken(token);
-      apiService.setGhostToken(token);
-    }).catch(() => {});
+    apiService
+      .registerGhost(guestId, trimmed)
+      .then(({ token }) => {
+        setGhostToken(token);
+        apiService.setGhostToken(token);
+      })
+      .catch(() => {});
 
     router.replace("/home");
   };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#0D0B14" }}>
+      <ScreenHeader title={t("auth:guest.setupTitle")} />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -205,21 +214,7 @@ export default function GuestSetupScreen() {
           </View>
 
           {/* Start button */}
-          <Pressable
-            onPress={handleStart}
-            style={({ pressed }) => ({
-              width: "100%",
-              backgroundColor: pressed ? "#7C3AED" : "#9B59B6",
-              paddingVertical: 18,
-              borderRadius: 20,
-              alignItems: "center",
-              shadowColor: "#9B59B6",
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.5,
-              shadowRadius: 12,
-              elevation: 8,
-            })}
-          >
+          <Button onPress={handleStart}>
             <Text
               style={{
                 color: "#FFFFFF",
@@ -230,7 +225,7 @@ export default function GuestSetupScreen() {
             >
               {t("auth:guest.startButton")}
             </Text>
-          </Pressable>
+          </Button>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

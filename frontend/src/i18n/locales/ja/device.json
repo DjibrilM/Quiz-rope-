@@ -7,6 +7,7 @@
     "errorToken": "トークンの取得に失敗しました。下をタップして再試行してください。"
   },
   "connectDevice": {
+    "title": "デバイスを接続",
     "scanTitle": "お子様のコードをスキャン",
     "scanInstruction": "お子様のデバイスのQRコードにカメラを向けてください",
     "manualEntryDivider": "またはコードを手動で入力",

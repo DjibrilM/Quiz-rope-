@@ -1,5 +1,5 @@
 {
-  "greeting": "Ready to play, {{name}}?",
+  "welcomeBack": "Welcome back",
   "appName": "QuizRope",
   "activeUntil": "Active until {{date}}",
   "menu": {

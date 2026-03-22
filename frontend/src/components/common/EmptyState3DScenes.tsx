@@ -54,15 +54,21 @@ function BabyFaceSVG() {
   }, []);
 
   const groupProps = useAnimatedProps(() => ({
-    transform: `translate(60, ${58 + bobY.value}) rotate(${sway.value}, 0, 0)`,
+    translateX: 60,
+    translateY: 58 + bobY.value,
+    rotation: sway.value,
   }));
 
   const leftEyeProps = useAnimatedProps(() => ({
-    transform: `translate(-14, -6) scale(1, ${blinkScale.value}) translate(14, 6)`,
+    scaleY: blinkScale.value,
+    originX: -14,
+    originY: -6,
   }));
 
   const rightEyeProps = useAnimatedProps(() => ({
-    transform: `translate(14, -6) scale(1, ${blinkScale.value}) translate(-14, 6)`,
+    scaleY: blinkScale.value,
+    originX: 14,
+    originY: -6,
   }));
 
   return (
@@ -129,7 +135,9 @@ function TrophySVG() {
   }, []);
 
   const groupProps = useAnimatedProps(() => ({
-    transform: `translate(60, ${72 + floatY.value}) rotate(${rock.value}, 0, 0)`,
+    translateX: 60,
+    translateY: 72 + floatY.value,
+    rotation: rock.value,
   }));
 
   return (
@@ -197,7 +205,9 @@ function GameBoxSVG() {
   }, []);
 
   const groupProps = useAnimatedProps(() => ({
-    transform: `translate(60, ${62 + floatY.value}) rotate(${rock.value}, 0, 0)`,
+    translateX: 60,
+    translateY: 62 + floatY.value,
+    rotation: rock.value,
   }));
 
   return (
@@ -247,7 +257,8 @@ function ErrorCloudSVG() {
   }, []);
 
   const cloudProps = useAnimatedProps(() => ({
-    transform: `translate(60, ${52 + floatY.value})`,
+    translateX: 60,
+    translateY: 52 + floatY.value,
   }));
 
   const lightningProps = useAnimatedProps(() => ({

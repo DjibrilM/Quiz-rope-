@@ -7,7 +7,7 @@ import { usePortrait } from "../../src/hooks/useOrientation";
 import { io, Socket } from "socket.io-client";
 import { apiService } from "../../src/services/api";
 import { useGameStore } from "../../src/stores/gameStore";
-import { BackButton, BouncePress } from "../../src/components/common";
+import { ScreenHeader, BouncePress } from "../../src/components/common";
 import { QRCodeDisplay, SessionCodeDisplay } from "../../src/components/device";
 import { FONTS } from "../../src/constants/theme";
 
@@ -136,52 +136,48 @@ export default function ChildJoinScreen() {
   }, [createSession, cleanup]);
 
   return (
-    <SafeAreaView className="flex-1 bg-game-bg items-center justify-center px-8">
-      <BackButton absolute />
+    <SafeAreaView className="flex-1 bg-game-bg">
+      <ScreenHeader title={t("device:childJoin.title")} />
 
-      <Text
-        className="text-3xl text-white mb-1"
-        style={{ fontFamily: "LuckiestGuy_400Regular" }}
-      >
-        {t("device:childJoin.title")}
-      </Text>
-      <Text style={{ fontSize: 16, color: "#B8A9C9", marginBottom: 24, fontFamily: FONTS.body }}>
-        {t("device:childJoin.instruction")}
-      </Text>
+      <View className="flex-1 items-center justify-center px-8">
+        <Text style={{ fontSize: 16, color: "#B8A9C9", marginBottom: 24, fontFamily: FONTS.body }}>
+          {t("device:childJoin.instruction")}
+        </Text>
 
-      <QRCodeDisplay sessionToken={sessionToken} status={status === "error" ? "waiting" : status} />
+        <QRCodeDisplay sessionToken={sessionToken} status={status === "error" ? "waiting" : status} />
 
-      {sessionToken && status !== "expired" && status !== "error" && (
-        <SessionCodeDisplay code={sessionToken} />
-      )}
+        {sessionToken && status !== "expired" && status !== "error" && (
+          <SessionCodeDisplay code={sessionToken} />
+        )}
 
-      {status === "waiting" && (
-        <View className="flex-row items-center mt-2">
-          <View className="w-2 h-2 rounded-full bg-game-purple mr-2" />
-          <Text style={{ color: "#B8A9C9", fontSize: 14, fontFamily: FONTS.body }}>
-            {t("device:childJoin.waitingStatus")}
-          </Text>
-        </View>
-      )}
-
-      {(status === "expired" || status === "error") && (
-        <View className="items-center mt-4">
-          {error !== "" && (
-            <Text style={{ color: "#EF4444", fontSize: 14, fontFamily: FONTS.body, marginBottom: 16, textAlign: "center" }}>{error}</Text>
-          )}
-          <BouncePress
-            onPress={handleRetry}
-            className="bg-game-purple px-8 py-4 rounded-2xl"
-          >
-            <Text
-              className="text-white text-lg"
-              style={{ fontFamily: "Bungee_400Regular" }}
-            >
-              {status === "expired" ? t("device:childJoin.generateNewCode") : t("common:buttons.tryAgain")}
+        {status === "waiting" && (
+          <View className="flex-row items-center mt-2">
+            <View className="w-2 h-2 rounded-full bg-game-purple mr-2" />
+            <Text style={{ color: "#B8A9C9", fontSize: 14, fontFamily: FONTS.body }}>
+              {t("device:childJoin.waitingStatus")}
             </Text>
-          </BouncePress>
-        </View>
-      )}
+          </View>
+        )}
+
+        {(status === "expired" || status === "error") && (
+          <View className="items-center mt-4">
+            {error !== "" && (
+              <Text style={{ color: "#EF4444", fontSize: 14, fontFamily: FONTS.body, marginBottom: 16, textAlign: "center" }}>{error}</Text>
+            )}
+            <BouncePress
+              onPress={handleRetry}
+              className="bg-game-purple px-8 py-4 rounded-2xl"
+            >
+              <Text
+                className="text-white text-lg"
+                style={{ fontFamily: "Bungee_400Regular" }}
+              >
+                {status === "expired" ? t("device:childJoin.generateNewCode") : t("common:buttons.tryAgain")}
+              </Text>
+            </BouncePress>
+          </View>
+        )}
+      </View>
     </SafeAreaView>
   );
 }

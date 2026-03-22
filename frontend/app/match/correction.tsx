@@ -1,12 +1,23 @@
-import { View, Text, ScrollView, Pressable, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Pressable,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Svg, { Path } from "react-native-svg";
 import Markdown from "react-native-markdown-display";
+import { useQuery } from "@tanstack/react-query";
 import { usePortrait } from "../../src/hooks/useOrientation";
 import { useGameStore } from "../../src/stores/gameStore";
+import * as guestDb from "../../src/services/guestDb";
 import { FONTS, FORTNITE_COLORS } from "../../src/constants/theme";
+import type { CorrectionItem } from "../../src/stores/gameStore";
+import { ScreenHeader } from "@/components/common";
 
 const OPTION_LABELS = ["A", "B", "C", "D"];
 
@@ -41,66 +52,65 @@ function XIcon() {
 export default function CorrectionScreen() {
   usePortrait();
   const { t } = useTranslation(["game", "common"]);
-  const { sessionId } = useLocalSearchParams<{ sessionId?: string }>();
-  const lastMatchCorrection = useGameStore((s) => s.lastMatchCorrection);
+  const { sessionId, matchId } = useLocalSearchParams<{
+    sessionId?: string;
+    matchId?: string;
+  }>();
+  const storeCorrections = useGameStore((s) => s.lastMatchCorrection);
 
-  const correctCount = lastMatchCorrection.filter((a) => a.isCorrect).length;
-  const total = lastMatchCorrection.length;
+  // Fetch from SQLite when matchId is present; falls back to store if DB is empty
+  const { data: dbCorrections, isLoading: loadingCorrections } = useQuery<
+    CorrectionItem[]
+  >({
+    queryKey: ["corrections", matchId],
+    queryFn: () =>
+      guestDb.getCorrections(matchId as string).then((rows) =>
+        rows.map((r) => ({
+          questionText: r.questionText,
+          options: r.options,
+          correctIndex: r.correctIndex,
+          explanation: r.explanation,
+          userAnswerIndex: r.userAnswerIndex,
+          isCorrect: r.isCorrect,
+        })),
+      ),
+    enabled: !!matchId,
+    staleTime: 5 * 60 * 1000, // Local SQLite — treat as fresh for 5 min
+    placeholderData: storeCorrections.length > 0 ? storeCorrections : undefined,
+  });
+
+  // When no matchId (just came from game end), use store directly; otherwise use DB result
+  const corrections: CorrectionItem[] = matchId
+    ? dbCorrections?.length
+      ? dbCorrections
+      : storeCorrections
+    : storeCorrections;
+
+  const correctCount = corrections.filter(
+    (a: CorrectionItem) => a.isCorrect,
+  ).length;
+  const total = corrections.length;
   const accuracy = total > 0 ? Math.round((correctCount / total) * 100) : 0;
 
   const fromHomework = !!sessionId;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: FORTNITE_COLORS.bgDark }}>
-      {/* Header */}
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          paddingHorizontal: 20,
-          paddingVertical: 14,
-          borderBottomWidth: 1,
-          borderBottomColor: "#3D2E4A",
-        }}
-      >
-        <Pressable
-          onPress={() => router.back()}
-          style={{
-            width: 32,
-            height: 32,
-            backgroundColor: "#1A1520",
-            borderRadius: 16,
-            alignItems: "center",
-            justifyContent: "center",
-            marginRight: 12,
-          }}
-        >
-          <Text style={{ color: "#B8A9C9", fontSize: 16, fontWeight: "bold" }}>
-            {"<"}
-          </Text>
-        </Pressable>
-        <Text
-          style={{
-            flex: 1,
-            color: "#FFFFFF",
-            fontSize: 20,
-            fontFamily: "Bungee_400Regular",
-          }}
-        >
-          {t("game:correction.title")}
-        </Text>
-      </View>
+    <View className="px-4 flex-1">
+      <ScreenHeader title={t("game:correction.title")} />
 
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
-          paddingHorizontal: 20,
           paddingBottom: fromHomework ? 110 : 40,
           paddingTop: 16,
           gap: 12,
         }}
       >
-        {total === 0 ? (
+        {loadingCorrections ? (
+          <View style={{ alignItems: "center", paddingTop: 60 }}>
+            <ActivityIndicator size="large" color="#A78BFA" />
+          </View>
+        ) : corrections.length === 0 ? (
           <View style={{ alignItems: "center", paddingTop: 60 }}>
             <Text
               style={{
@@ -133,7 +143,10 @@ export default function CorrectionScreen() {
                   color: FORTNITE_COLORS.textPrimary,
                 }}
               >
-                {t("game:correction.summary", { correct: correctCount, total })}
+                {t("game:correction.summary", {
+                  correct: correctCount,
+                  total,
+                })}
               </Text>
               <Text
                 style={{
@@ -152,7 +165,7 @@ export default function CorrectionScreen() {
             </View>
 
             {/* Question cards */}
-            {lastMatchCorrection.map((item, index) => (
+            {corrections.map((item, index) => (
               <View
                 key={index}
                 style={{
@@ -335,7 +348,7 @@ export default function CorrectionScreen() {
           </>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 

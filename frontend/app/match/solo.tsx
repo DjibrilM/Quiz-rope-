@@ -3,10 +3,13 @@ import { View, Text, ScrollView, TextInput, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import Svg, { Path } from "react-native-svg";
+import * as Crypto from "expo-crypto";
 import { usePortrait } from "../../src/hooks/useOrientation";
 import { useGameStore } from "../../src/stores/gameStore";
 import { apiService } from "../../src/services/api";
+import * as guestDb from "../../src/services/guestDb";
 import { Button, ScreenHeader } from "../../src/components/common";
+import { useToast } from "../../src/context/ToastContext";
 import { DifficultySelector, RoundsSelector } from "../../src/components/match";
 import { MatchStatus } from "@shared/types/match.types";
 import { useTranslation } from "react-i18next";
@@ -23,6 +26,7 @@ function PlayIcon() {
 
 export default function SoloMatchScreen() {
   usePortrait();
+  const { showError } = useToast();
   const [creatingMatch, setCreatingMatch] = useState(false);
   const [context, setContext] = useState("");
   const [contextError, setContextError] = useState("");
@@ -49,44 +53,61 @@ export default function SoloMatchScreen() {
         { name: "Blue Team", color: "#3B82F6", side: "RIGHT" },
       ];
 
-      const created = userRole === "guest"
-        ? await apiService.createGhostMatch({
-            subject: subject!,
-            difficulty,
-            maxRounds,
-            gameMode: "solo",
-            context: context.trim() || undefined,
-            language: locale,
-          })
-        : await apiService.createMatch({
-            subject: subject!,
-            difficulty,
-            maxRounds,
-            gameMode: "solo",
-            context: context.trim() || undefined,
-            teams,
-            childIds: selectedChildId ? [selectedChildId] : [],
-            language: locale,
-          });
+      let match: any;
 
-      const match = {
-        ...(created as any),
-        id: (created as any)._id || (created as any).id,
-        gameMode: "solo" as const,
-        teams: ((created as any).teams || teams).map((t: any, i: number) => ({
-          id: t._id || t.id || `team-${i}`,
-          name: t.name,
-          color: t.color,
-          side: t.side,
-          players: t.players || [],
-        })),
-        ropePosition: (created as any).ropePosition || 0,
-        currentQuestionIndex: (created as any).currentQuestionIndex || 0,
-        status: MatchStatus.IN_PROGRESS,
-        rounds: (created as any).rounds || 0,
-        maxRounds,
-        createdAt: (created as any).createdAt || new Date(),
-      };
+      if (userRole === "guest") {
+        const { questions } = await apiService.generateGuestMatch({
+          subject: subject!,
+          difficulty,
+          maxRounds,
+          context: context.trim() || undefined,
+          language: locale,
+        });
+        const matchId = Crypto.randomUUID();
+        const now = Date.now();
+        await guestDb.saveMatch({
+          _id: matchId, subject: subject!, difficulty,
+          gameMode: "solo", maxRounds, status: "IN_PROGRESS",
+          roundsPlayed: 0, createdAt: now,
+          context: context.trim() || undefined, language: locale,
+        });
+        await guestDb.saveQuestions(matchId, questions.map((q, i) => ({ ...q, id: `${matchId}-q${i}` })));
+        match = {
+          _id: matchId, id: matchId, subject: subject!, difficulty,
+          gameMode: "solo" as const, maxRounds,
+          questions: questions.map((q, i) => ({ ...q, id: `${matchId}-q${i}` })),
+          teams: teams.map((t, i) => ({ id: `team-${i}`, ...t, players: [] })),
+          ropePosition: 0, currentQuestionIndex: 0,
+          status: MatchStatus.IN_PROGRESS, rounds: 0,
+          createdAt: new Date(now),
+        };
+      } else {
+        const created = await apiService.createMatch({
+          subject: subject!,
+          difficulty,
+          maxRounds,
+          gameMode: "solo",
+          context: context.trim() || undefined,
+          teams,
+          childIds: selectedChildId ? [selectedChildId] : [],
+          language: locale,
+        });
+        match = {
+          ...(created as any),
+          id: (created as any)._id || (created as any).id,
+          gameMode: "solo" as const,
+          teams: ((created as any).teams || teams).map((t: any, i: number) => ({
+            id: t._id || t.id || `team-${i}`,
+            name: t.name, color: t.color, side: t.side, players: t.players || [],
+          })),
+          ropePosition: (created as any).ropePosition || 0,
+          currentQuestionIndex: (created as any).currentQuestionIndex || 0,
+          status: MatchStatus.IN_PROGRESS,
+          rounds: (created as any).rounds || 0,
+          maxRounds,
+          createdAt: (created as any).createdAt || new Date(),
+        };
+      }
 
       // Solo mode runs entirely offline — no socket needed.
       // Connecting the socket causes startTimer in game.tsx to bail out early.
@@ -103,7 +124,7 @@ export default function SoloMatchScreen() {
       if (error?.message === "CONTEXT_NOT_RELATED") {
         setContextError(t("match:solo.contextNotRelated"));
       } else {
-        console.error("Failed to create match:", error);
+        showError(t("common:errors.somethingWentWrong"), t("match:create.createFailed"));
       }
     }
   };

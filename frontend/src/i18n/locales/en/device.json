@@ -7,6 +7,7 @@
     "errorToken": "Failed to get child token. Tap below to retry."
   },
   "connectDevice": {
+    "title": "Connect Device",
     "scanTitle": "Scan Child's Code",
     "scanInstruction": "Point the camera at the QR code on the child's device",
     "manualEntryDivider": "or enter code manually",
