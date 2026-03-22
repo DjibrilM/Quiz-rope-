@@ -200,6 +200,13 @@ export default function RoleSelectScreen() {
   const { setAuth, guestProfile, loginAsGuest, _hasHydrated, isAuthenticated } = useGameStore();
   usePortrait();
 
+  useEffect(() => {
+    apiService
+      .getAuthStatus()
+      .then((s) => setIsMockMode(s.mockMode))
+      .catch(() => setIsMockMode(true));
+  }, []);
+
   // Show a loader while the persisted auth state is being rehydrated from
   // AsyncStorage. This prevents the role-select cards from flashing before
   // the redirect to /home fires for already-authenticated users.
@@ -223,13 +230,6 @@ export default function RoleSelectScreen() {
   if (isAuthenticated) {
     return <View style={{ flex: 1, backgroundColor: "#0D0B14" }} />;
   }
-
-  useEffect(() => {
-    apiService
-      .getAuthStatus()
-      .then((s) => setIsMockMode(s.mockMode))
-      .catch(() => setIsMockMode(true));
-  }, []);
 
   const handleDevLogin = async () => {
     setDevLoading(true);

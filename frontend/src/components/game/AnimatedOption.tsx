@@ -211,7 +211,6 @@ export function AnimatedOption({
           fontFamily: FONTS.bodySemiBold,
           flex: 1,
         }}
-        numberOfLines={2}
       >
         {optionText}
       </Text>

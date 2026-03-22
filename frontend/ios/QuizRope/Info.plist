@@ -43,6 +43,12 @@
           <string>exp+quizrope</string>
         </array>
       </dict>
+      <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>app-1-1097849103209-ios-44e71ea8f4d371c3add3f8</string>
+        </array>
+      </dict>
     </array>
     <key>CFBundleVersion</key>
     <string>1</string>

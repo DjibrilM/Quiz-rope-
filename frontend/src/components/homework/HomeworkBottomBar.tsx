@@ -49,13 +49,6 @@ export function HomeworkBottomBar({
       <Pressable
         onPress={onOpenChat}
         className="w-[60px] h-[60px] rounded-full bg-[#6C5CE7] items-center justify-center shrink-0"
-        style={{
-          shadowColor: "#6C5CE7",
-          shadowOpacity: 0.5,
-          shadowRadius: 16,
-          shadowOffset: { width: 0, height: 4 },
-          elevation: 12,
-        }}
       >
         <Ionicons name="chatbubble-ellipses" size={26} color="#FFFFFF" />
       </Pressable>

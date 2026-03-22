@@ -18,7 +18,7 @@ import { firebaseAuthService } from "../../src/services/firebase";
 import { useGameStore } from "../../src/stores/gameStore";
 import { AppTitle, LoginButton } from "../../src/components/auth";
 import {
-  BackButton,
+  ScreenHeader,
   Divider,
   AnimatedLoader,
   Button,
@@ -147,7 +147,7 @@ export default function LoginScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-game-bg">
-      <BackButton absolute />
+      <ScreenHeader title={t("auth:login.signIn")} />
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -193,10 +193,7 @@ export default function LoginScreen() {
             <View style={{ position: "relative", marginBottom: 4 }}>
               <TextInput
                 value={password}
-                onChangeText={(v) => {
-                  setPassword(v);
-                  if (error) setError("");
-                }}
+                onChangeText={setPassword}
                 placeholder={t("auth:login.passwordPlaceholder")}
                 placeholderTextColor="#7B6B8A"
                 secureTextEntry={!showPassword}

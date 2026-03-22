@@ -7,6 +7,7 @@
     "errorToken": "Falha ao obter token. Toque abaixo para tentar novamente."
   },
   "connectDevice": {
+    "title": "Conectar Dispositivo",
     "scanTitle": "Escanear Codigo da Crianca",
     "scanInstruction": "Aponte a camera para o QR code no dispositivo da crianca",
     "manualEntryDivider": "ou insira o codigo manualmente",

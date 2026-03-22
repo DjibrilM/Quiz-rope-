@@ -12,6 +12,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { usePortrait } from "../../src/hooks/useOrientation";
 import { apiService } from "../../src/services/api";
+import * as guestDb from "../../src/services/guestDb";
 import { useGameStore } from "../../src/stores/gameStore";
 import {
   AnimatedLoader,
@@ -195,21 +196,23 @@ function ChildMatchCard({
 export default function MatchHistoryScreen() {
   usePortrait();
   const { t } = useTranslation(["match", "common"]);
-  const { children } = useGameStore();
+  const { children, userRole, parentUser, guestProfile } = useGameStore();
+  const isGuest = userRole === "guest";
+  const uid = parentUser?._id ?? parentUser?.id ?? guestProfile?.guestId ?? null;
   const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
 
   // All-matches query (no child filter)
   const allMatchesQuery = useQuery({
-    queryKey: ["matches"],
-    queryFn: () => apiService.getMatches(),
+    queryKey: ["matches", uid],
+    queryFn: () => isGuest ? guestDb.getMatches() : apiService.getMatches(),
     enabled: selectedChildId === null,
   });
 
   // Per-child query
   const childMatchesQuery = useQuery({
-    queryKey: ["childMatches", selectedChildId],
+    queryKey: ["childMatches", uid, selectedChildId],
     queryFn: () => apiService.getChildMatchHistory(selectedChildId!),
-    enabled: selectedChildId !== null,
+    enabled: !isGuest && selectedChildId !== null,
   });
 
   const isLoading =
@@ -357,26 +360,33 @@ export default function MatchHistoryScreen() {
                 <MatchHistoryCard
                   match={match}
                   onPress={() => {
-                    router.push({
-                      pathname: "/match/detail" as any,
-                      params: { matchId: match._id },
-                    });
+                    if (!isGuest) {
+                      router.push({
+                        pathname: "/match/detail" as any,
+                        params: { matchId: match._id },
+                      });
+                    }
                   }}
                 />
                 {match.status === "COMPLETED" && (
                   <Pressable
                     onPress={() =>
-                      router.push({
-                        pathname: "/match/review" as any,
-                        params: {
-                          matchId: match._id,
-                          childId:
-                            (match as any).gameMode === "splitscreen"
-                              ? "player-red"
-                              : "mock-player",
-                          subject: match.subject,
-                        },
-                      })
+                      isGuest
+                        ? router.push({
+                            pathname: "/match/correction" as any,
+                            params: { matchId: match._id },
+                          })
+                        : router.push({
+                            pathname: "/match/review" as any,
+                            params: {
+                              matchId: match._id,
+                              childId:
+                                (match as any).gameMode === "splitscreen"
+                                  ? "player-red"
+                                  : "mock-player",
+                              subject: match.subject,
+                            },
+                          })
                     }
                     style={{
                       marginTop: -6,

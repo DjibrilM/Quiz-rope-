@@ -14,7 +14,9 @@ import * as ImagePicker from "expo-image-picker";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
+import * as Crypto from "expo-crypto";
 import { apiService } from "../../src/services/api";
+import * as guestDb from "../../src/services/guestDb";
 import { useGameStore } from "../../src/stores/gameStore";
 import { AnimatedLoader, Button } from "../../src/components/common";
 import { FONTS } from "../../src/constants/theme";
@@ -102,11 +104,30 @@ export default function CaptureScreen() {
 
     setUploading(true);
     try {
-      const session = userRole === "guest"
-        ? await apiService.analyzeGhostHomework(capturedBase64)
-        : await apiService.analyzeHomework(capturedBase64, undefined, childId);
-      await incrementDailyCount();
-      router.replace(`/homework/processing?sessionId=${session._id}` as any);
+      if (userRole === "guest") {
+        // Synchronous stateless analysis — no DB, skip processing screen
+        const result = await apiService.analyzeGuestHomework(capturedBase64);
+        const sessionId = Crypto.randomUUID();
+        await guestDb.saveHomeworkSession({
+          id: sessionId,
+          title: result.title,
+          subject: result.subject,
+          status: result.status as any,
+          topics: result.topics,
+          answersMarkdown: result.answersMarkdown,
+          imageBase64: capturedBase64,
+          imageMimeType: 'image/jpeg',
+          quizTaken: false,
+          linkedMatchIds: [],
+          createdAt: Date.now(),
+        });
+        await incrementDailyCount();
+        router.replace(`/homework/session/${sessionId}` as any);
+      } else {
+        const session = await apiService.analyzeHomework(capturedBase64, undefined, childId);
+        await incrementDailyCount();
+        router.replace(`/homework/processing?sessionId=${session._id}` as any);
+      }
     } catch (err: any) {
       setUploading(false);
       Alert.alert("Upload failed", err?.message ?? "Try again.");
@@ -124,6 +145,11 @@ export default function CaptureScreen() {
           />
         )}
         <SafeAreaView style={styles.bg}>
+          {Platform.OS === "android" && (
+            <Pressable onPress={() => router.back()} style={styles.androidBack} hitSlop={12}>
+              <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+            </Pressable>
+          )}
           <View style={styles.center}>
             <Text style={styles.permTitle}>Camera access needed</Text>
             <Text style={styles.permSub}>
@@ -154,6 +180,11 @@ export default function CaptureScreen() {
           />
         )}
         <SafeAreaView style={styles.bg} edges={["bottom"]}>
+          {Platform.OS === "android" && (
+            <Pressable onPress={handleRetake} style={styles.androidBack} hitSlop={12}>
+              <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+            </Pressable>
+          )}
           <Image
             source={{ uri: capturedUri }}
             style={StyleSheet.absoluteFill}
@@ -202,7 +233,11 @@ export default function CaptureScreen() {
           style={StyleSheet.absoluteFill}
           facing="back"
         />
-
+        {Platform.OS === "android" && (
+          <Pressable onPress={() => router.back()} style={styles.androidBack} hitSlop={12}>
+            <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+          </Pressable>
+        )}
         {/* Bottom sheet panel — floats over camera */}
         <View
           className="m-10 py-10"
@@ -334,5 +369,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 12,
     marginBottom: 8,
+  },
+
+  androidBack: {
+    position: "absolute",
+    top: 48,
+    left: 16,
+    zIndex: 10,
+    padding: 8,
   },
 });

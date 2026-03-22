@@ -5,6 +5,8 @@ import { router } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { usePortrait } from "../../src/hooks/useOrientation";
 import { apiService } from "../../src/services/api";
+import * as guestDb from "../../src/services/guestDb";
+import { useGameStore } from "../../src/stores/gameStore";
 import {
   AnimatedLoader,
   EmptyState,
@@ -259,6 +261,9 @@ function ChildFilterChips({
 export default function HomeworkIndexScreen() {
   usePortrait();
   const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
+  const { userRole, parentUser, guestProfile } = useGameStore();
+  const isGuest = userRole === "guest";
+  const uid = parentUser?._id ?? parentUser?.id ?? guestProfile?.guestId ?? null;
 
   const {
     data: sessions = [],
@@ -267,14 +272,18 @@ export default function HomeworkIndexScreen() {
     refetch,
     isRefetching,
   } = useQuery<HomeworkSession[]>({
-    queryKey: ["homeworkSessions"],
-    queryFn: () => apiService.getHomeworkSessions(),
+    queryKey: ["homeworkSessions", uid],
+    queryFn: () =>
+      isGuest
+        ? guestDb.getHomeworkSessions()
+        : apiService.getHomeworkSessions(),
   });
 
   const { data: children = [] } = useQuery<Child[]>({
-    queryKey: ["children"],
+    queryKey: ["children", uid],
     queryFn: () => apiService.getChildren(),
     staleTime: 60_000,
+    enabled: !isGuest,
   });
 
   const filteredSessions =

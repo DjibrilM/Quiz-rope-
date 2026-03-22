@@ -6,6 +6,7 @@
     "solo": "Solo",
     "splitScreen": "Split Screen",
     "startButton": "Play {{subject}}!",
+    "createFailed": "Failed to create the match. Please try again.",
     "subjectHint": {
       "MATH": "Numbers & puzzles",
       "SCIENCE": "Experiments & discovery",
@@ -41,7 +42,8 @@
     "completed": "Completed",
     "review": "Review Answers",
     "inProgress": "In Progress",
-    "waiting": "Not Started"
+    "waiting": "Not Started",
+    "abandoned": "Abandoned"
   },
   "detail": {
     "title": "Match Details",

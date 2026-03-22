@@ -179,10 +179,11 @@ export const useGameStore = create<GameState>()(
           authToken: null,
           userRole: null,
           childSession: null,
+          guestProfile: null,
+          ghostToken: null,
           subscriptionStatus: 'active',
           subscriptionExpiresAt: null,
           isMockMode: false,
-          // guestProfile intentionally NOT cleared — persists across logouts
         }),
 
       setCurrentMatch: (match) => set({ currentMatch: match }),

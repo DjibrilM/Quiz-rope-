@@ -9,8 +9,10 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { apiService } from "../../../src/services/api";
+import * as guestDb from "../../../src/services/guestDb";
+import { useGameStore } from "../../../src/stores/gameStore";
 import { MarkdownAnswer } from "../../../src/components/homework/MarkdownAnswer";
-import { HomeworkChatSheet } from "../../../src/components/homework/HomeworkChatSheet";
+import { HomeworkChatSheet, type ChatSheetRef } from "../../../src/components/homework/HomeworkChatSheet";
 import { HomeworkBottomBar } from "../../../src/components/homework/HomeworkBottomBar";
 import { HomeworkQuizSheet } from "../../../src/components/homework/HomeworkQuizSheet";
 import {
@@ -23,13 +25,17 @@ export default function HomeworkSessionScreen() {
   const { sessionId } = useLocalSearchParams<{ sessionId: string }>();
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
+  const { userRole } = useGameStore();
+  const isGuest = userRole === "guest";
 
-  const chatSheetRef = useRef<BottomSheetModal>(null);
+  const chatSheetRef = useRef<ChatSheetRef>(null);
   const quizSheetRef = useRef<BottomSheetModal>(null);
 
   const { data: session, isLoading: loading } = useQuery({
     queryKey: ["homeworkSession", sessionId],
-    queryFn: () => apiService.getHomeworkSession(sessionId),
+    queryFn: () => isGuest
+      ? guestDb.getHomeworkSession(sessionId)
+      : apiService.getHomeworkSession(sessionId),
   });
 
   const linkedMatchIds: string[] = session?.linkedMatchIds?.length
@@ -125,6 +131,7 @@ export default function HomeworkSessionScreen() {
       <HomeworkChatSheet
         ref={chatSheetRef}
         sessionId={sessionId}
+        guestContext={isGuest ? (session?.answersMarkdown || '') : undefined}
       />
     </SafeAreaView>
   );

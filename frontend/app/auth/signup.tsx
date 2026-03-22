@@ -17,12 +17,7 @@ import { apiService } from "../../src/services/api";
 import { firebaseAuthService } from "../../src/services/firebase";
 import { useGameStore } from "../../src/stores/gameStore";
 import { AppTitle, LoginButton } from "../../src/components/auth";
-import {
-  BackButton,
-  Divider,
-  AnimatedLoader,
-  Button,
-} from "../../src/components/common";
+import { ScreenHeader, Divider, Button } from "../../src/components/common";
 import { FONTS } from "../../src/constants/theme";
 import { useToast } from "../../src/context/ToastContext";
 
@@ -133,7 +128,7 @@ export default function SignupScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-game-bg">
-      <BackButton absolute />
+      <ScreenHeader title={t("auth:signup.title")} />
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -184,10 +179,7 @@ export default function SignupScreen() {
             <View style={{ position: "relative", marginBottom: 4 }}>
               <TextInput
                 value={password}
-                onChangeText={(v) => {
-                  setPassword(v);
-                  if (error) setError("");
-                }}
+                onChangeText={setPassword}
                 placeholder={t("auth:login.passwordPlaceholder")}
                 placeholderTextColor="#7B6B8A"
                 secureTextEntry={!showPassword}
@@ -270,7 +262,7 @@ export default function SignupScreen() {
               loading={loading}
               label={t("auth:signup.createAccount")}
               variant="primary"
-              className="bg-game-indigo! w-full mb-2"
+              className="bg-game-indigo! w-full my-5"
               onPress={handleEmailSignUp}
             />
 

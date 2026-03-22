@@ -7,6 +7,7 @@
     "errorToken": "Impossible d'obtenir le code enfant. Appuyez ci-dessous pour réessayer."
   },
   "connectDevice": {
+    "title": "Connecter l'appareil",
     "scanTitle": "Scanner le code de l'enfant",
     "scanInstruction": "Pointez la caméra vers le QR code sur l'appareil de l'enfant",
     "manualEntryDivider": "ou entrez le code manuellement",

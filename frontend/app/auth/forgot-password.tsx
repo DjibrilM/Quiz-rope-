@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import { usePortrait } from "../../src/hooks/useOrientation";
 import { firebaseAuthService } from "../../src/services/firebase";
 import { AppTitle } from "../../src/components/auth";
-import { BackButton, AnimatedLoader, Button } from "../../src/components/common";
+import { ScreenHeader, AnimatedLoader, Button } from "../../src/components/common";
 import { FONTS } from "../../src/constants/theme";
 import { useToast } from "../../src/context/ToastContext";
 
@@ -160,7 +160,7 @@ export default function ForgotPasswordScreen() {
   // ── Step: email ────────────────────────────────────────────────────────────
   return (
     <SafeAreaView className="flex-1 bg-game-bg">
-      <BackButton absolute />
+      <ScreenHeader title={t("auth:forgotPassword.title")} />
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}

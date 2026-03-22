@@ -7,6 +7,7 @@
     "errorToken": "获取儿童令牌失败。请点击下方重试。"
   },
   "connectDevice": {
+    "title": "连接设备",
     "scanTitle": "扫描孩子的代码",
     "scanInstruction": "将相机对准孩子设备上的二维码",
     "manualEntryDivider": "或手动输入代码",

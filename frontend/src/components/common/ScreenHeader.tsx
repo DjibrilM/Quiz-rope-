@@ -46,10 +46,11 @@ export function ScreenHeader({
 
   return (
     <View
+      className="pt-4"
       style={{
         flexDirection: "row",
         alignItems: "center",
-        height: 48,
+        height: 54,
         paddingHorizontal: 16,
         marginTop: 8,
       }}
@@ -89,9 +90,7 @@ export function ScreenHeader({
         </Text>
       </View>
 
-      <View style={{ width: 48, alignItems: "flex-end" }}>
-        {rightElement}
-      </View>
+      <View style={{ width: 48, alignItems: "flex-end" }}>{rightElement}</View>
     </View>
   );
 }

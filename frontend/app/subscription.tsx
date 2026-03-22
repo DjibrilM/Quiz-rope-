@@ -2,11 +2,13 @@ import { View, Text, Pressable, Alert, Modal } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { usePortrait } from "../src/hooks/useOrientation";
 import { apiService } from "../src/services/api";
 import { useGameStore } from "../src/stores/gameStore";
 import { firebaseAuthService } from "../src/services/firebase";
+import * as guestDb from "../src/services/guestDb";
 import { FlutterwaveWebView } from "../src/components/payment";
 import { FONTS } from "../src/constants/theme";
 
@@ -20,6 +22,7 @@ const FEATURE_KEYS = [
 
 export default function SubscriptionScreen() {
   usePortrait();
+  const queryClient = useQueryClient();
   const { t } = useTranslation(["subscription", "auth", "common"]);
   const [loading, setLoading] = useState(false);
   const [showWebView, setShowWebView] = useState(false);
@@ -87,8 +90,10 @@ export default function SubscriptionScreen() {
     } catch (err) {
       console.warn("Firebase sign-out error (non-critical):", err);
     }
+    guestDb.clearAllGuestData().catch(() => {});
     apiService.clearToken();
     useGameStore.getState().logout();
+    queryClient.clear();
     router.replace("/");
   };
 

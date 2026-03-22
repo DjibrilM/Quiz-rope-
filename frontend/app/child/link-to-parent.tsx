@@ -14,8 +14,9 @@ import { useTranslation } from "react-i18next";
 import { usePortrait } from "../../src/hooks/useOrientation";
 import { useGameStore } from "../../src/stores/gameStore";
 import { apiService } from "../../src/services/api";
+import * as guestDb from "../../src/services/guestDb";
 import { hapticsService } from "../../src/services/haptics";
-import { BackButton } from "../../src/components/common";
+import { BackButton, ScreenHeader } from "../../src/components/common";
 import { FONTS } from "../../src/constants/theme";
 
 export default function LinkToParentScreen() {
@@ -50,10 +51,15 @@ export default function LinkToParentScreen() {
         jwtToken: result.token,
       });
 
-      // Migrate all ghost data (answers, matches, homework) to the real child account.
-      // The child JWT is now in the header — migration happens silently.
-      if (guestProfile?.guestId) {
-        apiService.migrateGuestData(guestProfile.guestId).catch(() => {});
+      // Migrate all local SQLite guest data to MongoDB silently.
+      try {
+        const payload = await guestDb.getAllDataForMigration();
+        if (payload.matches.length > 0 || payload.homeworkSessions.length > 0) {
+          await apiService.migrateLocalGuestData(payload, result.token);
+        }
+        await guestDb.clearAllGuestData();
+      } catch {
+        // Migration is best-effort; local data already cleared or migration failed — continue
       }
 
       // Remove guest profile — they're now a real child account
@@ -75,7 +81,7 @@ export default function LinkToParentScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#0D0B14" }}>
-      <BackButton absolute />
+      <ScreenHeader title={t("device:connectDevice.title")} />
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -135,7 +141,12 @@ export default function LinkToParentScreen() {
             ref={inputRef}
             value={code}
             onChangeText={(v) => {
-              setCode(v.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6));
+              setCode(
+                v
+                  .toUpperCase()
+                  .replace(/[^A-Z0-9]/g, "")
+                  .slice(0, 6),
+              );
               setError("");
             }}
             placeholder="AB12CD"
@@ -156,7 +167,11 @@ export default function LinkToParentScreen() {
               width: "100%",
               marginBottom: 12,
               borderWidth: 2,
-              borderColor: error ? "#EF4444" : code.length === 6 ? "#9B59B6" : "#3D2E4A",
+              borderColor: error
+                ? "#EF4444"
+                : code.length === 6
+                  ? "#9B59B6"
+                  : "#3D2E4A",
             }}
             autoFocus
             returnKeyType="done"
@@ -196,8 +211,11 @@ export default function LinkToParentScreen() {
             disabled={loading || success}
             style={({ pressed }) => ({
               width: "100%",
-              backgroundColor:
-                success ? "#22C55E" : pressed ? "#7C3AED" : "#9B59B6",
+              backgroundColor: success
+                ? "#22C55E"
+                : pressed
+                  ? "#7C3AED"
+                  : "#9B59B6",
               paddingVertical: 18,
               borderRadius: 20,
               alignItems: "center",

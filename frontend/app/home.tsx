@@ -4,6 +4,7 @@ import { router } from "expo-router";
 import { usePortrait } from "../src/hooks/useOrientation";
 import { useGameStore } from "../src/stores/gameStore";
 import { firebaseAuthService } from "../src/services/firebase";
+import * as guestDb from "../src/services/guestDb";
 import { AvatarIcon } from "../src/components/common/AvatarIcons";
 import { apiService } from "../src/services/api";
 import { hapticsService } from "../src/services/haptics";
@@ -17,6 +18,7 @@ import Svg, {
   Stop,
 } from "react-native-svg";
 import React, { useRef, useCallback, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   BottomSheetModal,
   BottomSheetView,
@@ -288,6 +290,7 @@ function MenuItem({
 
 export default function HomeScreen() {
   usePortrait();
+  const queryClient = useQueryClient();
   const { t } = useTranslation(["home", "auth", "common"]);
   const {
     parentUser,
@@ -386,8 +389,10 @@ export default function HomeScreen() {
     } catch (err) {
       console.warn("Firebase sign-out error (non-critical):", err);
     }
+    guestDb.clearAllGuestData().catch(() => {});
     apiService.clearToken();
     logout();
+    queryClient.clear();
     router.replace("/");
   };
 
@@ -397,57 +402,83 @@ export default function HomeScreen() {
       <View className="px-6 pt-4 pb-6">
         <View className="flex-row items-center justify-between">
           <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <View className="relative bottom-1">
-              <BrainMascot speed={0.7} size={40} variant="headSideBounce" />
-            </View>
-            <View className="">
-              <Text
-                className="text-3xl text-white"
-                style={{ fontFamily: "LuckiestGuy_400Regular" }}
-              >
-                {t("home:appName")}
-              </Text>
-              {(isGuest || isChild) && (
+            <View className="flex-row">
+              <View className="relative flex items-start bottom-3">
+                <BrainMascot speed={0.7} size={40} variant="headSideBounce" />
+              </View>
+
+              <View className="flex-col">
                 <Text
-                  style={{
-                    fontSize: 14,
-                    color: "#B8A9C9",
-                    marginTop: 4,
-                    fontFamily: FONTS.body,
-                  }}
+                  className="text-3xl text-white"
+                  style={{ fontFamily: "LuckiestGuy_400Regular" }}
                 >
-                  {t("home:greeting", {
-                    name: isGuest
-                      ? guestProfile?.displayName || "Player"
-                      : currentChild?.displayName || "Player",
-                  })}
+                  {t("home:appName")}
                 </Text>
-              )}
+                {(isGuest || isChild) &&
+                  (() => {
+                    const name = isGuest
+                      ? guestProfile?.displayName
+                      : currentChild?.displayName;
+                    return name ? null : (
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          color: "#B8A9C9",
+                          marginTop: 1,
+                          fontFamily: FONTS.body,
+                        }}
+                      >
+                        {t("home:welcomeBack")}
+                      </Text>
+                    );
+                  })()}
+              </View>
             </View>
           </View>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
             <FlashingGlobeButton
               onPress={() => languageSheetRef.current?.present()}
             />
-            <Pressable
-              onPress={handleOpenLogout}
-              style={{
-                backgroundColor: "#1A1520",
-                paddingHorizontal: 16,
-                paddingVertical: 10,
-                borderRadius: 20,
-              }}
-            >
-              <Text
+            {(isGuest || isChild) ? (
+              <Pressable
+                onPress={() => router.push("/leaderboard" as any)}
                 style={{
-                  color: "#7B6B8A",
-                  fontSize: 12,
-                  fontFamily: "Bungee_400Regular",
+                  width: 40,
+                  height: 40,
+                  backgroundColor: "#2A1F35",
+                  borderRadius: 20,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderWidth: 2,
+                  borderColor: "#9B59B6",
                 }}
               >
-                {t("auth:logout.button")}
-              </Text>
-            </Pressable>
+                <AvatarIcon
+                  avatarId={isGuest ? guestProfile?.avatarId : currentChild?.avatarUrl}
+                  size={26}
+                />
+              </Pressable>
+            ) : (
+              <Pressable
+                onPress={handleOpenLogout}
+                style={{
+                  backgroundColor: "#1A1520",
+                  paddingHorizontal: 16,
+                  paddingVertical: 10,
+                  borderRadius: 20,
+                }}
+              >
+                <Text
+                  style={{
+                    color: "#7B6B8A",
+                    fontSize: 12,
+                    fontFamily: "Bungee_400Regular",
+                  }}
+                >
+                  {t("auth:logout.button")}
+                </Text>
+              </Pressable>
+            )}
           </View>
         </View>
       </View>
@@ -666,18 +697,18 @@ export default function HomeScreen() {
           >
             {t("auth:logout.confirmation")}
           </Text>
-          <View className="flex-col gap-3">
+          <View className="flex-col w-full gap-3">
             <Button
               label={t("auth:logout.button")}
               variant="danger"
               onPress={handleLogout}
-              className="w-full max-w-none"
+              className="min-w-full max-w-none"
             />
             <Button
               label={t("common:buttons.cancel")}
               variant="secondary"
               onPress={handleCloseLogout}
-              className="w-full max-w-none"
+              className="w-full min-w-full max-w-none"
             />
           </View>
         </BottomSheetView>

@@ -11,10 +11,13 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import Svg, { Path, Circle, Rect } from "react-native-svg";
+import * as Crypto from "expo-crypto";
 import { usePortrait } from "../../src/hooks/useOrientation";
 import { useGameStore } from "../../src/stores/gameStore";
 import { apiService } from "../../src/services/api";
+import * as guestDb from "../../src/services/guestDb";
 import { Button, ScreenHeader } from "../../src/components/common";
+import { useToast } from "../../src/context/ToastContext";
 import { RoundsSelector } from "../../src/components/match";
 import { MatchStatus } from "@shared/types/match.types";
 import { useTranslation } from "react-i18next";
@@ -76,6 +79,7 @@ function SplitIcon() {
 
 export default function SplitMatchScreen() {
   usePortrait();
+  const { showError } = useToast();
   const [creatingMatch, setCreatingMatch] = useState(false);
   const [player1Name, setPlayer1Name] = useState("");
   const [player2Name, setPlayer2Name] = useState("");
@@ -104,44 +108,61 @@ export default function SplitMatchScreen() {
         { name: p2, color: "#3B82F6", side: "RIGHT" },
       ];
 
-      const created = userRole === "guest"
-        ? await apiService.createGhostMatch({
-            subject: subject!,
-            difficulty: ageGroup,
-            maxRounds,
-            gameMode: "splitscreen",
-            context: context.trim() || undefined,
-            language: locale,
-          })
-        : await apiService.createMatch({
-            subject: subject!,
-            difficulty: ageGroup,
-            maxRounds,
-            gameMode: "splitscreen",
-            context: context.trim() || undefined,
-            teams,
-            childIds: [player1Id, player2Id].filter(Boolean) as string[],
-            language: locale,
-          });
+      let match: any;
 
-      const match = {
-        ...(created as any),
-        id: (created as any)._id || (created as any).id,
-        gameMode: "splitscreen" as const,
-        teams: ((created as any).teams || teams).map((t: any, i: number) => ({
-          id: t._id || t.id || `team-${i}`,
-          name: t.name,
-          color: t.color,
-          side: t.side,
-          players: t.players || [],
-        })),
-        ropePosition: (created as any).ropePosition || 0,
-        currentQuestionIndex: (created as any).currentQuestionIndex || 0,
-        status: MatchStatus.IN_PROGRESS,
-        rounds: (created as any).rounds || 0,
-        maxRounds,
-        createdAt: (created as any).createdAt || new Date(),
-      };
+      if (userRole === "guest") {
+        const { questions } = await apiService.generateGuestMatch({
+          subject: subject!,
+          difficulty: ageGroup,
+          maxRounds,
+          context: context.trim() || undefined,
+          language: locale,
+        });
+        const matchId = Crypto.randomUUID();
+        const now = Date.now();
+        await guestDb.saveMatch({
+          _id: matchId, subject: subject!, difficulty: ageGroup,
+          gameMode: "splitscreen", maxRounds, status: "IN_PROGRESS",
+          roundsPlayed: 0, createdAt: now,
+          context: context.trim() || undefined, language: locale,
+        });
+        await guestDb.saveQuestions(matchId, questions.map((q, i) => ({ ...q, id: `${matchId}-q${i}` })));
+        match = {
+          _id: matchId, id: matchId, subject: subject!, difficulty: ageGroup,
+          gameMode: "splitscreen" as const, maxRounds,
+          questions: questions.map((q, i) => ({ ...q, id: `${matchId}-q${i}` })),
+          teams: teams.map((t, i) => ({ id: `team-${i}`, ...t, players: [] })),
+          ropePosition: 0, currentQuestionIndex: 0,
+          status: MatchStatus.IN_PROGRESS, rounds: 0,
+          createdAt: new Date(now),
+        };
+      } else {
+        const created = await apiService.createMatch({
+          subject: subject!,
+          difficulty: ageGroup,
+          maxRounds,
+          gameMode: "splitscreen",
+          context: context.trim() || undefined,
+          teams,
+          childIds: [player1Id, player2Id].filter(Boolean) as string[],
+          language: locale,
+        });
+        match = {
+          ...(created as any),
+          id: (created as any)._id || (created as any).id,
+          gameMode: "splitscreen" as const,
+          teams: ((created as any).teams || teams).map((t: any, i: number) => ({
+            id: t._id || t.id || `team-${i}`,
+            name: t.name, color: t.color, side: t.side, players: t.players || [],
+          })),
+          ropePosition: (created as any).ropePosition || 0,
+          currentQuestionIndex: (created as any).currentQuestionIndex || 0,
+          status: MatchStatus.IN_PROGRESS,
+          rounds: (created as any).rounds || 0,
+          maxRounds,
+          createdAt: (created as any).createdAt || new Date(),
+        };
+      }
 
       setCurrentMatch(match);
       router.replace({
@@ -159,7 +180,7 @@ export default function SplitMatchScreen() {
       if (error?.message === "CONTEXT_NOT_RELATED") {
         setContextError(t("match:solo.contextNotRelated"));
       } else {
-        console.error("Failed to create split-screen match:", error);
+        showError(t("common:errors.somethingWentWrong"), t("match:create.createFailed"));
       }
     }
   };
