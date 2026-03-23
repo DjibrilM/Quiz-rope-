@@ -1,5 +1,6 @@
 import * as Haptics from 'expo-haptics';
 
+
 class HapticsService {
   light() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
