@@ -1,7 +1,25 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
-@Schema({ timestamps: true })
+@Schema({
+  timestamps: true,
+  toJSON: {
+    virtuals: true,
+    versionKey: false,
+    transform: (doc, ret: any) => {
+      ret.id = ret._id.toString();
+      delete ret._id;
+    },
+  },
+  toObject: {
+    virtuals: true,
+    versionKey: false,
+    transform: (doc, ret: any) => {
+      ret.id = ret._id.toString();
+      delete ret._id;
+    },
+  },
+})
 export class Parent extends Document {
   @Prop({ required: true })
   email: string;

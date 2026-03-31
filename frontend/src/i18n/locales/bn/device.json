@@ -1,18 +1,16 @@
 {
   "childJoin": {
     "title": "একটি খেলায় যোগ দিন!",
-    "instruction": "আপনার অভিভাবককে এই কোডটি দেখান",
-    "waitingStatus": "অভিভাবকের স্ক্যানের জন্য অপেক্ষা করা হচ্ছে...",
-    "generateNewCode": "নতুন কোড তৈরি করুন",
-    "errorToken": "চাইল্ড টোকেন পেতে ব্যর্থ। পুনরায় চেষ্টা করতে নিচে ট্যাপ করুন।"
+    "instruction": "আপনার অভিভাবকের ডিভাইসে দেখানো কোডটি লিখুন",
+    "codeInputPlaceholder": "সেশন কোড লিখুন",
+    "scanQR": "QR কোড স্ক্যান করুন",
+    "enterCodeInstead": "কোড লিখুন",
+    "errorToken": "চাইল্ড টোকেন পেতে ব্যর্থ। পুনরায় চেষ্টা করতে নিচে ট্যাপ করুন।",
+    "invalidCode": "অবৈধ বা মেয়াদোত্তীর্ণ কোড। অনুগ্রহ করে আবার চেষ্টা করুন।"
   },
   "connectDevice": {
     "title": "ডিভাইস সংযুক্ত করুন",
-    "scanTitle": "সন্তানের কোড স্ক্যান করুন",
-    "scanInstruction": "সন্তানের ডিভাইসে QR কোডের দিকে ক্যামেরা তাক করুন",
-    "manualEntryDivider": "অথবা ম্যানুয়ালি কোড লিখুন",
-    "manualCodePlaceholder": "সেশন কোড লিখুন",
-    "loadingTitle": "লোড হচ্ছে...",
+    "loadingTitle": "সেট আপ হচ্ছে...",
     "loadingMessage": "খেলোয়াড়দের তথ্য আনা হচ্ছে...",
     "selectChildTitle": "কে খেলছে?",
     "selectChildInstruction": "এই ডিভাইসের জন্য একটি সন্তান নির্বাচন করুন",
@@ -21,9 +19,8 @@
     "linkingTitle": "ডিভাইস সংযুক্ত হচ্ছে...",
     "settingUpSession": "{{name}}-এর সেশন সেট আপ হচ্ছে",
     "errorTitle": "কিছু একটা ভুল হয়েছে",
-    "successTitle": "ডিভাইস সংযুক্ত!",
-    "successStatus": "সংযুক্ত",
-    "successMessage": "{{name}}-এর ডিভাইস এখন সংযুক্ত"
+    "showCodeTitle": "এই কোডটি শেয়ার করুন",
+    "showCodeInstruction": "{{name}}-কে তাদের ডিভাইসে স্ক্যান বা টাইপ করতে এটি দেখান"
   },
   "qrCode": {
     "cameraPermission": "QR কোড স্ক্যান করতে ক্যামেরা অ্যাক্সেস প্রয়োজন",

@@ -1,24 +1,27 @@
 {
   "greeting": "مستعد للعب، {{name}}؟",
   "appName": "QuizRope",
+  "welcomeBack": "أهلاً بعودتك",
   "activeUntil": "نشط حتى {{date}}",
   "menu": {
     "quickPlay": "لعب سريع",
     "quickPlayDesc": "ابدأ لعبة تجريبية مباشرة",
-    "startNewGame": "بدء لعبة جديدة",
-    "startNewGameDesc": "أنشئ مباراة وتحدَّ اللاعبين",
+    "startNewGame": "العب",
+    "startNewGameDesc": "فردي أو شاشة مقسمة — اختر وضعك",
     "connectDevice": "ربط جهاز",
     "connectDeviceDesc": "اربط جهاز طفلك اللوحي عبر رمز QR",
     "myChildren": "أطفالي",
     "myChildrenDesc": "إضافة وإدارة ملفات اللاعبين",
     "matchHistory": "سجل المباريات",
     "matchHistoryDesc": "عرض الألعاب السابقة والإحصائيات",
-    "soloPlay": "لعب فردي",
-    "soloPlayDesc": "العب بمفردك بالوتيرة التي تناسبك",
+    "soloPlay": "العب",
+    "soloPlayDesc": "فردي أو شاشة مقسمة — اختر وضعك",
     "joinMatch": "الانضمام لمباراة",
     "joinMatchDesc": "أدخل رمزاً للانضمام إلى مباراة مباشرة",
     "leaderboard": "لوحة المتصدرين",
-    "leaderboardDesc": "شاهد من هو أفضل لاعب"
+    "leaderboardDesc": "شاهد من هو أفضل لاعب",
+    "homeworkAssist": "الواجبات",
+    "homeworkAssistDesc": "احصل على شرح بالذكاء الاصطناعي لواجباتك"
   },
   "guest": {
     "linkBannerCta": "اضغط لربط تقدمك بحساب أحد الوالدين",

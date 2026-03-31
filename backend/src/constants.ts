@@ -1,1 +1,1 @@
-export const GEMINI_MODEL = 'gemini-3.1-flash-lite-preview';
+export const GEMINI_MODEL = "gemini-3.1-flash-lite-preview";

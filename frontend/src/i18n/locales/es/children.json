@@ -18,5 +18,17 @@
     "nameMaxLength": "El nombre debe tener menos de 30 caracteres",
     "ageRange": "La edad debe ser entre 3 y 18",
     "gradeRequired": "El grado es obligatorio"
+  },
+  "linkCode": {
+    "getCode": "Obtener código",
+    "selectChild": "Seleccionar un hijo",
+    "title": "Código de enlace para {{name}}",
+    "expiresIn": "Expira en {{minutes}} minutos",
+    "expiresMinutes": "Expira en {{minutes}}m {{seconds}}s",
+    "expiresSeconds": "Expira en {{seconds}}s",
+    "expired": "Código expirado",
+    "ok": "Entendido",
+    "errorTitle": "Error al generar el código",
+    "errorBody": "Algo salió mal. Por favor, inténtalo de nuevo."
   }
 }

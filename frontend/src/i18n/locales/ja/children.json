@@ -18,5 +18,17 @@
     "nameMaxLength": "名前は30文字以内で入力してください",
     "ageRange": "年齢は3〜18歳の範囲で入力してください",
     "gradeRequired": "学年は必須です"
+  },
+  "linkCode": {
+    "getCode": "リンクコードを取得",
+    "selectChild": "子供を選択",
+    "title": "{{name}} のリンクコード",
+    "expiresIn": "{{minutes}}分で有効期限切れ",
+    "expiresMinutes": "{{minutes}}分{{seconds}}秒で有効期限切れ",
+    "expiresSeconds": "{{seconds}}秒で有効期限切れ",
+    "expired": "コードの有効期限が切れました",
+    "ok": "わかりました",
+    "errorTitle": "コードの生成に失敗",
+    "errorBody": "問題が発生しました。もう一度お試しください。"
   }
 }

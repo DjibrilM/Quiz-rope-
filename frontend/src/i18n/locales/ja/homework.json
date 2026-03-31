@@ -1,0 +1,84 @@
+{
+  "title": "宿題",
+  "status": {
+    "ready": "✓ 準備完了",
+    "analyzing": "分析中…",
+    "failed": "✕ 失敗"
+  },
+  "session": {
+    "defaultTitle": "宿題セッション",
+    "quizDone": "クイズ完了 ✓",
+    "reviewTitle": "写真を確認",
+    "notFound": "セッションが見つかりません",
+    "assistTitle": "アシスト",
+    "noExplanation": "解説がありません。"
+  },
+  "actions": {
+    "scanNew": "新しい宿題をスキャン",
+    "scanNewDesc": "ページを撮影してAIの解説を取得",
+    "retake": "撮り直す",
+    "analyze": "分析する",
+    "library": "ライブラリ"
+  },
+  "filters": {
+    "all": "すべて"
+  },
+  "history": {
+    "recent": "最近のセッション",
+    "childSessions": "{{name}}のセッション"
+  },
+  "errors": {
+    "loadFailed": "セッションを読み込めませんでした",
+    "pullToRetry": "下に引っ張って再試行",
+    "processFailed": "画像の処理に失敗しました。再試行してください。",
+    "uploadFailed": "アップロード失敗",
+    "limitReached": "1日の上限に達しました",
+    "limitDesc": "1日に{{limit}}ページの宿題をスキャンできます。明日また来てください！",
+    "analysisFailed": "分析失敗",
+    "analysisFailedDesc": "宿題を分析できませんでした。再試行してください。"
+  },
+  "empty": {
+    "noSessionsForChild": "この子供のセッションはありません",
+    "noHomeworkYet": "まだ宿題がありません",
+    "assignToChild": "宿題をスキャンしてこの子供に割り当てる",
+    "getStarted": "最初の宿題のページをスキャンして始めましょう"
+  },
+  "capture": {
+    "hint": "宿題に向けて、カメラをタップ",
+    "allowAccess": "カメラボタンをタップしてアクセスを許可",
+    "preparing": "画像を準備中…"
+  },
+  "processing": {
+    "title": "宿題を分析中",
+    "hint": "約15〜30秒かかります",
+    "steps": [
+      "宿題を読み込み中…",
+      "問題を解いています…",
+      "解説を作成中…",
+      "もうすぐ完了…"
+    ]
+  },
+  "chat": {
+    "title": "AIに質問する",
+    "subtitle": "宿題について何でも聞いてください",
+    "placeholder": "質問を入力…",
+    "emptyState": "宿題について何でも聞いてください"
+  },
+  "quiz": {
+    "title": "クイズ",
+    "emptyTitle": "まだクイズなし",
+    "emptySubtitle": "上のクイズを開始して理解度を確認しましょう。",
+    "attempt": "挑戦{{number}}回目",
+    "tapToView": "タップして結果を確認",
+    "viewResults": "結果を見る",
+    "startFirst": "最初のクイズを開始",
+    "startNew": "新しいクイズを開始",
+    "scoreDetail": "{{correct}}問正解 · {{wrong}}問不正解"
+  },
+  "bottomBar": {
+    "quizzes": "クイズ",
+    "noQuizzesYet": "まだクイズなし",
+    "oneAttempt": "1回挑戦",
+    "attempts": "{{count}}回挑戦"
+  }
+}

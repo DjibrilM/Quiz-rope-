@@ -18,5 +18,17 @@
     "nameMaxLength": "يجب أن يكون الاسم أقل من 30 حرفاً",
     "ageRange": "يجب أن يكون العمر بين 3 و18",
     "gradeRequired": "الصف مطلوب"
+  },
+  "linkCode": {
+    "getCode": "الحصول على رمز الربط",
+    "selectChild": "اختر طفلاً",
+    "title": "رمز الربط لـ {{name}}",
+    "expiresIn": "ينتهي خلال {{minutes}} دقيقة",
+    "expiresMinutes": "ينتهي خلال {{minutes}}د {{seconds}}ث",
+    "expiresSeconds": "ينتهي خلال {{seconds}} ثانية",
+    "expired": "انتهت صلاحية الرمز",
+    "ok": "حسناً",
+    "errorTitle": "فشل في توليد الرمز",
+    "errorBody": "حدث خطأ ما. يرجى المحاولة مرة أخرى."
   }
 }

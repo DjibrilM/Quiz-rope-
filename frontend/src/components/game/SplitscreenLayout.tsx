@@ -88,7 +88,7 @@ export function SplitscreenLayout({
               {scorePopKey.left > 0 && (
                 <ScorePop key={`left-${scorePopKey.left}`} side="left" />
               )}
-              <Text style={{ color: "#FFFFFF", fontSize: 20, fontFamily: "Bungee_400Regular" }}>
+              <Text style={{ color: "#FFFFFF", fontSize: 22, fontFamily: FONTS.bodyExtraBold }}>
                 {teamScores.left}
               </Text>
             </View>
@@ -111,10 +111,10 @@ export function SplitscreenLayout({
         <View
           style={{
             width: 52,
-            backgroundColor: "#130F1A",
+            backgroundColor: "rgba(0,0,0,0.2)",
             borderLeftWidth: 1,
             borderRightWidth: 1,
-            borderColor: "#2A1F38",
+            borderColor: "rgba(255, 255, 255, 0.05)",
             flexDirection: "column",
             alignItems: "center",
             paddingVertical: 12,
@@ -126,7 +126,7 @@ export function SplitscreenLayout({
             style={{
               width: 28,
               height: 28,
-              backgroundColor: "#1A1520",
+              backgroundColor: "rgba(255, 255, 255, 0.05)",
               borderRadius: 14,
               alignItems: "center",
               justifyContent: "center",
@@ -139,9 +139,9 @@ export function SplitscreenLayout({
 
           <Text
             style={{
-              color: "#7B6B8A",
-              fontSize: 9,
-              fontFamily: FONTS.bodySemiBold,
+              color: "rgba(255, 255, 255, 0.4)",
+              fontSize: 10,
+              fontFamily: FONTS.bodyExtraBold,
               textAlign: "center",
             }}
           >
@@ -150,9 +150,9 @@ export function SplitscreenLayout({
 
           <Text
             style={{
-              color: timeRemaining <= 5 ? "#EF4444" : "#A78BFA",
-              fontSize: 26,
-              fontFamily: "Bungee_400Regular",
+              color: timeRemaining <= 5 ? "#EF4444" : "rgba(255, 255, 255, 0.9)",
+              fontSize: 22,
+              fontFamily: FONTS.bodyExtraBold,
               textAlign: "center",
             }}
           >
@@ -198,7 +198,7 @@ export function SplitscreenLayout({
               {scorePopKey.right > 0 && (
                 <ScorePop key={`right-${scorePopKey.right}`} side="right" />
               )}
-              <Text style={{ color: "#FFFFFF", fontSize: 20, fontFamily: "Bungee_400Regular" }}>
+              <Text style={{ color: "#FFFFFF", fontSize: 22, fontFamily: FONTS.bodyExtraBold }}>
                 {teamScores.right}
               </Text>
             </View>

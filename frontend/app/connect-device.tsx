@@ -2,7 +2,6 @@ import {
   View,
   Text,
   Pressable,
-  TextInput,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
@@ -15,32 +14,27 @@ import { apiService } from "../src/services/api";
 import { hapticsService } from "../src/services/haptics";
 import {
   BackButton,
-  Divider,
   AnimatedLoader,
-  ScreenHeader,
 } from "../src/components/common";
-import { QRScanner } from "../src/components/device";
+import { QRCodeDisplay, SessionCodeDisplay } from "../src/components/device";
 import {
   ChildCard,
   AddChildForm,
   EmptyChildrenState,
 } from "../src/components/children";
-import { FONTS } from "../src/constants/theme";
 
 type Status =
-  | "scanning"
-  | "loading-children"
+  | "loading"
   | "select-child"
   | "adding-child"
   | "authorizing"
-  | "success"
+  | "showing-code"
   | "error";
 
 interface ChildProfile {
   id: string;
   _id?: string;
   displayName: string;
-  age: number;
   grade: string;
 }
 
@@ -48,10 +42,8 @@ export default function ConnectDeviceScreen() {
   const { t } = useTranslation(["device", "common"]);
   usePortrait();
   const mountedRef = useRef(true);
-  const [scanEnabled, setScanEnabled] = useState(true);
-  const [status, setStatus] = useState<Status>("scanning");
+  const [status, setStatus] = useState<Status>("loading");
   const [error, setError] = useState("");
-  const [manualCode, setManualCode] = useState("");
   const [sessionToken, setSessionToken] = useState("");
   const [children, setChildren] = useState<ChildProfile[]>([]);
   const [selectedChildName, setSelectedChildName] = useState("");
@@ -63,51 +55,40 @@ export default function ConnectDeviceScreen() {
     };
   }, []);
 
-  const fetchChildren = useCallback(async (token: string) => {
-    setSessionToken(token);
-    setStatus("loading-children");
+  const initialize = useCallback(async () => {
+    setStatus("loading");
     setError("");
-
     try {
-      const result = await apiService.getChildren();
+      const [sessionResult, childrenResult] = await Promise.all([
+        apiService.createQRSession(),
+        apiService.getChildren(),
+      ]);
       if (!mountedRef.current) return;
-      setChildren(result);
+      setSessionToken(sessionResult.sessionToken);
+      setChildren(childrenResult);
       setStatus("select-child");
     } catch (err: any) {
       if (!mountedRef.current) return;
-      setError(err.message || "Failed to load children");
+      setError(err.message || "Failed to set up session");
       setStatus("error");
     }
   }, []);
 
-  const handleScan = useCallback(
-    async (scannedToken: string) => {
-      if (!scanEnabled || status !== "scanning") return;
-      setScanEnabled(false);
-      fetchChildren(scannedToken.trim());
-    },
-    [scanEnabled, status, fetchChildren],
-  );
-
-  const handleManualSubmit = () => {
-    if (manualCode.trim()) {
-      setScanEnabled(false);
-      fetchChildren(manualCode.trim());
-    }
-  };
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
 
   const handleSelectChild = useCallback(
     async (child: ChildProfile) => {
       setStatus("authorizing");
       setSelectedChildName(child.displayName);
-
       try {
         await apiService.authorizeChildSession(
           sessionToken,
           child._id || child.id,
         );
         hapticsService.success();
-        setStatus("success");
+        setStatus("showing-code");
       } catch (err: any) {
         setError(err.message || "Failed to authorize session");
         setStatus("error");
@@ -117,15 +98,14 @@ export default function ConnectDeviceScreen() {
   );
 
   const handleAddChild = useCallback(
-    async (data: { displayName: string; age: number; grade: string }) => {
+    async (data: { displayName: string; grade: string }) => {
       setStatus("authorizing");
       setSelectedChildName(data.displayName);
-
       try {
         const newChild = await apiService.createChild(data);
         await apiService.authorizeChildSession(sessionToken, newChild._id);
         hapticsService.success();
-        setStatus("success");
+        setStatus("showing-code");
       } catch (err: any) {
         setError(err.message || "Failed to create child or authorize session");
         setStatus("error");
@@ -133,16 +113,6 @@ export default function ConnectDeviceScreen() {
     },
     [sessionToken],
   );
-
-  const handleRescan = () => {
-    setScanEnabled(true);
-    setStatus("scanning");
-    setError("");
-    setManualCode("");
-    setSessionToken("");
-    setChildren([]);
-    setSelectedChildName("");
-  };
 
   return (
     <SafeAreaView className="flex-1 bg-game-bg">
@@ -158,75 +128,9 @@ export default function ConnectDeviceScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <View className="items-center w-full max-w-lg">
-            {/* --- SUCCESS --- */}
-            {status === "success" && (
-              <>
-                <Text
-                  className="text-3xl text-white mb-6"
-                  style={{ fontFamily: "LuckiestGuy_400Regular" }}
-                >
-                  {t("device:connectDevice.successTitle")}
-                </Text>
-                <View className="bg-game-success/20 border border-game-success rounded-2xl px-8 py-6 items-center w-full">
-                  <Text className="text-game-success text-2xl font-bold text-center mb-2">
-                    {t("device:connectDevice.successStatus")}
-                  </Text>
-                  <Text className="text-slate-400 text-base text-center">
-                    {t("device:connectDevice.successMessage", {
-                      name: selectedChildName,
-                    })}
-                  </Text>
-                </View>
-              </>
-            )}
 
-            {/* --- SCANNING --- */}
-            {status === "scanning" && (
-              <>
-                <Text
-                  className="text-3xl text-white mb-2"
-                  style={{ fontFamily: "LuckiestGuy_400Regular" }}
-                >
-                  {t("device:connectDevice.scanTitle")}
-                </Text>
-                <Text className="text-xl text-slate-400 mb-8">
-                  {t("device:connectDevice.scanInstruction")}
-                </Text>
-
-                <View className="w-72 h-72 rounded-3xl overflow-hidden mb-6">
-                  <QRScanner onScan={handleScan} enabled={scanEnabled} />
-                </View>
-
-                <Divider label={t("device:connectDevice.manualEntryDivider")} />
-
-                <View className="flex-row w-full max-w-md">
-                  <TextInput
-                    value={manualCode}
-                    onChangeText={setManualCode}
-                    placeholder={t(
-                      "device:connectDevice.manualCodePlaceholder",
-                    )}
-                    placeholderTextColor="#7B6B8A"
-                    className="flex-1 bg-card-bg text-white text-xl px-6 py-4 rounded-l-2xl border border-[#3D2E4A]"
-                    autoCapitalize="characters"
-                  />
-                  <Pressable
-                    onPress={handleManualSubmit}
-                    className="bg-game-purple px-8 py-4 rounded-r-2xl items-center justify-center active:bg-violet-700"
-                  >
-                    <Text
-                      className="text-white text-base"
-                      style={{ fontFamily: "Bungee_400Regular" }}
-                    >
-                      {t("common:buttons.link")}
-                    </Text>
-                  </Pressable>
-                </View>
-              </>
-            )}
-
-            {/* --- LOADING CHILDREN --- */}
-            {status === "loading-children" && (
+            {/* --- LOADING --- */}
+            {status === "loading" && (
               <>
                 <Text
                   className="text-3xl text-white mb-6"
@@ -268,7 +172,6 @@ export default function ConnectDeviceScreen() {
                         >
                           <ChildCard
                             displayName={child.displayName}
-                            age={child.age}
                             grade={child.grade}
                           />
                         </Pressable>
@@ -326,6 +229,26 @@ export default function ConnectDeviceScreen() {
               </>
             )}
 
+            {/* --- SHOWING CODE --- */}
+            {status === "showing-code" && (
+              <>
+                <Text
+                  className="text-3xl text-white mb-2"
+                  style={{ fontFamily: "LuckiestGuy_400Regular" }}
+                >
+                  {t("device:connectDevice.showCodeTitle")}
+                </Text>
+                <Text className="text-base text-slate-400 mb-6 text-center">
+                  {t("device:connectDevice.showCodeInstruction", {
+                    name: selectedChildName,
+                  })}
+                </Text>
+
+                <QRCodeDisplay sessionToken={sessionToken} status="waiting" />
+                <SessionCodeDisplay code={sessionToken} />
+              </>
+            )}
+
             {/* --- ERROR --- */}
             {status === "error" && (
               <>
@@ -339,7 +262,7 @@ export default function ConnectDeviceScreen() {
                   {error}
                 </Text>
                 <Pressable
-                  onPress={handleRescan}
+                  onPress={initialize}
                   className="bg-game-purple px-8 py-4 rounded-2xl active:bg-violet-700"
                 >
                   <Text

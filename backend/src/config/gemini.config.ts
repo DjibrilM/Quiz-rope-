@@ -22,7 +22,7 @@ export function initializeGemini() {
       model: "gemini-3.1-flash-lite-preview",
       apiKey,
       temperature: 0.7,
-      maxOutputTokens: 2048,
+      maxOutputTokens: 8192,
     });
     isGeminiConfigured = true;
     logger.log("Gemini AI initialized via LangChain");

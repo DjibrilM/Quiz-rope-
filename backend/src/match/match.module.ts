@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MatchService } from './match.service';
 import { MatchController } from './match.controller';
@@ -16,7 +16,7 @@ import { AuthModule } from '../auth/auth.module';
       { name: Child.name, schema: ChildSchema },
     ]),
     QuestionModule,
-    AuthModule,
+    forwardRef(() => AuthModule),
   ],
   controllers: [MatchController],
   providers: [MatchService],

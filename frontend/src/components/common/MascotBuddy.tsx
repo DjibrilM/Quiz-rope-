@@ -81,7 +81,7 @@ export function MascotBuddy({
         </Svg>
       </View>
       <View style={styles.mascotWrapper}>
-        <BrainMascot size={90} />
+        <BrainMascot size={70} />
       </View>
     </Animated.View>
   );
@@ -90,10 +90,11 @@ export function MascotBuddy({
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    bottom: 24,
-    right: 24,
+    bottom: 40,
+    right: 20,
     alignItems: "flex-end",
     zIndex: 9999, // Floating on top of everything
+    transform: [{ scale: 0.55 }],
   },
   bubbleContainer: {
     alignItems: "flex-end",

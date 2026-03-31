@@ -1,18 +1,16 @@
 {
   "childJoin": {
     "title": "ゲームに参加しよう！",
-    "instruction": "このコードを保護者に見せてね",
-    "waitingStatus": "保護者のスキャンを待っています...",
-    "generateNewCode": "新しいコードを生成",
-    "errorToken": "トークンの取得に失敗しました。下をタップして再試行してください。"
+    "instruction": "保護者のデバイスに表示されたコードを入力してね",
+    "codeInputPlaceholder": "セッションコードを入力",
+    "scanQR": "QRコードをスキャン",
+    "enterCodeInstead": "コードを入力する",
+    "errorToken": "トークンの取得に失敗しました。下をタップして再試行してください。",
+    "invalidCode": "無効または期限切れのコードです。もう一度お試しください。"
   },
   "connectDevice": {
     "title": "デバイスを接続",
-    "scanTitle": "お子様のコードをスキャン",
-    "scanInstruction": "お子様のデバイスのQRコードにカメラを向けてください",
-    "manualEntryDivider": "またはコードを手動で入力",
-    "manualCodePlaceholder": "セッションコードを入力",
-    "loadingTitle": "読み込み中...",
+    "loadingTitle": "設定中...",
     "loadingMessage": "プレイヤーを取得中...",
     "selectChildTitle": "誰がプレイする？",
     "selectChildInstruction": "このデバイスのお子様を選択してください",
@@ -21,9 +19,8 @@
     "linkingTitle": "デバイスをリンク中...",
     "settingUpSession": "{{name}}のセッションを設定中",
     "errorTitle": "問題が発生しました",
-    "successTitle": "デバイスがリンクされました！",
-    "successStatus": "接続済み",
-    "successMessage": "{{name}}のデバイスがリンクされました"
+    "showCodeTitle": "このコードを共有",
+    "showCodeInstruction": "{{name}}のデバイスでスキャンまたは入力できるよう見せてください"
   },
   "qrCode": {
     "cameraPermission": "QRコードをスキャンするにはカメラへのアクセスが必要です",

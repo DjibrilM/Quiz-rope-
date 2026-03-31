@@ -2,15 +2,12 @@ import {
   View,
   Text,
   ScrollView,
-  Pressable,
-  StyleSheet,
   ActivityIndicator,
+  Linking,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Svg, { Path } from "react-native-svg";
-import Markdown from "react-native-markdown-display";
 import { useQuery } from "@tanstack/react-query";
 import { usePortrait } from "../../src/hooks/useOrientation";
 import { useGameStore } from "../../src/stores/gameStore";
@@ -18,12 +15,29 @@ import * as guestDb from "../../src/services/guestDb";
 import { FONTS, FORTNITE_COLORS } from "../../src/constants/theme";
 import type { CorrectionItem } from "../../src/stores/gameStore";
 import { ScreenHeader } from "@/components/common";
+import { EnrichedMarkdownText } from "react-native-enriched-markdown";
+import { useMemo } from "react";
 
 const OPTION_LABELS = ["A", "B", "C", "D"];
 
+/**
+ * 🔥 Shared math brightening (same as other screens)
+ */
+const brightenMath = (text: string) => {
+  if (!text) return text;
+
+  return text
+    .replace(/\$\$(.*?)\$\$/gs, (_, expr) => {
+      return `$$\\color{#E5E7EB}{${expr}}$$`;
+    })
+    .replace(/\$(.*?)\$/g, (_, expr) => {
+      return `$\\color{#E5E7EB}{${expr}}$`;
+    });
+};
+
 function CheckIcon() {
   return (
-    <Svg width={14} height={14} viewBox="0 0 24 24" fill="none">
+    <Svg width={14} height={14} viewBox="0 0 24 24">
       <Path
         d="M20 6L9 17l-5-5"
         stroke="#10B981"
@@ -37,7 +51,7 @@ function CheckIcon() {
 
 function XIcon() {
   return (
-    <Svg width={14} height={14} viewBox="0 0 24 24" fill="none">
+    <Svg width={14} height={14} viewBox="0 0 24 24">
       <Path
         d="M18 6L6 18M6 6l12 12"
         stroke="#EF4444"
@@ -56,9 +70,9 @@ export default function CorrectionScreen() {
     sessionId?: string;
     matchId?: string;
   }>();
+
   const storeCorrections = useGameStore((s) => s.lastMatchCorrection);
 
-  // Fetch from SQLite when matchId is present; falls back to store if DB is empty
   const { data: dbCorrections, isLoading: loadingCorrections } = useQuery<
     CorrectionItem[]
   >({
@@ -75,20 +89,17 @@ export default function CorrectionScreen() {
         })),
       ),
     enabled: !!matchId,
-    staleTime: 5 * 60 * 1000, // Local SQLite — treat as fresh for 5 min
+    staleTime: 5 * 60 * 1000,
     placeholderData: storeCorrections.length > 0 ? storeCorrections : undefined,
   });
 
-  // When no matchId (just came from game end), use store directly; otherwise use DB result
   const corrections: CorrectionItem[] = matchId
     ? dbCorrections?.length
       ? dbCorrections
       : storeCorrections
     : storeCorrections;
 
-  const correctCount = corrections.filter(
-    (a: CorrectionItem) => a.isCorrect,
-  ).length;
+  const correctCount = corrections.filter((a) => a.isCorrect).length;
   const total = corrections.length;
   const accuracy = total > 0 ? Math.round((correctCount / total) * 100) : 0;
 
@@ -131,9 +142,7 @@ export default function CorrectionScreen() {
                 borderRadius: 16,
                 padding: 16,
                 flexDirection: "row",
-                alignItems: "center",
                 justifyContent: "space-between",
-                marginBottom: 4,
               }}
             >
               <Text
@@ -164,202 +173,160 @@ export default function CorrectionScreen() {
               </Text>
             </View>
 
-            {/* Question cards */}
-            {corrections.map((item, index) => (
-              <View
-                key={index}
-                style={{
-                  backgroundColor: FORTNITE_COLORS.bgCard,
-                  borderRadius: 16,
-                  padding: 16,
-                  gap: 12,
-                  borderWidth: 1,
-                  borderColor: item.isCorrect ? "#10B98130" : "#EF444430",
-                }}
-              >
-                {/* Question header */}
+            {/* Cards */}
+            {corrections.map((item, index) => {
+              const questionMd = brightenMath(item.questionText);
+
+              return (
                 <View
+                  key={index}
                   style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "space-between",
+                    backgroundColor: FORTNITE_COLORS.bgCard,
+                    borderRadius: 16,
+                    padding: 16,
+                    gap: 12,
+                    borderWidth: 1,
+                    borderColor: item.isCorrect ? "#10B98130" : "#EF444430",
                   }}
                 >
-                  <Text
+                  {/* Header */}
+                  <View
                     style={{
-                      fontSize: 12,
-                      fontFamily: FONTS.accent,
-                      color: item.isCorrect ? "#10B981" : "#EF4444",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
                     }}
                   >
-                    {t("game:correction.question", { number: index + 1 })}
-                  </Text>
-                  {item.isCorrect ? <CheckIcon /> : <XIcon />}
-                </View>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        fontFamily: FONTS.accent,
+                        color: item.isCorrect ? "#10B981" : "#EF4444",
+                      }}
+                    >
+                      {t("game:correction.question", {
+                        number: index + 1,
+                      })}
+                    </Text>
+                    {item.isCorrect ? <CheckIcon /> : <XIcon />}
+                  </View>
 
-                {/* Question text */}
-                <Text
-                  style={{
-                    fontSize: 15,
-                    fontFamily: FONTS.bodySemiBold,
-                    color: FORTNITE_COLORS.textPrimary,
-                    lineHeight: 22,
-                  }}
-                >
-                  {item.questionText}
-                </Text>
+                  {/* Question */}
+                  <EnrichedMarkdownText
+                    flavor="github"
+                    markdown={questionMd}
+                    onLinkPress={({ url }) => Linking.openURL(url)}
+                    markdownStyle={{
+                      paragraph: {
+                        color: FORTNITE_COLORS.textPrimary,
+                      },
+                    }}
+                  />
 
-                {/* Options */}
-                <View style={{ gap: 6 }}>
-                  {item.options.map((option, i) => {
-                    const isCorrect = i === item.correctIndex;
-                    const isUserWrong =
-                      i === item.userAnswerIndex && !item.isCorrect;
+                  {/* Options */}
+                  <View style={{ gap: 6 }}>
+                    {item.options.map((option, i) => {
+                      const isCorrect = i === item.correctIndex;
+                      const isUserWrong =
+                        i === item.userAnswerIndex && !item.isCorrect;
 
-                    let borderColor = "#3D2E4A";
-                    let bgColor = "transparent";
-                    if (isCorrect) {
-                      borderColor = "#10B981";
-                      bgColor = "#10B98110";
-                    } else if (isUserWrong) {
-                      borderColor = "#EF4444";
-                      bgColor = "#EF444410";
-                    }
+                      const md = brightenMath(option);
 
-                    return (
-                      <View
-                        key={i}
-                        style={{
-                          flexDirection: "row",
-                          alignItems: "center",
-                          gap: 8,
-                          borderWidth: 1.5,
-                          borderColor,
-                          backgroundColor: bgColor,
-                          borderRadius: 10,
-                          paddingHorizontal: 12,
-                          paddingVertical: 10,
-                        }}
-                      >
+                      const textColor = isCorrect
+                        ? "#10B981"
+                        : isUserWrong
+                          ? "#EF4444"
+                          : FORTNITE_COLORS.textSecondary;
+
+                      return (
                         <View
+                          key={i}
                           style={{
-                            width: 22,
-                            height: 22,
-                            borderRadius: 11,
-                            backgroundColor: isCorrect
-                              ? "#10B98130"
-                              : isUserWrong
-                                ? "#EF444430"
-                                : "#3D2E4A",
+                            flexDirection: "row",
                             alignItems: "center",
-                            justifyContent: "center",
+                            gap: 8,
+                            borderWidth: 1.5,
+                            borderColor: isCorrect
+                              ? "#10B981"
+                              : isUserWrong
+                                ? "#EF4444"
+                                : "#3D2E4A",
+                            backgroundColor: isCorrect
+                              ? "#10B98110"
+                              : isUserWrong
+                                ? "#EF444410"
+                                : "transparent",
+                            borderRadius: 10,
+                            padding: 10,
                           }}
                         >
                           <Text
                             style={{
-                              fontSize: 11,
+                              color: textColor,
+                              fontSize: 12,
                               fontFamily: FONTS.accent,
-                              color: isCorrect
-                                ? "#10B981"
-                                : isUserWrong
-                                  ? "#EF4444"
-                                  : FORTNITE_COLORS.textMuted,
                             }}
                           >
                             {OPTION_LABELS[i]}
                           </Text>
-                        </View>
-                        <Text
-                          style={{
-                            flex: 1,
-                            fontSize: 13,
-                            fontFamily: FONTS.body,
-                            color: isCorrect
-                              ? "#10B981"
-                              : isUserWrong
-                                ? "#EF4444"
-                                : FORTNITE_COLORS.textSecondary,
-                          }}
-                        >
-                          {option}
-                        </Text>
-                        {isCorrect && <CheckIcon />}
-                        {isUserWrong && <XIcon />}
-                      </View>
-                    );
-                  })}
-                  {item.userAnswerIndex === -1 && (
-                    <Text
-                      style={{
-                        color: "#7B6B8A",
-                        fontSize: 12,
-                        fontFamily: FONTS.body,
-                        marginTop: 2,
-                      }}
-                    >
-                      {t("game:correction.skipped")}
-                    </Text>
-                  )}
-                </View>
 
-                {/* Explanation */}
-                {item.explanation ? (
-                  <View
-                    style={{
-                      backgroundColor: "#3D2E4A30",
-                      borderRadius: 10,
-                      padding: 12,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 11,
-                        fontFamily: FONTS.bodySemiBold,
-                        color: FORTNITE_COLORS.textMuted,
-                        marginBottom: 6,
-                      }}
-                    >
-                      {t("game:correction.explanation")}
-                    </Text>
-                    <Markdown
-                      style={{
-                        body: {
-                          fontSize: 13,
-                          fontFamily: FONTS.body,
-                          color: FORTNITE_COLORS.textSecondary,
-                          lineHeight: 20,
-                        },
-                        strong: {
-                          fontFamily: FONTS.bodySemiBold,
-                          color: FORTNITE_COLORS.textPrimary,
-                        },
-                        bullet_list: { marginTop: 4, marginBottom: 0 },
-                        ordered_list: { marginTop: 4, marginBottom: 0 },
-                        list_item: { marginBottom: 2 },
-                        paragraph: { marginTop: 0, marginBottom: 6 },
-                      }}
-                    >
-                      {item.explanation}
-                    </Markdown>
+                          <View style={{ flex: 1 }}>
+                            <EnrichedMarkdownText
+                              flavor="github"
+                              markdown={md}
+                              onLinkPress={({ url }) => Linking.openURL(url)}
+                              markdownStyle={{
+                                paragraph: {
+                                  color: textColor,
+                                },
+                              }}
+                            />
+                          </View>
+
+                          {isCorrect && <CheckIcon />}
+                          {isUserWrong && <XIcon />}
+                        </View>
+                      );
+                    })}
                   </View>
-                ) : null}
-              </View>
-            ))}
+
+                  {/* Explanation */}
+                  {item.explanation ? (
+                    <View
+                      style={{
+                        backgroundColor: "#3D2E4A30",
+                        borderRadius: 10,
+                        padding: 12,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 11,
+                          fontFamily: FONTS.bodySemiBold,
+                          color: FORTNITE_COLORS.textMuted,
+                          marginBottom: 6,
+                        }}
+                      >
+                        {t("game:correction.explanation")}
+                      </Text>
+
+                      <EnrichedMarkdownText
+                        flavor="github"
+                        markdown={brightenMath(item.explanation)}
+                        onLinkPress={({ url }) => Linking.openURL(url)}
+                        markdownStyle={{
+                          paragraph: {
+                            color: FORTNITE_COLORS.textPrimary,
+                          },
+                        }}
+                      />
+                    </View>
+                  ) : null}
+                </View>
+              );
+            })}
           </>
         )}
       </ScrollView>
     </View>
   );
 }
-
-const correctionStyles = StyleSheet.create({
-  bottomBar: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    paddingHorizontal: 24,
-    paddingTop: 16,
-    backgroundColor: "#0D0B14E8",
-  },
-});

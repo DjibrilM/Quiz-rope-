@@ -8,6 +8,7 @@ import {
   Req,
   UseGuards,
   NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { ChildrenService } from './children.service';
 import { FirebaseAuthGuard } from '../auth/guards/firebase-auth.guard';
@@ -24,20 +25,23 @@ export class ChildrenController {
   @UseGuards(FirebaseAuthGuard)
   async createChild(
     @Req() req,
-    @Body() body: { displayName: string; age: number; grade: string },
+    @Body() body: { displayName: string; grade: string; avatarUrl?: string },
   ) {
+    if (req.user.role !== 'parent') throw new ForbiddenException('Parents only');
     return this.childrenService.createChild(req.user._id, body);
   }
 
   @Get()
   @UseGuards(FirebaseAuthGuard)
   async getChildren(@Req() req) {
+    if (req.user.role !== 'parent') throw new ForbiddenException('Parents only');
     return this.childrenService.getChildrenByParent(req.user._id);
   }
 
   @Delete(':id')
   @UseGuards(FirebaseAuthGuard)
   async deleteChild(@Req() req, @Param('id') id: string) {
+    if (req.user.role !== 'parent') throw new ForbiddenException('Parents only');
     const child = await this.childrenService.deleteChild(req.user._id, id);
     if (!child) {
       throw new NotFoundException('Child not found');
@@ -87,6 +91,7 @@ export class ChildrenController {
     @Req() req,
     @Body() body: { sessionToken: string; childId?: string },
   ) {
+    if (req.user.role !== 'parent') throw new ForbiddenException('Parents only');
     const session = await this.childrenService.authorizeSession(
       body.sessionToken,
       req.user._id.toString(),
@@ -118,6 +123,7 @@ export class ChildrenController {
     @Req() req,
     @Body() body: { childId: string },
   ) {
+    if (req.user.role !== 'parent') throw new ForbiddenException('Parents only');
     if (!body.childId) {
       throw new NotFoundException('childId is required');
     }
@@ -125,5 +131,18 @@ export class ChildrenController {
       req.user._id.toString(),
       body.childId,
     );
+  }
+
+  @Post(':id/active')
+  @UseGuards(FirebaseAuthGuard)
+  async updateActive(@Param('id') id: string) {
+    return this.childrenService.updateLastActive(id);
+  }
+
+  @Get(':id/inactivity-message')
+  @UseGuards(FirebaseAuthGuard)
+  async getInactivityMessage(@Param('id') id: string) {
+    const message = await this.childrenService.getInactivityMessage(id);
+    return { message };
   }
 }

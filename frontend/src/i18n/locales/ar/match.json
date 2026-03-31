@@ -4,7 +4,16 @@
     "subtitle": "ماذا نتعلم اليوم؟ اختر ساحتك!",
     "modeLabel": "وضع اللعب",
     "solo": "فردي",
-    "splitScreen": "شاشة مقسمة"
+    "splitScreen": "شاشة مقسمة",
+    "startButton": "العب {{subject}}!",
+    "createFailed": "فشل إنشاء المباراة. حاول مرة أخرى.",
+    "subjectHint": {
+      "MATH": "أرقام وألغاز",
+      "SCIENCE": "تجارب واكتشافات",
+      "ENGLISH": "كلمات وقصص",
+      "HISTORY": "مغامرات الماضي",
+      "GEOGRAPHY": "استكشف العالم"
+    }
   },
   "lobby": {
     "codeLabel": "الرمز",
@@ -12,8 +21,14 @@
     "startMatch": "ابدأ المباراة!"
   },
   "solo": {
-    "title": "\u0641\u0631\u062f\u064a - {{subject}}",
-    "startButton": "\u0627\u0628\u062f\u0623 \u0627\u0644\u0644\u0639\u0628\u0629"
+    "title": "فردي - {{subject}}",
+    "startButton": "ابدأ اللعبة",
+    "contextLabel": "خصّص تدريبك",
+    "contextPlaceholder": "مثال: الجذور التربيعية، الكسور بمقامات حتى 20…",
+    "contextHint": "اختياري — صف بالضبط ما تريد التدرب عليه",
+    "contextDisabled": "التخصيص غير متاح لهذه المادة.",
+    "contextNotRelated": "هذا السياق غير مرتبط بالموضوع.",
+    "playingAs": "تلعب بصفتك"
   },
   "selectors": {
     "subject": "المادة",
@@ -25,7 +40,12 @@
     "loadingMessage": "جارٍ تحميل سجل المعارك...",
     "emptyTitle": "لا توجد مباريات بعد",
     "emptySubtitle": "ابدأ لعبة لرؤية سجل معاركك هنا!",
-    "won": "فاز"
+    "won": "فاز",
+    "completed": "مكتمل",
+    "review": "مراجعة الإجابات",
+    "inProgress": "جارٍ",
+    "waiting": "لم يبدأ",
+    "abandoned": "تم التخلي"
   },
   "detail": {
     "title": "تفاصيل المباراة",
@@ -37,6 +57,46 @@
     "playerStatistics": "إحصائيات اللاعبين",
     "score": "النتيجة",
     "accuracy": "الدقة",
-    "avgTime": "متوسط الوقت"
+    "avgTime": "متوسط الوقت",
+    "reviewAnswers": "مراجعة الإجابات",
+    "completed": "مكتمل",
+    "soloMode": "تدريب فردي",
+    "splitMode": "شاشة مقسمة",
+    "yourPerformance": "أداؤك",
+    "teamScores": "نقاط الفريق",
+    "correct": "صحيح",
+    "total": "الإجمالي",
+    "noStats": "لا توجد إجابات مسجلة",
+    "mode": "الوضع",
+    "players": "اللاعبون",
+    "redWins": "الفريق الأحمر يفوز!",
+    "blueWins": "الفريق الأزرق يفوز!",
+    "draw": "تعادل!",
+    "soloComplete": "انتهت الجلسة!"
+  },
+  "join": {
+    "title": "الانضمام إلى مباراة",
+    "subtitle": "اطلب من المضيف الرمز المكون من 6 أحرف",
+    "joinButton": "الانضمام للمباراة",
+    "codeLengthError": "الرجاء إدخال رمز مكون من 6 أحرف",
+    "notFoundError": "المباراة غير موجودة. تحقق من الرمز وحاول مرة أخرى.",
+    "matchEndedError": "انتهت هذه المباراة بالفعل.",
+    "networkError": "حدث خطأ ما. الرجاء المحاولة مرة أخرى."
+  },
+  "split": {
+    "title": "شاشة مقسمة · {{subject}}",
+    "subtitle": "لاعبان · نفس الجهاز",
+    "ageGroupLabel": "الفئة العمرية",
+    "playersLabel": "اللاعبون",
+    "player1": "اللاعب 1",
+    "player2": "اللاعب 2",
+    "redTeamPlaceholder": "الفريق الأحمر",
+    "blueTeamPlaceholder": "الفريق الأزرق",
+    "startBattle": "ابدأ المعركة",
+    "ageGroups": {
+      "EASY": { "label": "أطفال", "age": "6–12 سنة" },
+      "MEDIUM": { "label": "مراهقون", "age": "13–17 سنة" },
+      "HARD": { "label": "شباب بالغون", "age": "18+ سنة" }
+    }
   }
 }

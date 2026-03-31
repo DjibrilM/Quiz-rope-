@@ -10,6 +10,9 @@ import {
 import { GuestLink, GuestLinkSchema } from './schemas/guest-link.schema';
 import { AuthModule } from '../auth/auth.module';
 import { RealtimeModule } from '../realtime/realtime.module';
+import { MatchModule } from '../match/match.module';
+import { HomeworkModule } from '../homework/homework.module';
+import { NotificationAiService } from './notification-ai.service';
 
 @Module({
   imports: [
@@ -18,11 +21,13 @@ import { RealtimeModule } from '../realtime/realtime.module';
       { name: DeviceSession.name, schema: DeviceSessionSchema },
       { name: GuestLink.name, schema: GuestLinkSchema },
     ]),
-    AuthModule,
+    forwardRef(() => AuthModule),
     forwardRef(() => RealtimeModule),
+    forwardRef(() => MatchModule),
+    forwardRef(() => HomeworkModule),
   ],
   controllers: [ChildrenController],
-  providers: [ChildrenService],
-  exports: [ChildrenService],
+  providers: [ChildrenService, NotificationAiService],
+  exports: [ChildrenService, NotificationAiService],
 })
 export class ChildrenModule {}

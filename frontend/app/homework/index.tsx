@@ -14,12 +14,15 @@ import {
   ScreenHeader,
 } from "../../src/components/common";
 import { FONTS } from "../../src/constants/theme";
+import { useTranslation } from "react-i18next";
 import { getSubjectTheme } from "../../src/config/subjectThemes";
+
 import type { HomeworkSession } from "@shared/types/homework.types";
 import type { Child } from "@shared/types/user.types";
+import { useHomeworkLimit } from "../../src/hooks/useHomeworkLimit";
 import Svg, { Path, Circle } from "react-native-svg";
-
 function StatusBadge({ status }: { status: HomeworkSession["status"] }) {
+  const { t } = useTranslation("homework");
   if (status === "READY") {
     return (
       <View className="flex-row items-center gap-1 bg-game-success/15 px-2 py-[3px] rounded-full">
@@ -27,7 +30,7 @@ function StatusBadge({ status }: { status: HomeworkSession["status"] }) {
           className="text-game-success text-[10px]"
           style={{ fontFamily: FONTS.bodyBold }}
         >
-          ✓ Ready
+          {t("status.ready")}
         </Text>
       </View>
     );
@@ -40,7 +43,7 @@ function StatusBadge({ status }: { status: HomeworkSession["status"] }) {
           className="text-game-warning text-[10px]"
           style={{ fontFamily: FONTS.bodyBold }}
         >
-          Analyzing…
+          {t("status.analyzing")}
         </Text>
       </View>
     );
@@ -51,7 +54,7 @@ function StatusBadge({ status }: { status: HomeworkSession["status"] }) {
         className="text-red-500 text-[10px]"
         style={{ fontFamily: FONTS.bodyBold }}
       >
-        ✕ Failed
+        {t("status.failed")}
       </Text>
     </View>
   );
@@ -64,7 +67,9 @@ function SessionCard({
   session: HomeworkSession;
   onPress: () => void;
 }) {
+  const { t } = useTranslation("homework");
   const theme = getSubjectTheme(session.subject || "SCIENCE");
+
   const date = new Date(session.createdAt).toLocaleDateString(undefined, {
     month: "short",
     day: "numeric",
@@ -77,16 +82,14 @@ function SessionCard({
       className="bg-card-bg rounded-2xl p-4 mb-3"
       style={{ borderWidth: 1, borderColor: "#3D2E4A" }}
     >
-      {/* Title — article-style at the top */}
       <Text
         className="text-white text-base mb-2"
         style={{ fontFamily: FONTS.bodyBold }}
         numberOfLines={2}
       >
-        {session.title || "Homework Session"}
+        {session.title || t("session.defaultTitle")}
       </Text>
 
-      {/* Subject + status */}
       <View className="flex-row items-center justify-between mb-2">
         <View
           className={`px-3 py-1 rounded-full ${theme.badgeClass}`}
@@ -102,7 +105,6 @@ function SessionCard({
         <StatusBadge status={session.status} />
       </View>
 
-      {/* Topics */}
       {session.topics && session.topics.length > 0 && (
         <View className="flex-row flex-wrap gap-1 mt-1 mb-2">
           {session.topics.slice(0, 4).map((topic) => (
@@ -118,7 +120,6 @@ function SessionCard({
         </View>
       )}
 
-      {/* Date + quiz badge */}
       <View className="flex-row items-center justify-between mt-1">
         <Text
           className="text-[#7B6B8A] text-xs"
@@ -132,7 +133,7 @@ function SessionCard({
               className="text-game-indigo text-[11px]"
               style={{ fontFamily: FONTS.bodySemiBold }}
             >
-              Quiz done ✓
+              {t("session.quizDone")}
             </Text>
           </View>
         )}
@@ -142,6 +143,9 @@ function SessionCard({
 }
 
 function NewScanCard({ childId }: { childId: string | null }) {
+  const { t } = useTranslation("homework");
+  const { remaining, limit, loading } = useHomeworkLimit();
+
   return (
     <BouncePress
       onPress={() =>
@@ -174,13 +178,13 @@ function NewScanCard({ childId }: { childId: string | null }) {
             className="text-white text-base"
             style={{ fontFamily: "Bungee_400Regular" }}
           >
-            Scan New Homework
+            {t("actions.scanNew")}
           </Text>
           <Text
             className="text-[#10B981] text-xs mt-[3px]"
             style={{ fontFamily: FONTS.body }}
           >
-            Photograph a page and get AI explanations
+            {loading ? t("actions.scanNewDesc") : __DEV__ ? "Unlimited developer scans" : `${remaining}/${limit} daily scans remaining`}
           </Text>
         </View>
         <Text className="text-game-success text-xl">›</Text>
@@ -198,6 +202,7 @@ function ChildFilterChips({
   selected: string | null;
   onSelect: (id: string | null) => void;
 }) {
+  const { t } = useTranslation("homework");
   if (items.length === 0) return null;
   return (
     <ScrollView
@@ -223,7 +228,7 @@ function ChildFilterChips({
             fontSize: 13,
           }}
         >
-          All
+          {t("filters.all")}
         </Text>
       </Pressable>
       {items.map((child) => {
@@ -258,8 +263,11 @@ function ChildFilterChips({
   );
 }
 
+
 export default function HomeworkIndexScreen() {
   usePortrait();
+  const { t } = useTranslation("homework");
+
   const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
   const { userRole, parentUser, guestProfile } = useGameStore();
   const isGuest = userRole === "guest";
@@ -273,10 +281,22 @@ export default function HomeworkIndexScreen() {
     isRefetching,
   } = useQuery<HomeworkSession[]>({
     queryKey: ["homeworkSessions", uid],
-    queryFn: () =>
-      isGuest
-        ? guestDb.getHomeworkSessions()
-        : apiService.getHomeworkSessions(),
+    queryFn: async () => {
+      const local = await guestDb.getHomeworkSessions();
+      if (isGuest) return local as unknown as HomeworkSession[];
+
+      try {
+        const remote = await apiService.getHomeworkSessions();
+        // Sync to local in background
+        guestDb
+          .syncFromBackend({ matches: [], homeworkSessions: remote })
+          .catch(console.error);
+        return remote;
+      } catch (err) {
+        if (local.length > 0) return local as unknown as HomeworkSession[];
+        throw err;
+      }
+    },
   });
 
   const { data: children = [] } = useQuery<Child[]>({
@@ -293,7 +313,8 @@ export default function HomeworkIndexScreen() {
 
   return (
     <SafeAreaView edges={["bottom"]} className="flex-1 bg-game-bg">
-      <ScreenHeader showBack title="Homework" />
+      <ScreenHeader showBack title={t("title")} />
+
 
       <ScrollView
         className="flex-1 px-5"
@@ -320,8 +341,14 @@ export default function HomeworkIndexScreen() {
           style={{ fontFamily: FONTS.bodySemiBold }}
         >
           {selectedChildId
-            ? `${children.find((c) => (c.id || (c as any)._id?.toString()) === selectedChildId)?.displayName ?? ""}'s Sessions`
-            : "Recent Sessions"}
+            ? t("history.childSessions", {
+                name:
+                  children.find(
+                    (c) => (c.id || (c as any)._id?.toString()) === selectedChildId,
+                  )?.displayName ?? "",
+              })
+            : t("history.recent")}
+
         </Text>
 
         {isLoading && (
@@ -333,21 +360,25 @@ export default function HomeworkIndexScreen() {
         {isError && !isLoading && (
           <EmptyState
             illustration="error"
-            title="Couldn't load sessions"
-            subtitle="Pull down to try again"
+            title={t("errors.loadFailed")}
+            subtitle={t("errors.pullToRetry")}
           />
+
         )}
 
         {!isLoading && !isError && filteredSessions.length === 0 && (
           <EmptyState
             illustration="noMatches"
-            title={selectedChildId ? "No sessions for this child" : "No homework yet"}
-            subtitle={
+            title={
               selectedChildId
-                ? "Scan homework and assign it to this child"
-                : "Scan your first homework page to get started"
+                ? t("empty.noSessionsForChild")
+                : t("empty.noHomeworkYet")
+            }
+            subtitle={
+              selectedChildId ? t("empty.assignToChild") : t("empty.getStarted")
             }
           />
+
         )}
 
         {!isLoading &&

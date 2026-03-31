@@ -1,24 +1,27 @@
 {
   "greeting": "¿Listo para jugar, {{name}}?",
   "appName": "QuizRope",
+  "welcomeBack": "Bienvenido de nuevo",
   "activeUntil": "Activo hasta {{date}}",
   "menu": {
     "quickPlay": "Juego rápido",
     "quickPlayDesc": "Salta directo a un juego de prueba",
-    "startNewGame": "Nuevo juego",
-    "startNewGameDesc": "Crea una partida y desafía a los jugadores",
+    "startNewGame": "Jugar",
+    "startNewGameDesc": "Solo o pantalla dividida — elige tu modo",
     "connectDevice": "Conectar dispositivo",
     "connectDeviceDesc": "Vincula la tableta de un hijo por código QR",
     "myChildren": "Mis hijos",
     "myChildrenDesc": "Agrega y administra perfiles de jugadores",
     "matchHistory": "Historial de partidas",
     "matchHistoryDesc": "Ve juegos anteriores y estadísticas",
-    "soloPlay": "Juego solo",
-    "soloPlayDesc": "Juega solo, a tu ritmo",
+    "soloPlay": "Jugar",
+    "soloPlayDesc": "Solo o pantalla dividida — elige tu modo",
     "joinMatch": "Unirse a una partida",
     "joinMatchDesc": "Ingresa un código para unirte a una partida en vivo",
     "leaderboard": "Clasificación",
-    "leaderboardDesc": "Mira quién es el mejor jugador"
+    "leaderboardDesc": "Mira quién es el mejor jugador",
+    "homeworkAssist": "Deberes",
+    "homeworkAssistDesc": "Obtén explicaciones de IA para tus deberes"
   },
   "guest": {
     "linkBannerCta": "Toca para vincular tu progreso a una cuenta de padre",

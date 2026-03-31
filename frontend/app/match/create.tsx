@@ -27,13 +27,21 @@ export default function CreateMatchScreen() {
   };
 
   return (
-    <SafeAreaView edges={["bottom"]} className="flex-1 bg-game-bg">
+    <SafeAreaView
+      edges={["bottom"]}
+      style={{ flex: 1, backgroundColor: "#0D0B14" }}
+    >
       <ScreenHeader title={t("match:create.title")} />
 
       <ScrollView
-        className="flex-1 px-6"
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          paddingBottom: 120,
+          paddingTop: 8,
+          paddingHorizontal: 24,
+        }}
         contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={{ paddingBottom: 120, paddingTop: 8 }}
+        showsVerticalScrollIndicator={false}
       >
         <Text
           style={{

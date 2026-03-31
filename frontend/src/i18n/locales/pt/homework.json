@@ -1,0 +1,84 @@
+{
+  "title": "Dever de casa",
+  "status": {
+    "ready": "✓ Pronto",
+    "analyzing": "Analisando…",
+    "failed": "✕ Falhou"
+  },
+  "session": {
+    "defaultTitle": "Sessão de dever de casa",
+    "quizDone": "Quiz concluído ✓",
+    "reviewTitle": "Rever foto",
+    "notFound": "Sessão não encontrada",
+    "assistTitle": "Assistir",
+    "noExplanation": "Nenhuma explicação disponível."
+  },
+  "actions": {
+    "scanNew": "Escanear novo dever",
+    "scanNewDesc": "Fotografe uma página e obtenha explicações de IA",
+    "retake": "Tirar novamente",
+    "analyze": "Analisar",
+    "library": "Biblioteca"
+  },
+  "filters": {
+    "all": "Todos"
+  },
+  "history": {
+    "recent": "Sessões recentes",
+    "childSessions": "Sessões de {{name}}"
+  },
+  "errors": {
+    "loadFailed": "Não foi possível carregar as sessões",
+    "pullToRetry": "Puxe para baixo para tentar novamente",
+    "processFailed": "Falha ao processar a imagem. Tente novamente.",
+    "uploadFailed": "Falha no envio",
+    "limitReached": "Limite diário atingido",
+    "limitDesc": "Você pode escanear até {{limit}} páginas de dever por dia. Volte amanhã!",
+    "analysisFailed": "Análise falhou",
+    "analysisFailedDesc": "Não foi possível analisar o dever de casa. Tente novamente."
+  },
+  "empty": {
+    "noSessionsForChild": "Nenhuma sessão para esta criança",
+    "noHomeworkYet": "Nenhum dever ainda",
+    "assignToChild": "Escaneie o dever e atribua a esta criança",
+    "getStarted": "Escaneie sua primeira página de dever para começar"
+  },
+  "capture": {
+    "hint": "Aponte para o dever, depois toque na câmera",
+    "allowAccess": "Toque no botão da câmera para permitir acesso",
+    "preparing": "Preparando imagem…"
+  },
+  "processing": {
+    "title": "Analisando seu dever de casa",
+    "hint": "Isso leva cerca de 15–30 segundos",
+    "steps": [
+      "Lendo seu dever…",
+      "Resolvendo questões…",
+      "Escrevendo explicações…",
+      "Quase pronto…"
+    ]
+  },
+  "chat": {
+    "title": "Perguntar à IA",
+    "subtitle": "Pergunte qualquer coisa sobre o seu dever",
+    "placeholder": "Faça uma pergunta…",
+    "emptyState": "Pergunte qualquer coisa sobre o seu dever"
+  },
+  "quiz": {
+    "title": "Quizzes",
+    "emptyTitle": "Sem quizzes ainda",
+    "emptySubtitle": "Teste sua compreensão iniciando um quiz acima.",
+    "attempt": "Tentativa {{number}}",
+    "tapToView": "Toque para ver os resultados",
+    "viewResults": "Ver Resultados",
+    "startFirst": "Iniciar Primeiro Quiz",
+    "startNew": "Iniciar Novo Quiz",
+    "scoreDetail": "{{correct}} correto · {{wrong}} errado"
+  },
+  "bottomBar": {
+    "quizzes": "Quizzes",
+    "noQuizzesYet": "Sem quizzes ainda",
+    "oneAttempt": "1 tentativa",
+    "attempts": "{{count}} tentativas"
+  }
+}

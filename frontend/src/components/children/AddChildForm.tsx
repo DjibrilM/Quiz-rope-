@@ -6,20 +6,18 @@ import { BouncePress } from "../common/BouncePress";
 import { FONTS } from "../../constants/theme";
 
 interface AddChildFormProps {
-  onSave: (data: { displayName: string; age: number; grade: string; avatarUrl: string }) => void;
+  onSave: (data: { displayName: string; grade: string; avatarUrl: string }) => void;
   onCancel: () => void;
 }
 
 interface FormErrors {
   name?: string;
-  age?: string;
   grade?: string;
 }
 
 export function AddChildForm({ onSave, onCancel }: AddChildFormProps) {
   const { t } = useTranslation(["children", "common"]);
   const [name, setName] = useState("");
-  const [age, setAge] = useState("");
   const [grade, setGrade] = useState("");
   const [avatar, setAvatar] = useState("lion");
   const [errors, setErrors] = useState<FormErrors>({});
@@ -32,11 +30,6 @@ export function AddChildForm({ onSave, onCancel }: AddChildFormProps) {
       newErrors.name = t("validation.nameMinLength");
     } else if (trimmedName.length > 30) {
       newErrors.name = t("validation.nameMaxLength");
-    }
-
-    const ageNum = parseInt(age);
-    if (!age.trim() || isNaN(ageNum) || ageNum < 3 || ageNum > 18) {
-      newErrors.age = t("validation.ageRange");
     }
 
     if (!grade.trim()) {
@@ -52,12 +45,10 @@ export function AddChildForm({ onSave, onCancel }: AddChildFormProps) {
 
     onSave({
       displayName: name.trim(),
-      age: parseInt(age),
       grade: grade.trim(),
       avatarUrl: avatar,
     });
     setName("");
-    setAge("");
     setGrade("");
     setAvatar("lion");
     setErrors({});
@@ -96,44 +87,23 @@ export function AddChildForm({ onSave, onCancel }: AddChildFormProps) {
       )}
       {!errors.name && <View style={{ marginBottom: 8 }} />}
 
-      <View style={{ flexDirection: "row", gap: 12, marginBottom: 4 }}>
-        <View style={{ flex: 1 }}>
-          <TextInput
-            value={age}
-            onChangeText={(t) => {
-              setAge(t);
-              if (errors.age) setErrors((e) => ({ ...e, age: undefined }));
-            }}
-            placeholder={t("form.agePlaceholder")}
-            placeholderTextColor="#7B6B8A"
-            keyboardType="number-pad"
-            style={[
-              inputStyle,
-              { borderColor: errors.age ? "#EF4444" : "#3D2E4A" },
-            ]}
-          />
-          {errors.age && (
-            <Text style={{ color: "#EF4444", fontSize: 13, fontFamily: FONTS.body, marginTop: 4, marginLeft: 8 }}>{errors.age}</Text>
-          )}
-        </View>
-        <View style={{ flex: 1 }}>
-          <TextInput
-            value={grade}
-            onChangeText={(t) => {
-              setGrade(t);
-              if (errors.grade) setErrors((e) => ({ ...e, grade: undefined }));
-            }}
-            placeholder={t("form.gradePlaceholder")}
-            placeholderTextColor="#7B6B8A"
-            style={[
-              inputStyle,
-              { borderColor: errors.grade ? "#EF4444" : "#3D2E4A" },
-            ]}
-          />
-          {errors.grade && (
-            <Text style={{ color: "#EF4444", fontSize: 13, fontFamily: FONTS.body, marginTop: 4, marginLeft: 8 }}>{errors.grade}</Text>
-          )}
-        </View>
+      <View style={{ marginBottom: 4 }}>
+        <TextInput
+          value={grade}
+          onChangeText={(t) => {
+            setGrade(t);
+            if (errors.grade) setErrors((e) => ({ ...e, grade: undefined }));
+          }}
+          placeholder={t("form.gradePlaceholder")}
+          placeholderTextColor="#7B6B8A"
+          style={[
+            inputStyle,
+            { borderColor: errors.grade ? "#EF4444" : "#3D2E4A" },
+          ]}
+        />
+        {errors.grade && (
+          <Text style={{ color: "#EF4444", fontSize: 13, fontFamily: FONTS.body, marginTop: 4, marginLeft: 8 }}>{errors.grade}</Text>
+        )}
       </View>
 
       <View style={{ flexDirection: "row", gap: 12, marginTop: 16 }}>

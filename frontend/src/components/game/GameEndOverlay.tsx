@@ -115,7 +115,11 @@ export function GameEndOverlay({
 
       <ScrollView
         style={{ width: "100%", maxWidth: 500 }}
-        contentContainerStyle={{ alignItems: "center", paddingTop: insets.top + 16, paddingBottom: insets.bottom + 16 }}
+        contentContainerStyle={{
+          alignItems: "center",
+          paddingTop: insets.top + 16,
+          paddingBottom: insets.bottom + 16,
+        }}
         showsVerticalScrollIndicator={false}
       >
         <TrophyIcon />
@@ -410,13 +414,30 @@ export function GameEndOverlay({
           </View>
         )}
 
-        <Animated.View style={[buttonsStyle, { gap: 10, alignItems: "center", width: "100%" }]}>
+        <Animated.View
+          style={[
+            buttonsStyle,
+            { gap: 10, alignItems: "center", width: "100%" },
+          ]}
+        >
           <View style={{ flexDirection: "row", gap: 10, width: "100%" }}>
             <Pressable
               onPress={onPlayAgain}
-              style={{ flex: 1, backgroundColor: "#10B981", paddingVertical: 20, borderRadius: 16, alignItems: "center" }}
+              style={{
+                flex: 1,
+                backgroundColor: "#10B981",
+                paddingVertical: 10,
+                borderRadius: 16,
+                alignItems: "center",
+              }}
             >
-              <Text style={{ color: "#FFFFFF", fontSize: 16, fontFamily: "Bungee_400Regular" }}>
+              <Text
+                style={{
+                  color: "#FFFFFF",
+                  fontSize: 16,
+                  fontFamily: "Bungee_400Regular",
+                }}
+              >
                 {t("game:end.playAgain")}
               </Text>
             </Pressable>
@@ -428,12 +449,18 @@ export function GameEndOverlay({
                 backgroundColor: "#1A1520",
                 borderWidth: 2,
                 borderColor: "#3D2E4A",
-                paddingVertical: 20,
+                paddingVertical: 10,
                 borderRadius: 16,
                 alignItems: "center",
               }}
             >
-              <Text style={{ color: "#FFFFFF", fontSize: 16, fontFamily: "Bungee_400Regular" }}>
+              <Text
+                style={{
+                  color: "#FFFFFF",
+                  fontSize: 16,
+                  fontFamily: "Bungee_400Regular",
+                }}
+              >
                 {t("game:end.backToHome")}
               </Text>
             </Pressable>
@@ -452,7 +479,13 @@ export function GameEndOverlay({
                 alignItems: "center",
               }}
             >
-              <Text style={{ color: "#C4B0D8", fontSize: 15, fontFamily: "Bungee_400Regular" }}>
+              <Text
+                style={{
+                  color: "#C4B0D8",
+                  fontSize: 15,
+                  fontFamily: "Bungee_400Regular",
+                }}
+              >
                 {t("game:end.reviewAnswers")}
               </Text>
             </Pressable>

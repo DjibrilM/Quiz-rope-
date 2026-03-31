@@ -32,7 +32,8 @@ export default function SoloMatchScreen() {
   const [contextError, setContextError] = useState("");
   const { t } = useTranslation(["match", "common"]);
   const { subject } = useLocalSearchParams<{ subject: string }>();
-  const { setCurrentMatch, children, childSession, locale, userRole } = useGameStore();
+  const { setCurrentMatch, children, childSession, locale, userRole } =
+    useGameStore();
   const [difficulty, setDifficulty] = useState("EASY");
   const [maxRounds, setMaxRounds] = useState(10);
   // Pre-select the child if playing from their own device
@@ -49,8 +50,8 @@ export default function SoloMatchScreen() {
       hapticsService.medium();
 
       const teams = [
-        { name: "Red Team", color: "#EF4444", side: "LEFT" },
-        { name: "Blue Team", color: "#3B82F6", side: "RIGHT" },
+        { name: t("common:teams.redTeam"), color: "#EF4444", side: "LEFT" },
+        { name: t("common:teams.blueTeam"), color: "#3B82F6", side: "RIGHT" },
       ];
 
       let match: any;
@@ -66,19 +67,40 @@ export default function SoloMatchScreen() {
         const matchId = Crypto.randomUUID();
         const now = Date.now();
         await guestDb.saveMatch({
-          _id: matchId, subject: subject!, difficulty,
-          gameMode: "solo", maxRounds, status: "IN_PROGRESS",
-          roundsPlayed: 0, createdAt: now,
-          context: context.trim() || undefined, language: locale,
+          _id: matchId,
+          subject: subject!,
+          difficulty,
+          gameMode: "solo",
+          maxRounds,
+          status: "IN_PROGRESS",
+          roundsPlayed: 0,
+          createdAt: now,
+          context: context.trim() || undefined,
+          language: locale,
+          scoreLeft: 0,
+          scoreRight: 0,
         });
-        await guestDb.saveQuestions(matchId, questions.map((q, i) => ({ ...q, id: `${matchId}-q${i}` })));
+
+        await guestDb.saveQuestions(
+          matchId,
+          questions.map((q, i) => ({ ...q, id: `${matchId}-q${i}` })),
+        );
         match = {
-          _id: matchId, id: matchId, subject: subject!, difficulty,
-          gameMode: "solo" as const, maxRounds,
-          questions: questions.map((q, i) => ({ ...q, id: `${matchId}-q${i}` })),
+          _id: matchId,
+          id: matchId,
+          subject: subject!,
+          difficulty,
+          gameMode: "solo" as const,
+          maxRounds,
+          questions: questions.map((q, i) => ({
+            ...q,
+            id: `${matchId}-q${i}`,
+          })),
           teams: teams.map((t, i) => ({ id: `team-${i}`, ...t, players: [] })),
-          ropePosition: 0, currentQuestionIndex: 0,
-          status: MatchStatus.IN_PROGRESS, rounds: 0,
+          ropePosition: 0,
+          currentQuestionIndex: 0,
+          status: MatchStatus.IN_PROGRESS,
+          rounds: 0,
           createdAt: new Date(now),
         };
       } else {
@@ -98,7 +120,10 @@ export default function SoloMatchScreen() {
           gameMode: "solo" as const,
           teams: ((created as any).teams || teams).map((t: any, i: number) => ({
             id: t._id || t.id || `team-${i}`,
-            name: t.name, color: t.color, side: t.side, players: t.players || [],
+            name: t.name,
+            color: t.color,
+            side: t.side,
+            players: t.players || [],
           })),
           ropePosition: (created as any).ropePosition || 0,
           currentQuestionIndex: (created as any).currentQuestionIndex || 0,
@@ -124,19 +149,30 @@ export default function SoloMatchScreen() {
       if (error?.message === "CONTEXT_NOT_RELATED") {
         setContextError(t("match:solo.contextNotRelated"));
       } else {
-        showError(t("common:errors.somethingWentWrong"), t("match:create.createFailed"));
+        showError(
+          t("common:errors.somethingWentWrong"),
+          t("match:create.createFailed"),
+        );
       }
     }
   };
 
   return (
-    <SafeAreaView edges={["bottom"]} className="flex-1 bg-game-bg">
+    <SafeAreaView
+      edges={["bottom"]}
+      style={{ flex: 1, backgroundColor: "#0D0B14" }}
+    >
       <ScreenHeader title={t("match:solo.title", { subject: subjectLabel })} />
 
       <ScrollView
-        className="flex-1 px-6"
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          paddingBottom: 120,
+          paddingTop: 24,
+          paddingHorizontal: 24,
+        }}
         contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={{ paddingBottom: 120, paddingTop: 24 }}
+        showsVerticalScrollIndicator={false}
       >
         <DifficultySelector selected={difficulty} onSelect={setDifficulty} />
         <RoundsSelector selected={maxRounds} onSelect={setMaxRounds} />
@@ -154,18 +190,20 @@ export default function SoloMatchScreen() {
                 marginBottom: 10,
               }}
             >
-              Playing as
+              {t("match:solo.playingAs")}
             </Text>
+
             <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
               {children.map((c) => {
                 const cId = c.id;
                 const active = selectedChildId === cId;
                 return (
                   <Pressable
-                    key={c.id}
+                    key={c.id || (c as any)._id}
                     onPress={() => {
                       hapticsService.selection();
-                      setSelectedChildId(active ? null : cId);
+                      const cId = c.id || (c as any)._id;
+                      setSelectedChildId(selectedChildId === cId ? null : cId);
                     }}
                     style={{
                       paddingHorizontal: 14,
@@ -259,6 +297,7 @@ export default function SoloMatchScreen() {
 
       {/* Start Game button */}
       <View
+        className="my-6"
         style={{
           position: "absolute",
           bottom: 0,

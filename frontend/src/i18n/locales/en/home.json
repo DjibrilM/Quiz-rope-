@@ -18,8 +18,11 @@
     "matchHistory": "Match History",
     "matchHistoryDesc": "View past games and stats",
     "leaderboard": "Leaderboard",
-    "leaderboardDesc": "See who's the top player"
+    "leaderboardDesc": "See who's the top player",
+    "homeworkAssist": "Homework",
+    "homeworkAssistDesc": "Get AI explanations for your homework"
   },
+
   "guest": {
     "linkBannerCta": "Tap to link your progress to a parent account",
     "linkMenuItem": "Link to Parent",

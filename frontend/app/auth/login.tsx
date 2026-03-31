@@ -25,6 +25,7 @@ import {
 } from "../../src/components/common";
 import { FONTS } from "../../src/constants/theme";
 import { useToast } from "../../src/context/ToastContext";
+import { NotificationService } from "../../src/services/NotificationService";
 
 export default function LoginScreen() {
   const { t } = useTranslation(["auth", "common"]);
@@ -64,6 +65,8 @@ export default function LoginScreen() {
 
     // Subscription disabled — app is free for now
 
+
+    NotificationService.sendSignInNotification(result.user.displayName);
     router.replace("/home");
   };
 
@@ -80,6 +83,7 @@ export default function LoginScreen() {
         true,
         result.token || "mock-token",
       );
+      NotificationService.sendSignInNotification((result.user || result).displayName);
       router.replace("/home");
     } catch {
       setAuth(
@@ -93,6 +97,7 @@ export default function LoginScreen() {
         true,
         "mock-token",
       );
+      NotificationService.sendSignInNotification("Test Parent");
       router.replace("/home");
     }
   };

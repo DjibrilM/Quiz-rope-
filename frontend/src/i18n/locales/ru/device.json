@@ -1,18 +1,16 @@
 {
   "childJoin": {
     "title": "Присоединиться к игре!",
-    "instruction": "Покажите этот код родителю",
-    "waitingStatus": "Ожидание сканирования родителем...",
-    "generateNewCode": "Сгенерировать новый код",
-    "errorToken": "Не удалось получить токен. Нажмите ниже, чтобы повторить."
+    "instruction": "Введите код, показанный на устройстве родителя",
+    "codeInputPlaceholder": "Введите код сессии",
+    "scanQR": "Сканировать QR-код",
+    "enterCodeInstead": "Ввести код вместо этого",
+    "errorToken": "Не удалось получить токен. Нажмите ниже, чтобы повторить.",
+    "invalidCode": "Неверный или истёкший код. Попробуйте ещё раз."
   },
   "connectDevice": {
     "title": "Подключить устройство",
-    "scanTitle": "Сканировать код ребёнка",
-    "scanInstruction": "Наведите камеру на QR-код на устройстве ребёнка",
-    "manualEntryDivider": "или введите код вручную",
-    "manualCodePlaceholder": "Введите код сессии",
-    "loadingTitle": "Загрузка...",
+    "loadingTitle": "Настройка...",
     "loadingMessage": "Получение игроков...",
     "selectChildTitle": "Кто играет?",
     "selectChildInstruction": "Выберите ребёнка для этого устройства",
@@ -21,9 +19,8 @@
     "linkingTitle": "Привязка устройства...",
     "settingUpSession": "Настройка сессии для {{name}}",
     "errorTitle": "Что-то пошло не так",
-    "successTitle": "Устройство привязано!",
-    "successStatus": "Подключено",
-    "successMessage": "Устройство {{name}} теперь привязано"
+    "showCodeTitle": "Поделитесь этим кодом",
+    "showCodeInstruction": "Покажите это {{name}} для сканирования или ввода на их устройстве"
   },
   "qrCode": {
     "cameraPermission": "Для сканирования QR-кодов необходим доступ к камере",

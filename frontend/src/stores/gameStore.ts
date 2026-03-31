@@ -39,6 +39,12 @@ interface ChildSession {
   jwtToken: string | null;
 }
 
+interface ChildProfile {
+  displayName: string;
+  avatarUrl: string;
+  grade: string;
+}
+
 interface GuestProfile {
   /** Locally generated ID so we can reference the profile across sessions. */
   guestId: string;
@@ -55,6 +61,8 @@ interface GameState {
   childSession: ChildSession | null;
   /** Persisted local guest profile — survives logouts and app restarts. */
   guestProfile: GuestProfile | null;
+  /** Fresh profile for the currently logged-in child, fetched on startup. */
+  childProfile: ChildProfile | null;
   /** JWT for ghost (guest) API access. Persisted alongside guestProfile. */
   ghostToken: string | null;
   currentMatch: Match | null;
@@ -76,6 +84,8 @@ interface GameState {
   incrementStreak: () => void;
   resetStreak: () => void;
   setAuth: (user: ParentUser & Record<string, unknown>, mockMode: boolean, token: string) => void;
+  updateParentUser: (user: Partial<ParentUser>) => void;
+  setChildProfile: (profile: ChildProfile | null) => void;
   setChildSession: (session: ChildSession) => void;
   /** Set the persistent guest profile and mark the user as authenticated. */
   setGuestProfile: (profile: GuestProfile) => void;
@@ -104,7 +114,7 @@ interface GameState {
   setHasHydrated: (hydrated: boolean) => void;
 }
 
-export type { StoreQuestion, StoreRoundResult, CorrectionItem, ChildSession, GuestProfile };
+export type { StoreQuestion, StoreRoundResult, CorrectionItem, ChildSession, GuestProfile, ChildProfile };
 
 export const useGameStore = create<GameState>()(
   persist(
@@ -117,6 +127,7 @@ export const useGameStore = create<GameState>()(
       userRole: null,
       childSession: null,
       guestProfile: null,
+      childProfile: null,
       ghostToken: null,
       currentMatch: null,
       ropePosition: 0,
@@ -143,6 +154,13 @@ export const useGameStore = create<GameState>()(
           subscriptionStatus: 'active',
           subscriptionExpiresAt: null,
         }),
+
+      updateParentUser: (user) =>
+        set((state) => ({
+          parentUser: state.parentUser ? { ...state.parentUser, ...user } : (user as ParentUser),
+        })),
+
+      setChildProfile: (profile) => set({ childProfile: profile }),
 
       setChildSession: (session) =>
         set({ childSession: session, userRole: 'child', isAuthenticated: true, authToken: session.jwtToken }),
@@ -180,6 +198,7 @@ export const useGameStore = create<GameState>()(
           userRole: null,
           childSession: null,
           guestProfile: null,
+          childProfile: null,
           ghostToken: null,
           subscriptionStatus: 'active',
           subscriptionExpiresAt: null,

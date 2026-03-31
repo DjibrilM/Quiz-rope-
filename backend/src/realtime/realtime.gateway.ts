@@ -280,6 +280,12 @@ export class RealtimeGateway
     this.logger.log(`Session ${sessionToken} authorized, notified room`);
   }
 
+  emitChildDeleted(sessionToken: string, childId: string) {
+    const room = `session:${sessionToken}`;
+    this.server.to(room).emit("child:deleted", { childId });
+    this.logger.log(`Child ${childId} deleted, notified session ${sessionToken}`);
+  }
+
   private startTimer(matchId: string, seconds: number) {
     let remaining = seconds;
     const interval = setInterval(() => {
@@ -317,21 +323,24 @@ export class RealtimeGateway
   @SubscribeMessage("homework:chat")
   async handleHomeworkChat(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { sessionId: string; message: string },
+    @MessageBody() data: { sessionId: string; message: string; language?: string },
   ) {
-    const { sessionId, message } = data;
+    const { sessionId, message, language } = data;
+
+    this.logger.log(`[Gemini] homework:chat start session=${sessionId} client=${client.id} msgLen=${message.length}`);
 
     const controller = new AbortController();
     this.activeStreams.set(client.id, controller);
 
     try {
       const session = await this.homeworkService.getSessionRaw(sessionId);
-      const history = await this.homeworkService.getChatHistory(sessionId);
+      const history = await this.homeworkService.fetchChatHistory(sessionId);
 
       await this.homeworkService.saveMessage(sessionId, "user", message);
 
       const apiKey = process.env.GEMINI_API_KEY;
       if (!apiKey) {
+        this.logger.error(`[Gemini] homework:chat aborted — GEMINI_API_KEY not configured session=${sessionId}`);
         client.emit("homework:error", "AI not configured");
         return;
       }
@@ -343,14 +352,21 @@ export class RealtimeGateway
         temperature: 0.7,
       });
 
-      let systemInstruction = `You are an expert, encouraging K-12 tutor helping a student deeply understand their homework.
+      let systemInstruction = `You are an encouraging K-12 tutor assistant in QuizRope — an educational tug-of-war quiz app for children.
+Your ONLY job is to help the student understand their homework.
 Subject: ${session.subject || "General"}.
 Homework content for context:
 ${session.answersMarkdown || ""}
 
-Do NOT just give the answer. 
-Write LONG, thorough, step-by-step educational explanations. 
-Break down the fundamental concepts so the child actually learns the material. Use simple, supportive language.`;
+STRICT RULES — follow all of these without exception:
+1. ONLY discuss the student's homework and related school subjects. If asked about anything unrelated, politely decline and redirect to the homework.
+2. NEVER simply give the final answer — always guide, explain, and scaffold so the student actually learns.
+3. NEVER discuss violence, adult content, personal information, politics, religion, or anything inappropriate for children.
+4. NEVER impersonate other people, claim to be human, or role-play as a different AI system.
+5. Keep all language simple, encouraging, and age-appropriate for K-12 students.
+6. If a student mentions personal distress or safety concerns, respond with care and encourage them to talk to a trusted adult.
+Write LONG, thorough, step-by-step educational explanations. Break down fundamental concepts so the child actually learns.
+7. Always respond in the language identified by this BCP-47 code: ${language || "en"}.`;
 
       if (session.chatSummary) {
         systemInstruction += `\n\nHere is a summary of the conversation so far, for context:\n${session.chatSummary}`;
@@ -377,6 +393,8 @@ Break down the fundamental concepts so the child actually learns the material. U
 
       let fullResponse = "";
 
+      this.logger.log(`[Gemini] homework:chat streaming session=${sessionId} model=${GEMINI_MODEL} historyLen=${history.length}`);
+
       try {
         const stream = await model.stream(msgs, {
           signal: controller.signal,
@@ -391,7 +409,11 @@ Break down the fundamental concepts so the child actually learns the material. U
           }
         }
       } catch (err: any) {
-        if (!controller.signal.aborted) throw err;
+        if (!controller.signal.aborted) {
+          this.logger.error(`[Gemini] homework:chat stream error session=${sessionId}: ${err.message}`, err.stack);
+          throw err;
+        }
+        this.logger.log(`[Gemini] homework:chat stream aborted by client session=${sessionId}`);
       }
 
       // Save whatever was generated (full or partial)
@@ -401,6 +423,7 @@ Break down the fundamental concepts so the child actually learns the material. U
           "ai",
           fullResponse,
         );
+        this.logger.log(`[Gemini] homework:chat done session=${sessionId} responseLen=${fullResponse.length}`);
         client.emit("homework:done", saved);
 
         // Fire and forget the background summarization logic so it doesn't block the connection
@@ -412,8 +435,61 @@ Break down the fundamental concepts so the child actually learns the material. U
         client.emit("homework:stopped");
       }
     } catch (error) {
-      this.logger.error("Homework chat error:", error.message);
+      this.logger.error(`[Gemini] homework:chat unhandled error session=${sessionId}: ${error.message}`, error.stack);
       client.emit("homework:error", "Something went wrong. Try again.");
+    } finally {
+      this.activeStreams.delete(client.id);
+    }
+  }
+
+  @SubscribeMessage("homework:guest-chat")
+  async handleGuestHomeworkChat(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    data: {
+      sessionContext: string;
+      history: { role: "user" | "model"; content: string }[];
+      message: string;
+      language?: string;
+    },
+  ) {
+    const controller = new AbortController();
+    this.activeStreams.set(client.id, controller);
+
+    try {
+      let fullResponse = "";
+      const stream = this.homeworkService.guestChatStream(
+        data.sessionContext || "",
+        data.history || [],
+        data.message,
+        controller.signal,
+        data.language,
+      );
+
+      for await (const token of stream) {
+        if (controller.signal.aborted) break;
+        fullResponse += token;
+        client.emit("homework:token", token);
+      }
+
+      if (controller.signal.aborted) {
+        client.emit("homework:stopped");
+      } else if (fullResponse) {
+        client.emit("homework:done", {
+          _id: `guest-${Date.now()}`,
+          role: "ai",
+          content: fullResponse,
+        });
+      } else {
+        client.emit("homework:stopped");
+      }
+    } catch (err: any) {
+      if (controller.signal.aborted) {
+        client.emit("homework:stopped");
+      } else {
+        this.logger.error(`[Gemini] homework:guest-chat error: ${err.message}`);
+        client.emit("homework:error", "Something went wrong. Try again.");
+      }
     } finally {
       this.activeStreams.delete(client.id);
     }

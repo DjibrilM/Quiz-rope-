@@ -18,5 +18,17 @@
     "nameMaxLength": "নাম ৩০ অক্ষরের কম হতে হবে",
     "ageRange": "বয়স ৩-১৮ এর মধ্যে হতে হবে",
     "gradeRequired": "শ্রেণি প্রয়োজন"
+  },
+  "linkCode": {
+    "getCode": "লিংক কোড পান",
+    "selectChild": "একটি শিশু নির্বাচন করুন",
+    "title": "{{name}} এর লিংক কোড",
+    "expiresIn": "{{minutes}} মিনিটে মেয়াদ শেষ হয়",
+    "expiresMinutes": "{{minutes}}মি {{seconds}}সে তে মেয়াদ শেষ",
+    "expiresSeconds": "{{seconds}}সেকেন্ডে মেয়াদ শেষ",
+    "expired": "কোডের মেয়াদ শেষ",
+    "ok": "বুঝেছি",
+    "errorTitle": "কোড তৈরি করতে ব্যর্থ",
+    "errorBody": "কিছু একটা ভুল হয়েছে। আবার চেষ্টা করুন।"
   }
 }

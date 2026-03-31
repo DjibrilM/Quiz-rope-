@@ -4,7 +4,16 @@
     "subtitle": "আজ কী শিখছি? আপনার ময়দান বেছে নিন!",
     "modeLabel": "গেম মোড",
     "solo": "একক",
-    "splitScreen": "স্প্লিট স্ক্রিন"
+    "splitScreen": "স্প্লিট স্ক্রিন",
+    "startButton": "{{subject}} খেলুন!",
+    "createFailed": "ম্যাচ তৈরি করতে ব্যর্থ। আবার চেষ্টা করুন।",
+    "subjectHint": {
+      "MATH": "সংখ্যা ও ধাঁধা",
+      "SCIENCE": "পরীক্ষা-নিরীক্ষা ও আবিষ্কার",
+      "ENGLISH": "শব্দ ও গল্প",
+      "HISTORY": "অতীতের অ্যাডভেঞ্চার",
+      "GEOGRAPHY": "বিশ্ব অন্বেষণ করুন"
+    }
   },
   "lobby": {
     "codeLabel": "কোড",
@@ -12,8 +21,14 @@
     "startMatch": "ম্যাচ শুরু করুন!"
   },
   "solo": {
-    "title": "\u098f\u0995\u0995 - {{subject}}",
-    "startButton": "\u0996\u09c7\u09b2\u09be \u09b6\u09c1\u09b0\u09c1 \u0995\u09b0\u09c1\u09a8"
+    "title": "একক - {{subject}}",
+    "startButton": "খেলা শুরু করুন",
+    "contextLabel": "আপনার অনুশীলন কাস্টমাইজ করুন",
+    "contextPlaceholder": "যেমন. বর্গমূল, ২০ পর্যন্ত হর সহ ভগ্নাংশ...",
+    "contextHint": "ঐচ্ছিক — আপনি ঠিক কী অনুশীলন করতে চান তা বর্ণনা করুন",
+    "contextDisabled": "এই বিষয়ের জন্য অনুশীলন নিষ্ক্রিয়।",
+    "contextNotRelated": "এই প্রসঙ্গটি বিষয়ের সাথে সম্পর্কিত নয়।",
+    "playingAs": "যে নামে খেলছেন"
   },
   "selectors": {
     "subject": "বিষয়",
@@ -25,7 +40,12 @@
     "loadingMessage": "আপনার যুদ্ধের ইতিহাস লোড হচ্ছে...",
     "emptyTitle": "এখনো কোনো ম্যাচ নেই",
     "emptySubtitle": "আপনার যুদ্ধের ইতিহাস দেখতে একটি খেলা শুরু করুন!",
-    "won": "জিতেছে"
+    "won": "জিতেছে",
+    "completed": "সম্পন্ন",
+    "review": "উত্তর পর্যালোচনা করুন",
+    "inProgress": "চলমান",
+    "waiting": "শুরু হয়নি",
+    "abandoned": "ছেড়ে দেওয়া হয়েছে"
   },
   "detail": {
     "title": "ম্যাচের বিবরণ",
@@ -37,6 +57,46 @@
     "playerStatistics": "খেলোয়াড়দের পরিসংখ্যান",
     "score": "স্কোর",
     "accuracy": "নির্ভুলতা",
-    "avgTime": "গড় সময়"
+    "avgTime": "গড় সময়",
+    "reviewAnswers": "উত্তর পর্যালোচনা করুন",
+    "completed": "সম্পন্ন",
+    "soloMode": "একক অনুশীলন",
+    "splitMode": "স্প্লিট স্ক্রিন",
+    "yourPerformance": "আপনার পারফরম্যান্স",
+    "teamScores": "দলের স্কোর",
+    "correct": "সঠিক",
+    "total": "মোট",
+    "noStats": "কোনো উত্তর রেকর্ড করা হয়নি",
+    "mode": "মোড",
+    "players": "খেলোয়াড়",
+    "redWins": "লাল দল জিতেছে!",
+    "blueWins": "নীল দল জিতেছে!",
+    "draw": "ড্র!",
+    "soloComplete": "সেশন সম্পন্ন!"
+  },
+  "join": {
+    "title": "ম্যাচে যোগ দিন",
+    "subtitle": "হোস্টের কাছ থেকে ৬-অক্ষরের ম্যাচ কোড চান",
+    "joinButton": "ম্যাচে যোগ দিন",
+    "codeLengthError": "অনুগ্রহ করে ৬-অক্ষরের কোড দিন",
+    "notFoundError": "ম্যাচ পাওয়া যায়নি। কোডটি পরীক্ষা করুন এবং আবার চেষ্টা করুন।",
+    "matchEndedError": "এই ম্যাচটি ইতিমধ্যে শেষ হয়েছে।",
+    "networkError": "কিছু একটা ভুল হয়েছে। আবার চেষ্টা করুন।"
+  },
+  "split": {
+    "title": "স্প্লিট স্ক্রিন · {{subject}}",
+    "subtitle": "দুই খেলোয়াড় · একই ডিভাইস",
+    "ageGroupLabel": "বয়স গোষ্ঠী",
+    "playersLabel": "খেলোয়াড়",
+    "player1": "খেলোয়াড় ১",
+    "player2": "খেলোয়াড় ২",
+    "redTeamPlaceholder": "লাল দল",
+    "blueTeamPlaceholder": "নীল দল",
+    "startBattle": "যুদ্ধ শুরু করুন",
+    "ageGroups": {
+      "EASY": { "label": "শিশু", "age": "৬–১২ বছর" },
+      "MEDIUM": { "label": "কিশোর", "age": "১৩–১৭ বছর" },
+      "HARD": { "label": "তরুণ প্রাপ্তবয়স্ক", "age": "১৮+ বছর" }
+    }
   }
 }
