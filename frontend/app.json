@@ -15,10 +15,15 @@
     "android": {
       "package": "com.quizrope.app",
       "googleServicesFile": "./google-services.json",
+      "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png", // 1024×1024, with transparency OK
-        "backgroundColor": "#FFFFFF" // or your brand color
-      }
+        "foregroundImage": "./assets/android_icons/ic_launcher_foreground.png",
+        "backgroundImage": "./assets/android_icons/ic_launcher_background.png"
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "ios": {
       "bundleIdentifier": "com.quizrope.app",
@@ -71,7 +76,11 @@
           "ios": {
             "useFrameworks": "static",
             "buildReactNativeFromSource": true,
-            "forceStaticLinking": ["RNFBApp", "RNFBAuth", "RNFBFirestore"]
+            "forceStaticLinking": [
+              "RNFBApp",
+              "RNFBAuth",
+              "RNFBFirestore"
+            ]
           }
         }
       ],
@@ -82,10 +91,27 @@
           "initialOrientation": "DEFAULT"
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#9B59B6"
+        }
+      ],
+      "./plugins/withFmtPatch",
+      "expo-sqlite",
+      "expo-web-browser",
+      "expo-audio"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c07dbe31-e3f5-437d-8a13-05d61c03aed6"
+      }
     }
   }
 }

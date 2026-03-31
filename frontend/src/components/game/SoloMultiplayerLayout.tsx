@@ -92,12 +92,12 @@ export function SoloMultiplayerLayout({
 
         <View
           style={{
-            backgroundColor: "#1A1520",
-            borderRadius: 16,
+            backgroundColor: "rgba(255, 255, 255, 0.02)",
+            borderRadius: 24,
             borderWidth: 1,
-            borderColor: "#3D2E4A",
-            paddingHorizontal: 20,
-            paddingVertical: 6,
+            borderColor: "rgba(255, 255, 255, 0.05)",
+            paddingHorizontal: 24,
+            paddingVertical: 10,
             flexDirection: "row",
             alignItems: "center",
             gap: 20,
@@ -114,17 +114,21 @@ export function SoloMultiplayerLayout({
                     letterSpacing: 1,
                   }}
                 >
-                  {t("game:roundLabel", { current: currentRound, max: maxRounds })}
+                  {t("game:roundLabel", {
+                    current: currentRound,
+                    max: maxRounds,
+                  })}
                 </Text>
                 <TimerBar timeRemaining={timeRemaining} maxTime={30} />
               </View>
               <View style={{ alignItems: "center", minWidth: 50 }}>
                 <Text
                   style={{
-                    color: "#A78BFA",
+                    color: "rgba(255, 255, 255, 0.4)",
                     fontSize: 10,
-                    fontFamily: "LuckiestGuy_400Regular",
-                    letterSpacing: 1,
+                    fontFamily: FONTS.bodyExtraBold,
+                    letterSpacing: 2,
+                    textTransform: "uppercase",
                   }}
                 >
                   {t("game:scoreboard.score")}
@@ -133,7 +137,13 @@ export function SoloMultiplayerLayout({
                   {scorePopKey.left > 0 && (
                     <ScorePop key={`left-${scorePopKey.left}`} side="left" />
                   )}
-                  <Text style={{ color: "#ffffff", fontSize: 24, fontFamily: "Bungee_400Regular" }}>
+                  <Text
+                    style={{
+                      color: "#ffffff",
+                      fontSize: 24,
+                      fontFamily: FONTS.bodyExtraBold,
+                    }}
+                  >
                     {teamScores.left}
                   </Text>
                 </View>
@@ -144,10 +154,11 @@ export function SoloMultiplayerLayout({
               <View style={{ alignItems: "center", minWidth: 40 }}>
                 <Text
                   style={{
-                    color: "#B8A9C9",
+                    color: "rgba(255, 255, 255, 0.4)",
                     fontSize: 10,
-                    fontFamily: "LuckiestGuy_400Regular",
-                    letterSpacing: 1,
+                    fontFamily: FONTS.bodyExtraBold,
+                    letterSpacing: 2,
+                    textTransform: "uppercase",
                   }}
                 >
                   {t("common:teams.red")}
@@ -156,7 +167,13 @@ export function SoloMultiplayerLayout({
                   {scorePopKey.left > 0 && (
                     <ScorePop key={`left-${scorePopKey.left}`} side="left" />
                   )}
-                  <Text style={{ color: "#ffffff", fontSize: 24, fontFamily: "Bungee_400Regular" }}>
+                  <Text
+                    style={{
+                      color: "#ffffff",
+                      fontSize: 24,
+                      fontFamily: FONTS.bodyExtraBold,
+                    }}
+                  >
                     {teamScores.left}
                   </Text>
                 </View>
@@ -171,7 +188,10 @@ export function SoloMultiplayerLayout({
                     letterSpacing: 1,
                   }}
                 >
-                  {t("game:roundLabel", { current: currentRound, max: maxRounds })}
+                  {t("game:roundLabel", {
+                    current: currentRound,
+                    max: maxRounds,
+                  })}
                 </Text>
                 <TimerBar timeRemaining={timeRemaining} maxTime={30} />
               </View>
@@ -179,10 +199,11 @@ export function SoloMultiplayerLayout({
               <View style={{ alignItems: "center", minWidth: 40 }}>
                 <Text
                   style={{
-                    color: "#B8A9C9",
+                    color: "rgba(255, 255, 255, 0.4)",
                     fontSize: 10,
-                    fontFamily: "LuckiestGuy_400Regular",
-                    letterSpacing: 1,
+                    fontFamily: FONTS.bodyExtraBold,
+                    letterSpacing: 2,
+                    textTransform: "uppercase",
                   }}
                 >
                   {t("common:teams.blue")}
@@ -191,7 +212,13 @@ export function SoloMultiplayerLayout({
                   {scorePopKey.right > 0 && (
                     <ScorePop key={`right-${scorePopKey.right}`} side="right" />
                   )}
-                  <Text style={{ color: "#ffffff", fontSize: 24, fontFamily: "Bungee_400Regular" }}>
+                  <Text
+                    style={{
+                      color: "#ffffff",
+                      fontSize: 24,
+                      fontFamily: FONTS.bodyExtraBold,
+                    }}
+                  >
                     {teamScores.right}
                   </Text>
                 </View>
@@ -202,14 +229,40 @@ export function SoloMultiplayerLayout({
       </View>
 
       {/* Progress + Streak + Dominance */}
-      <View style={{ paddingHorizontal: 20, paddingTop: 6, paddingBottom: 10, gap: 6 }}>
-        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 }}>
-          <Text style={{ color: "#7B6B8A", fontSize: 11, fontFamily: FONTS.body }}>
-            {t("game:questionProgress", { current: currentRound, max: maxRounds })}
+      <View
+        style={{
+          paddingHorizontal: 20,
+          paddingTop: 6,
+          paddingBottom: 10,
+          gap: 6,
+        }}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+          }}
+        >
+          <Text
+            style={{ color: "#7B6B8A", fontSize: 11, fontFamily: FONTS.body }}
+          >
+            {t("game:questionProgress", {
+              current: currentRound,
+              max: maxRounds,
+            })}
           </Text>
           <StreakBadge />
         </View>
-        <View style={{ height: 4, backgroundColor: "#1A1520", borderRadius: 2, overflow: "hidden" }}>
+        <View
+          style={{
+            height: 4,
+            backgroundColor: "rgba(255, 255, 255, 0.05)",
+            borderRadius: 2,
+            overflow: "hidden",
+          }}
+        >
           <View
             style={{
               height: "100%",
@@ -223,9 +276,9 @@ export function SoloMultiplayerLayout({
           <View>
             <View
               style={{
-                height: 8,
-                backgroundColor: "#1A1520",
-                borderRadius: 4,
+                height: 6,
+                backgroundColor: "rgba(255, 255, 255, 0.05)",
+                borderRadius: 3,
                 overflow: "hidden",
                 flexDirection: "row",
               }}
@@ -247,24 +300,36 @@ export function SoloMultiplayerLayout({
                 }}
               />
             </View>
-            <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 2 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginTop: 2,
+              }}
+            >
               <Text
                 style={{
-                  color: teamScores.left > teamScores.right ? "#ff6b6b" : "#5A4B6B",
+                  color:
+                    teamScores.left > teamScores.right ? "#ff6b6b" : "#5A4B6B",
                   fontSize: 9,
                   fontFamily: FONTS.bodySemiBold,
                 }}
               >
-                {teamScores.left > teamScores.right ? t("common:teams.red") + " ▲" : ""}
+                {teamScores.left > teamScores.right
+                  ? t("common:teams.red") + " ▲"
+                  : ""}
               </Text>
               <Text
                 style={{
-                  color: teamScores.right > teamScores.left ? "#4ecdc4" : "#5A4B6B",
+                  color:
+                    teamScores.right > teamScores.left ? "#4ecdc4" : "#5A4B6B",
                   fontSize: 9,
                   fontFamily: FONTS.bodySemiBold,
                 }}
               >
-                {teamScores.right > teamScores.left ? "▲ " + t("common:teams.blue") : ""}
+                {teamScores.right > teamScores.left
+                  ? "▲ " + t("common:teams.blue")
+                  : ""}
               </Text>
             </View>
           </View>

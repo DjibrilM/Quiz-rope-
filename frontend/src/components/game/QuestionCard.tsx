@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
-import { View, Text } from "react-native";
+import React, { useEffect, useMemo } from "react";
+import { EnrichedMarkdownText } from "react-native-enriched-markdown";
+import { View, Text, Linking } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -17,7 +18,6 @@ interface QuestionCardProps {
     subject: string;
   } | null;
   selectedAnswer: number | null;
-  /** When provided (solo mode), enables instant correct/wrong feedback without roundResult */
   correctIndex?: number;
   roundResult: {
     isCorrect: boolean;
@@ -31,6 +31,25 @@ interface QuestionCardProps {
 }
 
 const OPTION_LABELS = ["A", "B", "C", "D"];
+
+/**
+ * 🔥 Fix dim math by forcing LaTeX color
+ */
+const brightenMath = (text: string) => {
+  if (!text) return text;
+
+  return (
+    text
+      // block math $$...$$ (handle first to avoid conflicts)
+      .replace(/\$\$(.*?)\$\$/gs, (_, expr) => {
+        return `$$\\color{#fab143}{${expr}}$$`;
+      })
+      // inline math $...$
+      .replace(/\$(.*?)\$/g, (_, expr) => {
+        return `$\\color{#fab143}{${expr}}$`;
+      })
+  );
+};
 
 export function QuestionCard({
   question,
@@ -49,9 +68,10 @@ export function QuestionCard({
 
   useEffect(() => {
     if (!question) return;
+
     questionScale.value = 0.95;
     questionOpacity.value = 0;
-    // Snappier spring for faster question reveal
+
     questionScale.value = withSpring(1, { damping: 30, stiffness: 600 });
     questionOpacity.value = withSpring(1, { damping: 30, stiffness: 600 });
   }, [question?.id]);
@@ -61,10 +81,12 @@ export function QuestionCard({
     opacity: questionOpacity.value,
   }));
 
+  const processedMarkdown = useMemo(() => {
+    return question ? brightenMath(question.text) : "";
+  }, [question?.text]);
+
   if (!question) return null;
 
-  // When correctIndex is provided (solo mode), give instant feedback the moment
-  // selectedAnswer is set — no intermediate "selected" grey state.
   const resolvedCorrectIndex = correctIndex ?? roundResult?.correctIndex;
 
   const getVariant = (
@@ -75,12 +97,13 @@ export function QuestionCard({
       if (index === selectedAnswer) return "wrong";
       return "default";
     }
-    // Multiplayer fallback: wait for roundResult from server
+
     if (roundResult) {
       if (index === roundResult.correctIndex) return "correct";
       if (index === selectedAnswer && !roundResult.isCorrect) return "wrong";
       return "default";
     }
+
     if (index === selectedAnswer) return "selected";
     return "default";
   };
@@ -89,77 +112,149 @@ export function QuestionCard({
     <View
       style={{
         flex: 1,
-        backgroundColor: "#1A1520",
-        borderRadius: 16,
+        backgroundColor: "rgba(255, 255, 255, 0.02)",
+        borderRadius: 24,
         overflow: "hidden",
         borderWidth: 1,
-        borderColor: "#3D2E4A",
+        borderColor: "rgba(255, 255, 255, 0.05)",
       }}
     >
-      {/* Question display */}
+      {/* Question */}
       <Animated.View
         style={[
           questionAnimatedStyle,
           {
-            marginHorizontal: compact ? 6 : 10,
-            marginTop: compact ? 6 : 10,
-            marginBottom: compact ? 4 : 8,
-            backgroundColor: "#0D0B14",
-            borderRadius: 12,
-            paddingHorizontal: compact ? 10 : 14,
-            paddingVertical: compact ? 6 : 10,
+            paddingHorizontal: compact ? 12 : 20,
+            paddingTop: compact ? 12 : 20,
+            paddingBottom: compact ? 8 : 12,
           },
         ]}
       >
         <Text
           style={{
-            color: "#B8A9C9",
-            fontSize: 10,
-            fontFamily: "LuckiestGuy_400Regular",
+            color: "rgba(255,255,255,0.4)",
+            fontSize: compact ? 9 : 11,
+            fontFamily: FONTS.bodyExtraBold,
             letterSpacing: 2,
-            marginBottom: 6,
+            textTransform: "uppercase",
+            marginBottom: compact ? 4 : 8,
           }}
         >
           {teamSide === "LEFT" ? t("teams.redTeam") : t("teams.blueTeam")}
         </Text>
-        <Text
+
+        <View
           style={{
-            color: "#ffffff",
-            fontSize: compact ? 13 : 17,
-            fontFamily: FONTS.bodySemiBold,
-            lineHeight: compact ? 18 : 24,
-            textAlign: "center",
+            width: "100%",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          {question.text}
-        </Text>
+          <EnrichedMarkdownText
+            flavor="github"
+            markdown={processedMarkdown}
+            onLinkPress={({ url }) => Linking.openURL(url)}
+            markdownStyle={{
+              // Base text
+
+              paragraph: {
+                color: "#D1D5DB",
+                marginBottom: 10,
+                textAlign: "center",
+              },
+
+              // Headings
+              h1: {
+                fontSize: 24,
+                fontWeight: "700",
+                color: "#FFFFFF",
+                marginBottom: 8,
+                marginTop: 16,
+                textAlign: "center",
+              },
+              h2: {
+                fontSize: 20,
+                fontWeight: "700",
+                color: "#F3F4F6",
+                marginBottom: 6,
+                marginTop: 14,
+                textAlign: "center",
+              },
+              h3: {
+                fontSize: 18,
+                fontWeight: "600",
+                color: "#E5E7EB",
+                marginBottom: 4,
+                marginTop: 12,
+                textAlign: "center",
+              },
+
+              // Links
+              link: {
+                color: "#60A5FA",
+              },
+
+              // Lists
+              list: {
+                marginBottom: 10,
+              },
+
+              // Inline code
+              code: {
+                backgroundColor: "#1F2937",
+                color: "#F9FAFB",
+
+                fontFamily: "Menlo",
+                fontSize: 14,
+              },
+
+              // Code blocks
+              codeBlock: {
+                backgroundColor: "#020617",
+                color: "#E2E8F0",
+                padding: 12,
+                borderRadius: 8,
+                fontFamily: "Menlo",
+                fontSize: 14,
+              },
+
+              // Blockquote
+              blockquote: {
+                color: "#9CA3AF",
+              },
+
+              // Tables
+              table: {
+                borderColor: "#374151",
+                borderRadius: 8,
+              },
+            }}
+          />
+        </View>
       </Animated.View>
 
-      {/* 2x2 Keypad */}
-      <View style={{ paddingHorizontal: compact ? 6 : 10, paddingBottom: compact ? 8 : 14, paddingTop: compact ? 2 : 4, gap: compact ? 5 : 8 }}>
-        <View style={{ flexDirection: "row", gap: compact ? 5 : 8 }}>
-          {question.options.slice(0, 2).map((option, i) => (
-            <AnimatedOption
+      {/* Options */}
+      <View
+        style={{
+          paddingHorizontal: compact ? 12 : 20,
+          paddingBottom: compact ? 12 : 20,
+          gap: compact ? 8 : 12,
+          flexDirection: "row",
+          flexWrap: "wrap",
+          justifyContent: "space-between",
+        }}
+      >
+        {question.options.map((option, i) => {
+          const isLong = option.length > 25 || question.options.length <= 2;
+
+          return (
+            <View
               key={i}
-              label={OPTION_LABELS[i]}
-              optionText={option}
-              index={i}
-              questionId={question.id}
-              staggerDelay={i * 15}
-              variant={getVariant(i)}
-              teamColor={teamColor}
-              disabled={selectedAnswer !== null}
-              onPress={() => onAnswer(i)}
-              compact={compact}
-            />
-          ))}
-        </View>
-        <View style={{ flexDirection: "row", gap: compact ? 5 : 8 }}>
-          {question.options.slice(2, 4).map((option, ci) => {
-            const i = ci + 2;
-            return (
+              style={{
+                width: isLong ? "100%" : "48%",
+              }}
+            >
               <AnimatedOption
-                key={i}
                 label={OPTION_LABELS[i]}
                 optionText={option}
                 index={i}
@@ -171,9 +266,9 @@ export function QuestionCard({
                 onPress={() => onAnswer(i)}
                 compact={compact}
               />
-            );
-          })}
-        </View>
+            </View>
+          );
+        })}
       </View>
     </View>
   );

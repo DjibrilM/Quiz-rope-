@@ -18,5 +18,17 @@
     "nameMaxLength": "नाम 30 अक्षर से कम होना चाहिए",
     "ageRange": "उम्र 3-18 के बीच होनी चाहिए",
     "gradeRequired": "कक्षा आवश्यक है"
+  },
+  "linkCode": {
+    "getCode": "लिंक कोड प्राप्त करें",
+    "selectChild": "बच्चा चुनें",
+    "title": "{{name}} के लिए लिंक कोड",
+    "expiresIn": "{{minutes}} मिनट में समाप्त होगा",
+    "expiresMinutes": "{{minutes}}म {{seconds}}से में समाप्त होगा",
+    "expiresSeconds": "{{seconds}}से में समाप्त होगा",
+    "expired": "कोड समाप्त हो गया",
+    "ok": "समझ गया",
+    "errorTitle": "कोड बनाने में विफल",
+    "errorBody": "कुछ गलत हो गया। कृपया पुनः प्रयास करें।"
   }
 }

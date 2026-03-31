@@ -1,42 +1,102 @@
 {
   "create": {
-    "title": "Escolha uma Materia",
+    "title": "Escolha uma Matéria",
     "subtitle": "O que vamos aprender hoje? Escolha sua arena!",
     "modeLabel": "Modo de jogo",
     "solo": "Solo",
-    "splitScreen": "Tela dividida"
+    "splitScreen": "Tela dividida",
+    "startButton": "Jogar {{subject}}!",
+    "createFailed": "Falha ao criar a partida. Tente novamente.",
+    "subjectHint": {
+      "MATH": "Números e puzzles",
+      "SCIENCE": "Experimentos e descobertas",
+      "ENGLISH": "Palavras e histórias",
+      "HISTORY": "Aventuras do passado",
+      "GEOGRAPHY": "Explore o mundo"
+    }
   },
   "lobby": {
-    "codeLabel": "CODIGO",
+    "codeLabel": "CÓDIGO",
     "matchInfo": "{{subject}} · {{difficulty}} · {{rounds}} rodadas",
     "startMatch": "Iniciar Partida!"
   },
   "solo": {
     "title": "Solo - {{subject}}",
-    "startButton": "Iniciar"
+    "startButton": "Iniciar",
+    "contextLabel": "Personalize sua prática",
+    "contextPlaceholder": "ex. raízes quadradas, frações com denominadores até 20…",
+    "contextHint": "Opcional — descreva exatamente o que quer praticar",
+    "contextDisabled": "Prática desativada para esta matéria.",
+    "contextNotRelated": "Este contexto não está relacionado ao tema.",
+    "playingAs": "Jogando como"
   },
   "selectors": {
-    "subject": "Materia",
+    "subject": "Matéria",
     "difficulty": "Dificuldade",
     "rounds": "Rodadas"
   },
   "history": {
-    "title": "Historico de Partidas",
-    "loadingMessage": "Carregando seu historico de batalhas...",
+    "title": "Histórico de Partidas",
+    "loadingMessage": "Carregando seu histórico de batalhas...",
     "emptyTitle": "Nenhuma partida ainda",
-    "emptySubtitle": "Comece um jogo para ver seu historico de batalhas aqui!",
-    "won": "Venceu"
+    "emptySubtitle": "Comece um jogo para ver seu histórico de batalhas aqui!",
+    "won": "Venceu",
+    "completed": "Concluída",
+    "review": "Revisar respostas",
+    "inProgress": "Em andamento",
+    "waiting": "Não iniciada",
+    "abandoned": "Abandonada"
   },
   "detail": {
     "title": "Detalhes da Partida",
     "rounds": "Rodadas",
-    "ropePosition": "Posicao da Corda",
+    "ropePosition": "Posição da Corda",
     "status": "Status",
     "winner": "Vencedor",
     "center": "Centro",
-    "playerStatistics": "Estatisticas dos Jogadores",
-    "score": "Pontuacao",
-    "accuracy": "Precisao",
-    "avgTime": "Tempo Medio"
+    "playerStatistics": "Estatísticas dos Jogadores",
+    "score": "Pontuação",
+    "accuracy": "Precisão",
+    "avgTime": "Tempo Médio",
+    "reviewAnswers": "Revisar respostas",
+    "completed": "Concluída",
+    "soloMode": "Prática solo",
+    "splitMode": "Tela dividida",
+    "yourPerformance": "Seu desempenho",
+    "teamScores": "Pontuações dos times",
+    "correct": "Correto",
+    "total": "Total",
+    "noStats": "Nenhuma resposta registrada",
+    "mode": "Modo",
+    "players": "Jogadores",
+    "redWins": "Time vermelho venceu!",
+    "blueWins": "Time azul venceu!",
+    "draw": "Empate!",
+    "soloComplete": "Sessão concluída!"
+  },
+  "join": {
+    "title": "Entrar em Partida",
+    "subtitle": "Peça ao anfitrião o código de 6 caracteres",
+    "joinButton": "Entrar na partida",
+    "codeLengthError": "Por favor insira um código de 6 caracteres",
+    "notFoundError": "Partida não encontrada. Verifique o código e tente novamente.",
+    "matchEndedError": "Esta partida já terminou.",
+    "networkError": "Algo deu errado. Por favor tente novamente."
+  },
+  "split": {
+    "title": "Tela Dividida · {{subject}}",
+    "subtitle": "Dois jogadores · Mesmo dispositivo",
+    "ageGroupLabel": "Faixa etária",
+    "playersLabel": "Jogadores",
+    "player1": "Jogador 1",
+    "player2": "Jogador 2",
+    "redTeamPlaceholder": "Time vermelho",
+    "blueTeamPlaceholder": "Time azul",
+    "startBattle": "Iniciar batalha",
+    "ageGroups": {
+      "EASY": { "label": "Crianças", "age": "6–12 anos" },
+      "MEDIUM": { "label": "Adolescentes", "age": "13–17 anos" },
+      "HARD": { "label": "Jovens adultos", "age": "18+ anos" }
+    }
   }
 }

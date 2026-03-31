@@ -5,17 +5,17 @@ import { router, useLocalSearchParams } from "expo-router";
 import { apiService } from "../../src/services/api";
 import { AnimatedLoader } from "../../src/components/common";
 import { FONTS } from "../../src/constants/theme";
+import { useTranslation } from "react-i18next";
 
-const STEPS = [
-  "Reading your homework…",
-  "Solving questions…",
-  "Writing explanations…",
-  "Almost done…",
-];
+
+
 
 export default function HomeworkProcessingScreen() {
+  const { t } = useTranslation("homework");
+  const STEPS = t("processing.steps", { returnObjects: true }) as string[];
   const { sessionId } = useLocalSearchParams<{ sessionId: string }>();
   const [stepIndex, setStepIndex] = useState(0);
+
 
   useEffect(() => {
     const stepInterval = setInterval(() => {
@@ -33,10 +33,11 @@ export default function HomeworkProcessingScreen() {
           clearInterval(pollInterval);
           clearInterval(stepInterval);
           Alert.alert(
-            "Analysis failed",
-            session.errorMessage ?? "Could not analyze the homework. Try again.",
-            [{ text: "OK", onPress: () => router.back() }],
+            t("errors.analysisFailed"),
+            session.errorMessage ?? t("errors.analysisFailedDesc"),
+            [{ text: t("common:buttons.ok"), onPress: () => router.back() }],
           );
+
         }
       } catch {
         // network blip — keep polling
@@ -53,9 +54,10 @@ export default function HomeworkProcessingScreen() {
     <SafeAreaView style={styles.bg}>
       <View style={styles.center}>
         <AnimatedLoader size="lg" color="#6C5CE7" />
-        <Text style={styles.title}>Analyzing your homework</Text>
+        <Text style={styles.title}>{t("processing.title")}</Text>
         <Text style={styles.step}>{STEPS[stepIndex]}</Text>
-        <Text style={styles.hint}>This takes about 15–30 seconds</Text>
+        <Text style={styles.hint}>{t("processing.hint")}</Text>
+
       </View>
     </SafeAreaView>
   );

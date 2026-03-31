@@ -26,8 +26,11 @@
     "contextLabel": "Customize Your Practice",
     "contextPlaceholder": "e.g. square roots, fractions with denominators up to 20...",
     "contextHint": "Optional — describe exactly what you want to practice",
-    "contextNotRelated": "This context is not related to the topic."
+    "contextDisabled": "Practice disabled for this subject.",
+    "contextNotRelated": "This context is not related to the topic.",
+    "playingAs": "Playing as"
   },
+
   "selectors": {
     "subject": "Subject",
     "difficulty": "Difficulty",
@@ -80,5 +83,31 @@
     "notFoundError": "Match not found. Check the code and try again.",
     "matchEndedError": "This match has already ended.",
     "networkError": "Something went wrong. Please try again."
+  },
+  "split": {
+    "title": "Split Screen · {{subject}}",
+    "subtitle": "Two players · Same device",
+    "ageGroupLabel": "Age Group",
+    "playersLabel": "Players",
+    "player1": "Player 1",
+    "player2": "Player 2",
+    "redTeamPlaceholder": "Red Team",
+    "blueTeamPlaceholder": "Blue Team",
+    "startBattle": "Start Battle",
+    "ageGroups": {
+      "EASY": {
+        "label": "Kids",
+        "age": "Ages 6–12"
+      },
+      "MEDIUM": {
+        "label": "Teens",
+        "age": "Ages 13–17"
+      },
+      "HARD": {
+        "label": "Young Adults",
+        "age": "Ages 18+"
+      }
+    }
   }
+
 }

@@ -1,7 +1,25 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
-@Schema({ timestamps: true })
+@Schema({
+  timestamps: true,
+  toJSON: {
+    virtuals: true,
+    versionKey: false,
+    transform: (doc, ret: any) => {
+      ret.id = ret._id.toString();
+      delete ret._id;
+    },
+  },
+  toObject: {
+    virtuals: true,
+    versionKey: false,
+    transform: (doc, ret: any) => {
+      ret.id = ret._id.toString();
+      delete ret._id;
+    },
+  },
+})
 export class Child extends Document {
   @Prop({ required: true })
   displayName: string;
@@ -12,11 +30,11 @@ export class Child extends Document {
   @Prop({ default: '' })
   avatarUrl: string;
 
-  @Prop({ default: 8 })
-  age: number;
-
   @Prop({ default: '3rd' })
   grade: string;
+
+  @Prop({ default: Date.now })
+  lastActiveAt: Date;
 }
 
 export const ChildSchema = SchemaFactory.createForClass(Child);

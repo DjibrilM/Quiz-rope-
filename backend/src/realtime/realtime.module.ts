@@ -5,7 +5,7 @@ import { ChildrenModule } from '../children/children.module';
 import { HomeworkModule } from '../homework/homework.module';
 
 @Module({
-  imports: [MatchModule, forwardRef(() => ChildrenModule), HomeworkModule],
+  imports: [forwardRef(() => MatchModule), forwardRef(() => ChildrenModule), forwardRef(() => HomeworkModule)],
   providers: [RealtimeGateway],
   exports: [RealtimeGateway],
 })

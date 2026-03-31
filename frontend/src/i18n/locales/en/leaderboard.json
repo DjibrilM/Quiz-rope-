@@ -9,5 +9,8 @@
   "correct": "Correct",
   "accuracy": "Accuracy",
   "yourProfile": "Your Profile",
-  "tapForStats": "Tap to view your full stats"
+  "tapForStats": "Tap to view your full stats",
+  "recentMatches": "Recent Matches",
+  "bySubject": "By Subject"
 }
+

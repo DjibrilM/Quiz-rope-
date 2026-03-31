@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { usePortrait } from "../../src/hooks/useOrientation";
 import { useGameStore } from "../../src/stores/gameStore";
@@ -17,21 +17,26 @@ import { apiService } from "../../src/services/api";
 import * as guestDb from "../../src/services/guestDb";
 import { hapticsService } from "../../src/services/haptics";
 import { BackButton, ScreenHeader } from "../../src/components/common";
+import { QRScanner } from "../../src/components/device";
 import { FONTS } from "../../src/constants/theme";
 
 export default function LinkToParentScreen() {
-  const { t } = useTranslation(["auth", "common"]);
+  const { t } = useTranslation(["auth", "common", "device"]);
   usePortrait();
 
-  const { setChildSession, clearGuestProfile, guestProfile } = useGameStore();
+  const { setChildSession, clearGuestProfile, setChildProfile, setChildren } = useGameStore();
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [scanning, setScanning] = useState(false);
   const inputRef = useRef<TextInput>(null);
+  const scanEnabled = useRef(true);
 
-  const handleLink = async () => {
-    const trimmed = code.trim().toUpperCase();
+  const handleLink = useCallback(async (rawCode: string) => {
+    // Extract the 6-char code whether rawCode is the code itself or a deep-link URL
+    const match = rawCode.trim().toUpperCase().match(/[A-Z0-9]{6}/);
+    const trimmed = match ? match[0] : "";
     if (trimmed.length !== 6) {
       setError(t("auth:guest.linkCodeLengthError"));
       return;
@@ -43,7 +48,13 @@ export default function LinkToParentScreen() {
     try {
       const result = await apiService.redeemGuestCode(trimmed);
 
+      // Set token immediately so all subsequent calls are authenticated
       apiService.setToken(result.token);
+
+      // Wipe any stale local user data from a previous session
+      useGameStore.setState({ parentUser: null, children: [] });
+
+      // Establish the child session (sets isAuthenticated + userRole)
       setChildSession({
         sessionToken: trimmed,
         parentId: result.parentId,
@@ -51,7 +62,7 @@ export default function LinkToParentScreen() {
         jwtToken: result.token,
       });
 
-      // Migrate all local SQLite guest data to MongoDB silently.
+      // Migrate local SQLite guest data to MongoDB (best-effort)
       try {
         const payload = await guestDb.getAllDataForMigration();
         if (payload.matches.length > 0 || payload.homeworkSessions.length > 0) {
@@ -59,25 +70,60 @@ export default function LinkToParentScreen() {
         }
         await guestDb.clearAllGuestData();
       } catch {
-        // Migration is best-effort; local data already cleared or migration failed — continue
+        // Non-blocking
       }
 
-      // Remove guest profile — they're now a real child account
+      // Fetch fresh child profile from backend and update store
+      const me = (await apiService.getMe()) as any;
+      setChildProfile({
+        displayName: me?.displayName ?? (result as any).displayName ?? "",
+        avatarUrl: me?.avatarUrl ?? (result as any).avatarUrl ?? "",
+        grade: me?.grade ?? "",
+      });
+
       clearGuestProfile();
-
       hapticsService.success();
-      setSuccess(true);
-
-      setTimeout(() => {
-        router.replace("/home");
-      }, 1500);
+      setChildren([]);
+      router.replace("/home");
     } catch {
       hapticsService.error();
       setError(t("auth:guest.linkCodeInvalidError"));
+      scanEnabled.current = true;
     } finally {
       setLoading(false);
     }
-  };
+  }, [setChildSession, clearGuestProfile, setChildProfile, setChildren, t]);
+
+  const handleScan = useCallback(
+    (data: string) => {
+      if (!scanEnabled.current) return;
+      scanEnabled.current = false;
+      setScanning(false);
+      setCode(data.trim().toUpperCase().slice(0, 6));
+      handleLink(data);
+    },
+    [handleLink],
+  );
+
+  const handleSubmit = () => handleLink(code);
+
+  if (scanning) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#0D0B14" }}>
+        <ScreenHeader title={t("device:childJoin.title")} />
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 32 }}>
+          <View style={{ width: 288, height: 288, borderRadius: 24, overflow: "hidden", marginBottom: 24 }}>
+            <QRScanner onScan={handleScan} enabled={scanEnabled.current} />
+          </View>
+          <Pressable onPress={() => { scanEnabled.current = true; setScanning(false); }}>
+            <Text style={{ color: "#B8A9C9", fontSize: 16, fontFamily: FONTS.body }}>
+              {t("device:childJoin.enterCodeInstead")}
+            </Text>
+          </Pressable>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#0D0B14" }}>
@@ -175,7 +221,7 @@ export default function LinkToParentScreen() {
             }}
             autoFocus
             returnKeyType="done"
-            onSubmitEditing={handleLink}
+            onSubmitEditing={handleSubmit}
           />
 
           {error !== "" && (
@@ -207,7 +253,7 @@ export default function LinkToParentScreen() {
           )}
 
           <Pressable
-            onPress={handleLink}
+            onPress={handleSubmit}
             disabled={loading || success}
             style={({ pressed }) => ({
               width: "100%",
@@ -243,6 +289,31 @@ export default function LinkToParentScreen() {
               </Text>
             )}
           </Pressable>
+
+          {/* Scan QR option */}
+          {!success && (
+            <Pressable
+              onPress={() => {
+                scanEnabled.current = true;
+                setScanning(true);
+              }}
+              style={{
+                marginTop: 20,
+                backgroundColor: "#1A1520",
+                borderWidth: 1,
+                borderColor: "#3D2E4A",
+                paddingVertical: 14,
+                paddingHorizontal: 32,
+                borderRadius: 16,
+                width: "100%",
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: "#B8A9C9", fontSize: 14, fontFamily: "Bungee_400Regular" }}>
+                {t("device:childJoin.scanQR")}
+              </Text>
+            </Pressable>
+          )}
 
           <Text
             style={{

@@ -23,18 +23,25 @@ import { MatchStatus } from "@shared/types/match.types";
 import { useTranslation } from "react-i18next";
 import { hapticsService } from "../../src/services/haptics";
 
-const AGE_GROUPS = [
-  { id: "EASY",   label: "Kids",         age: "Ages 6–12",  color: "#10B981", Icon: KidsIcon },
-  { id: "MEDIUM", label: "Teens",        age: "Ages 13–17", color: "#F59E0B", Icon: TeensIcon },
-  { id: "HARD",   label: "Young Adults", age: "Ages 18+",   color: "#6C5CE7", Icon: YoungAdultsIcon },
-] as const;
-
 function KidsIcon() {
   return (
     <Svg width={28} height={28} viewBox="0 0 24 24" fill="none">
       <Circle cx="12" cy="8" r="4" fill="#10B981" opacity={0.85} />
-      <Path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7" stroke="#10B981" strokeWidth={1.8} strokeLinecap="round" fill="none" opacity={0.85} />
-      <Path d="M9 6.5c0-.8.7-1.5 1.5-1.5S12 5.7 12 6.5" stroke="#FFFFFF" strokeWidth={1.2} strokeLinecap="round" opacity={0.6} />
+      <Path
+        d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7"
+        stroke="#10B981"
+        strokeWidth={1.8}
+        strokeLinecap="round"
+        fill="none"
+        opacity={0.85}
+      />
+      <Path
+        d="M9 6.5c0-.8.7-1.5 1.5-1.5S12 5.7 12 6.5"
+        stroke="#FFFFFF"
+        strokeWidth={1.2}
+        strokeLinecap="round"
+        opacity={0.6}
+      />
     </Svg>
   );
 }
@@ -43,8 +50,21 @@ function TeensIcon() {
   return (
     <Svg width={28} height={28} viewBox="0 0 24 24" fill="none">
       <Circle cx="12" cy="7.5" r="3.5" fill="#F59E0B" opacity={0.85} />
-      <Path d="M5.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="#F59E0B" strokeWidth={1.8} strokeLinecap="round" fill="none" opacity={0.85} />
-      <Path d="M9 5c1-1.5 3-1.5 4.5-.5" stroke="#FFFFFF" strokeWidth={1.2} strokeLinecap="round" opacity={0.6} />
+      <Path
+        d="M5.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5"
+        stroke="#F59E0B"
+        strokeWidth={1.8}
+        strokeLinecap="round"
+        fill="none"
+        opacity={0.85}
+      />
+      <Path
+        d="M9 5c1-1.5 3-1.5 4.5-.5"
+        stroke="#FFFFFF"
+        strokeWidth={1.2}
+        strokeLinecap="round"
+        opacity={0.6}
+      />
     </Svg>
   );
 }
@@ -53,9 +73,28 @@ function YoungAdultsIcon() {
   return (
     <Svg width={28} height={28} viewBox="0 0 24 24" fill="none">
       <Circle cx="12" cy="7" r="3.5" fill="#6C5CE7" opacity={0.85} />
-      <Path d="M5.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="#6C5CE7" strokeWidth={1.8} strokeLinecap="round" fill="none" opacity={0.85} />
-      <Path d="M8.5 4.5L12 3l3.5 1.5-3.5 1.5-3.5-1.5Z" fill="#6C5CE7" opacity={0.9} />
-      <Rect x="13.5" y="4.5" width="1" height="2.5" rx="0.5" fill="#6C5CE7" opacity={0.7} />
+      <Path
+        d="M5.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5"
+        stroke="#6C5CE7"
+        strokeWidth={1.8}
+        strokeLinecap="round"
+        fill="none"
+        opacity={0.85}
+      />
+      <Path
+        d="M8.5 4.5L12 3l3.5 1.5-3.5 1.5-3.5-1.5Z"
+        fill="#6C5CE7"
+        opacity={0.9}
+      />
+      <Rect
+        x="13.5"
+        y="4.5"
+        width="1"
+        height="2.5"
+        rx="0.5"
+        fill="#6C5CE7"
+        opacity={0.7}
+      />
     </Svg>
   );
 }
@@ -71,26 +110,74 @@ function PlayIcon() {
 function SplitIcon() {
   return (
     <Svg width={14} height={14} viewBox="0 0 24 24" fill="none">
-      <Rect x="2" y="3" width="9" height="18" rx="2" fill="#EF4444" opacity={0.8} />
-      <Rect x="13" y="3" width="9" height="18" rx="2" fill="#3B82F6" opacity={0.8} />
+      <Rect
+        x="2"
+        y="3"
+        width="9"
+        height="18"
+        rx="2"
+        fill="#EF4444"
+        opacity={0.8}
+      />
+      <Rect
+        x="13"
+        y="3"
+        width="9"
+        height="18"
+        rx="2"
+        fill="#3B82F6"
+        opacity={0.8}
+      />
     </Svg>
   );
 }
 
 export default function SplitMatchScreen() {
+  const { t } = useTranslation(["match", "common"]);
+
+  const AGE_GROUPS = [
+    {
+      id: "EASY",
+      label: t("split.ageGroups.EASY.label"),
+      age: t("split.ageGroups.EASY.age"),
+      color: "#10B981",
+      Icon: KidsIcon,
+    },
+    {
+      id: "MEDIUM",
+      label: t("split.ageGroups.MEDIUM.label"),
+      age: t("split.ageGroups.MEDIUM.age"),
+      color: "#F59E0B",
+      Icon: TeensIcon,
+    },
+    {
+      id: "HARD",
+      label: t("split.ageGroups.HARD.label"),
+      age: t("split.ageGroups.HARD.age"),
+      color: "#6C5CE7",
+      Icon: YoungAdultsIcon,
+    },
+  ] as const;
+
   usePortrait();
   const { showError } = useToast();
   const [creatingMatch, setCreatingMatch] = useState(false);
   const [player1Name, setPlayer1Name] = useState("");
   const [player2Name, setPlayer2Name] = useState("");
+
   const [context, setContext] = useState("");
   const [contextError, setContextError] = useState("");
-  const { t } = useTranslation(["match", "common"]);
+
   const { subject } = useLocalSearchParams<{ subject: string }>();
-  const { setCurrentMatch, children, childSession, locale, userRole } = useGameStore();
-  const [player1Id, setPlayer1Id] = useState<string | null>(childSession?.childId ?? null);
+  const { setCurrentMatch, children, childSession, locale, userRole } =
+    useGameStore();
+  const [player1Id, setPlayer1Id] = useState<string | null>(
+    childSession?.childId ?? null,
+  );
   const [player2Id, setPlayer2Id] = useState<string | null>(null);
-  const [ageGroup, setAgeGroup] = useState<"EASY" | "MEDIUM" | "HARD">("MEDIUM");
+  const [ageGroup, setAgeGroup] = useState<"EASY" | "MEDIUM" | "HARD">(
+    "MEDIUM",
+  );
   const [maxRounds, setMaxRounds] = useState(10);
 
   const subjectLabel = t(`common:subjects.${subject}`);
@@ -101,8 +188,9 @@ export default function SplitMatchScreen() {
       setCreatingMatch(true);
       hapticsService.medium();
 
-      const p1 = player1Name.trim() || "Red Team";
-      const p2 = player2Name.trim() || "Blue Team";
+      const p1 = player1Name.trim() || t("split.redTeamPlaceholder");
+      const p2 = player2Name.trim() || t("split.blueTeamPlaceholder");
+
       const teams = [
         { name: p1, color: "#EF4444", side: "LEFT" },
         { name: p2, color: "#3B82F6", side: "RIGHT" },
@@ -121,19 +209,40 @@ export default function SplitMatchScreen() {
         const matchId = Crypto.randomUUID();
         const now = Date.now();
         await guestDb.saveMatch({
-          _id: matchId, subject: subject!, difficulty: ageGroup,
-          gameMode: "splitscreen", maxRounds, status: "IN_PROGRESS",
-          roundsPlayed: 0, createdAt: now,
-          context: context.trim() || undefined, language: locale,
+          _id: matchId,
+          subject: subject!,
+          difficulty: ageGroup,
+          gameMode: "splitscreen",
+          maxRounds,
+          status: "IN_PROGRESS",
+          roundsPlayed: 0,
+          createdAt: now,
+          context: context.trim() || undefined,
+          language: locale,
+          scoreLeft: 0,
+          scoreRight: 0,
         });
-        await guestDb.saveQuestions(matchId, questions.map((q, i) => ({ ...q, id: `${matchId}-q${i}` })));
+
+        await guestDb.saveQuestions(
+          matchId,
+          questions.map((q, i) => ({ ...q, id: `${matchId}-q${i}` })),
+        );
         match = {
-          _id: matchId, id: matchId, subject: subject!, difficulty: ageGroup,
-          gameMode: "splitscreen" as const, maxRounds,
-          questions: questions.map((q, i) => ({ ...q, id: `${matchId}-q${i}` })),
+          _id: matchId,
+          id: matchId,
+          subject: subject!,
+          difficulty: ageGroup,
+          gameMode: "splitscreen" as const,
+          maxRounds,
+          questions: questions.map((q, i) => ({
+            ...q,
+            id: `${matchId}-q${i}`,
+          })),
           teams: teams.map((t, i) => ({ id: `team-${i}`, ...t, players: [] })),
-          ropePosition: 0, currentQuestionIndex: 0,
-          status: MatchStatus.IN_PROGRESS, rounds: 0,
+          ropePosition: 0,
+          currentQuestionIndex: 0,
+          status: MatchStatus.IN_PROGRESS,
+          rounds: 0,
           createdAt: new Date(now),
         };
       } else {
@@ -153,7 +262,10 @@ export default function SplitMatchScreen() {
           gameMode: "splitscreen" as const,
           teams: ((created as any).teams || teams).map((t: any, i: number) => ({
             id: t._id || t.id || `team-${i}`,
-            name: t.name, color: t.color, side: t.side, players: t.players || [],
+            name: t.name,
+            color: t.color,
+            side: t.side,
+            players: t.players || [],
           })),
           ropePosition: (created as any).ropePosition || 0,
           currentQuestionIndex: (created as any).currentQuestionIndex || 0,
@@ -180,31 +292,42 @@ export default function SplitMatchScreen() {
       if (error?.message === "CONTEXT_NOT_RELATED") {
         setContextError(t("match:solo.contextNotRelated"));
       } else {
-        showError(t("common:errors.somethingWentWrong"), t("match:create.createFailed"));
+        showError(
+          t("common:errors.somethingWentWrong"),
+          t("match:create.createFailed"),
+        );
       }
     }
   };
 
   return (
-    <SafeAreaView edges={["bottom"]} className="flex-1 bg-game-bg">
-      <ScreenHeader title={`Split Screen · ${subjectLabel}`} />
+    <SafeAreaView
+      edges={["bottom"]}
+      style={{ flex: 1, backgroundColor: "#0D0B14" }}
+    >
+      <ScreenHeader title={t("split.title", { subject: subjectLabel })} />
 
       <View className="flex-row items-center justify-center gap-1.5 pb-2">
         <SplitIcon />
         <Text className="text-xs font-body" style={{ color: "#7B6B8A" }}>
-          Two players · Same device
+          {t("split.subtitle")}
         </Text>
       </View>
 
       <KeyboardAvoidingView
-        className="flex-1"
+        style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <ScrollView
-          className="flex-1 px-6"
+          style={{ flex: 1 }}
+          contentContainerStyle={{
+            paddingBottom: 120,
+            paddingTop: 24,
+            paddingHorizontal: 24,
+          }}
           contentInsetAdjustmentBehavior="automatic"
-          contentContainerStyle={{ paddingBottom: 120, paddingTop: 24 }}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
           {/* Age Group Selector */}
           <View className="mb-8">
@@ -212,7 +335,7 @@ export default function SplitMatchScreen() {
               className="text-[11px] font-body-semibold uppercase text-center mb-3"
               style={{ color: "#7B6B8A", letterSpacing: 1.5 }}
             >
-              Age Group
+              {t("split.ageGroupLabel")}
             </Text>
             <View className="flex-row gap-2.5">
               {AGE_GROUPS.map((g) => {
@@ -259,21 +382,27 @@ export default function SplitMatchScreen() {
               className="text-[11px] font-body-semibold uppercase text-center mb-3"
               style={{ color: "#7B6B8A", letterSpacing: 1.5 }}
             >
-              Players
+              {t("split.playersLabel")}
             </Text>
             <View className="flex-row gap-3">
               {/* Player 1 */}
               <View className="flex-1">
                 <View className="flex-row items-center mb-1.5 gap-1.5">
                   <View className="w-2.5 h-2.5 rounded-full bg-red-500" />
-                  <Text className="text-xs font-body-semibold" style={{ color: "#B8A9C9" }}>
-                    Player 1
+                  <Text
+                    className="text-xs font-body-semibold"
+                    style={{ color: "#B8A9C9" }}
+                  >
+                    {t("split.player1")}
                   </Text>
                 </View>
                 <TextInput
                   value={player1Name}
-                  onChangeText={(v) => { setPlayer1Name(v); setPlayer1Id(null); }}
-                  placeholder="Red Team"
+                  onChangeText={(v) => {
+                    setPlayer1Name(v);
+                    setPlayer1Id(null);
+                  }}
+                  placeholder={t("split.redTeamPlaceholder")}
                   placeholderTextColor="#4A3D5A"
                   maxLength={20}
                   returnKeyType="next"
@@ -295,16 +424,17 @@ export default function SplitMatchScreen() {
                       const takenByP2 = player2Id === c.id;
                       return (
                         <Pressable
-                          key={c.id}
+                          key={c.id || (c as any)._id}
                           disabled={takenByP2}
                           onPress={() => {
                             hapticsService.selection();
+                            const cId = c.id || (c as any)._id;
                             if (active) {
                               setPlayer1Name("");
                               setPlayer1Id(null);
                             } else {
                               setPlayer1Name(c.displayName);
-                              setPlayer1Id(c.id);
+                              setPlayer1Id(cId);
                             }
                           }}
                           className="px-2.5 py-1 rounded-full border"
@@ -331,14 +461,20 @@ export default function SplitMatchScreen() {
               <View className="flex-1">
                 <View className="flex-row items-center mb-1.5 gap-1.5">
                   <View className="w-2.5 h-2.5 rounded-full bg-blue-500" />
-                  <Text className="text-xs font-body-semibold" style={{ color: "#B8A9C9" }}>
-                    Player 2
+                  <Text
+                    className="text-xs font-body-semibold"
+                    style={{ color: "#B8A9C9" }}
+                  >
+                    {t("split.player2")}
                   </Text>
                 </View>
                 <TextInput
                   value={player2Name}
-                  onChangeText={(v) => { setPlayer2Name(v); setPlayer2Id(null); }}
-                  placeholder="Blue Team"
+                  onChangeText={(v) => {
+                    setPlayer2Name(v);
+                    setPlayer2Id(null);
+                  }}
+                  placeholder={t("split.blueTeamPlaceholder")}
                   placeholderTextColor="#4A3D5A"
                   maxLength={20}
                   returnKeyType="done"
@@ -360,16 +496,17 @@ export default function SplitMatchScreen() {
                       const takenByP1 = player1Id === c.id;
                       return (
                         <Pressable
-                          key={c.id}
+                          key={c.id || (c as any)._id}
                           disabled={takenByP1}
                           onPress={() => {
                             hapticsService.selection();
+                            const cId = c.id || (c as any)._id;
                             if (active) {
                               setPlayer2Name("");
                               setPlayer2Id(null);
                             } else {
                               setPlayer2Name(c.displayName);
-                              setPlayer2Id(c.id);
+                              setPlayer2Id(cId);
                             }
                           }}
                           className="px-2.5 py-1 rounded-full border"
@@ -426,7 +563,10 @@ export default function SplitMatchScreen() {
                 {contextError}
               </Text>
             ) : (
-              <Text className="text-xs font-body mt-1.5" style={{ color: "#4A3D5A" }}>
+              <Text
+                className="text-xs font-body mt-1.5"
+                style={{ color: "#4A3D5A" }}
+              >
                 {t("match:solo.contextHint")}
               </Text>
             )}
@@ -436,13 +576,13 @@ export default function SplitMatchScreen() {
 
       {/* Start button */}
       <View
-        className="absolute bottom-0 left-0 right-0 px-6 pb-9 pt-4"
+        className="absolute bottom-0 my-6 left-0 right-0 px-6 pb-9 pt-4"
         style={{ backgroundColor: "#0D0B14E8" }}
       >
         <Button
           className="min-w-full"
           onPress={handleStart}
-          label="Start Battle"
+          label={t("split.startBattle")}
           icon={<PlayIcon />}
           loading={creatingMatch}
         />

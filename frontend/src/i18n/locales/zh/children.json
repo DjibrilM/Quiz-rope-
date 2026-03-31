@@ -18,5 +18,17 @@
     "nameMaxLength": "名字不能超过30个字符",
     "ageRange": "年龄须在3-18岁之间",
     "gradeRequired": "年级为必填项"
+  },
+  "linkCode": {
+    "getCode": "获取链接码",
+    "selectChild": "选择孩子",
+    "title": "{{name}} 的链接码",
+    "expiresIn": "{{minutes}} 分钟后过期",
+    "expiresMinutes": "{{minutes}}分{{seconds}}秒后过期",
+    "expiresSeconds": "{{seconds}}秒后过期",
+    "expired": "代码已过期",
+    "ok": "知道了",
+    "errorTitle": "生成代码失败",
+    "errorBody": "出了点问题，请重试。"
   }
 }

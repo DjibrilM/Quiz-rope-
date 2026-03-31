@@ -1,5 +1,6 @@
 import { View, Text, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 
 interface HomeworkBottomBarProps {
   quizCount: number;
@@ -14,6 +15,7 @@ export function HomeworkBottomBar({
   onOpenChat,
   bottomInset,
 }: HomeworkBottomBarProps) {
+  const { t } = useTranslation("homework");
   return (
     <View
       className="absolute bottom-0 left-0 right-0 flex-row items-center gap-3 px-4 pt-4 bg-[#0D0B14] w-full border-t border-white/5"
@@ -31,14 +33,14 @@ export function HomeworkBottomBar({
           </View>
           <View>
             <Text className="text-white font-['Bungee_400Regular'] text-sm tracking-[0.3px]">
-              Quizzes
+              {t("bottomBar.quizzes")}
             </Text>
             <Text className="text-[#5A4B6B] font-body text-xs mt-px">
               {quizCount === 0
-                ? "No quizzes yet"
+                ? t("bottomBar.noQuizzesYet")
                 : quizCount === 1
-                  ? "1 attempt"
-                  : `${quizCount} attempts`}
+                  ? t("bottomBar.oneAttempt")
+                  : t("bottomBar.attempts", { count: quizCount })}
             </Text>
           </View>
         </View>
@@ -48,7 +50,7 @@ export function HomeworkBottomBar({
       {/* Ask AI FAB */}
       <Pressable
         onPress={onOpenChat}
-        className="w-[60px] h-[60px] rounded-full bg-[#6C5CE7] items-center justify-center shrink-0"
+        className="w-[50px] h-[50px] rounded-full bg-[#6C5CE7] items-center justify-center shrink-0"
       >
         <Ionicons name="chatbubble-ellipses" size={26} color="#FFFFFF" />
       </Pressable>

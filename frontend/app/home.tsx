@@ -297,6 +297,7 @@ export default function HomeScreen() {
     isMockMode,
     userRole,
     guestProfile,
+    childProfile,
     logout,
     setCurrentMatch,
     setChildren,
@@ -306,13 +307,14 @@ export default function HomeScreen() {
 
   const isGuest = userRole === "guest";
   const isChild = userRole === "child";
-  const currentChild = isChild
-    ? children.find((c) => c.id === childSession?.childId)
-    : null;
   const logoutSheetRef = useRef<BottomSheetModal>(null);
   const languageSheetRef = useRef<BottomSheetModal>(null);
 
   useEffect(() => {
+    if (userRole === "child" && apiService.hasToken()) {
+      apiService.syncBackendDataToLocal().catch(() => {});
+    }
+
     if (userRole !== "child" && userRole !== "guest" && apiService.hasToken()) {
       apiService
         .getChildren()
@@ -327,7 +329,7 @@ export default function HomeScreen() {
         })
         .catch(() => {});
     }
-  }, []);
+  }, [userRole]);
 
   const handleOpenLogout = useCallback(() => {
     logoutSheetRef.current?.present();
@@ -418,7 +420,7 @@ export default function HomeScreen() {
                   (() => {
                     const name = isGuest
                       ? guestProfile?.displayName
-                      : currentChild?.displayName;
+                      : childProfile?.displayName;
                     return name ? null : (
                       <Text
                         style={{
@@ -441,7 +443,7 @@ export default function HomeScreen() {
             />
             {(isGuest || isChild) ? (
               <Pressable
-                onPress={() => router.push("/leaderboard" as any)}
+                onPress={() => router.push("/profile" as any)}
                 style={{
                   width: 40,
                   height: 40,
@@ -454,7 +456,7 @@ export default function HomeScreen() {
                 }}
               >
                 <AvatarIcon
-                  avatarId={isGuest ? guestProfile?.avatarId : currentChild?.avatarUrl}
+                  avatarId={isGuest ? guestProfile?.avatarId : childProfile?.avatarUrl}
                   size={26}
                 />
               </Pressable>
@@ -548,7 +550,7 @@ export default function HomeScreen() {
         <StaggeredList staggerMs={80}>
           {/* Quick play / solo — always available */}
           {__DEV__ && isMockMode && !isGuest && (
-            <View style={{ position: "relative" }}>
+            <View style={{ position: "relative", overflow: "visible" }}>
               <View
                 style={{
                   position: "absolute",
@@ -572,7 +574,7 @@ export default function HomeScreen() {
 
           {/* Guest: solo play as the highlighted primary action */}
           {isGuest && (
-            <View style={{ position: "relative" }}>
+            <View style={{ position: "relative", overflow: "visible" }}>
               <View
                 style={{
                   position: "absolute",
@@ -581,7 +583,9 @@ export default function HomeScreen() {
                   zIndex: -1,
                   transform: [{ rotate: "10deg" }],
                 }}
-              ></View>
+              >
+                <BrainMascot size={85} />
+              </View>
               <MenuItem
                 icon={<IconQuickPlay />}
                 title={t("home:menu.soloPlay")}
@@ -616,10 +620,11 @@ export default function HomeScreen() {
 
           <MenuItem
             icon={<IconHomework />}
-            title="Homework Assist"
-            subtitle="Photograph homework and get AI explanations"
+            title={t("home:menu.homeworkAssist")}
+            subtitle={t("home:menu.homeworkAssistDesc")}
             onPress={() => router.push("/homework" as any)}
           />
+
 
           {userRole !== "child" && !isGuest && (
             <MenuItem
@@ -637,12 +642,14 @@ export default function HomeScreen() {
             onPress={() => router.push("/match/history" as any)}
           />
 
-          <MenuItem
-            icon={<IconLeaderboard />}
-            title={t("home:menu.leaderboard")}
-            subtitle={t("home:menu.leaderboardDesc")}
-            onPress={() => router.push("/leaderboard" as any)}
-          />
+          {!isGuest && !isChild && (
+            <MenuItem
+              icon={<IconLeaderboard />}
+              title={t("home:menu.leaderboard")}
+              subtitle={t("home:menu.leaderboardDesc")}
+              onPress={() => router.push("/leaderboard" as any)}
+            />
+          )}
 
           {/* Guest: link to parent as a menu item too */}
           {isGuest && (

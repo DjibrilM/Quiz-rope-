@@ -1,24 +1,27 @@
 {
   "greeting": "Готов играть, {{name}}?",
   "appName": "QuizRope",
+  "welcomeBack": "С возвращением",
   "activeUntil": "Активно до {{date}}",
   "menu": {
     "quickPlay": "Быстрая игра",
     "quickPlayDesc": "Сразу перейти к тестовой игре",
-    "startNewGame": "Новая игра",
-    "startNewGameDesc": "Создайте матч и бросьте вызов игрокам",
+    "startNewGame": "Играть",
+    "startNewGameDesc": "Соло или разделённый экран — выберите режим",
     "connectDevice": "Подключить устройство",
     "connectDeviceDesc": "Привяжите планшет ребёнка по QR-коду",
     "myChildren": "Мои дети",
     "myChildrenDesc": "Добавляйте и управляйте профилями игроков",
     "matchHistory": "История матчей",
     "matchHistoryDesc": "Просмотр прошлых игр и статистики",
-    "soloPlay": "Одиночная игра",
-    "soloPlayDesc": "Играйте один, в своём темпе",
+    "soloPlay": "Играть",
+    "soloPlayDesc": "Соло или разделённый экран — выберите режим",
     "joinMatch": "Присоединиться к матчу",
     "joinMatchDesc": "Введите код, чтобы присоединиться к живому матчу",
     "leaderboard": "Таблица лидеров",
-    "leaderboardDesc": "Узнайте, кто лучший игрок"
+    "leaderboardDesc": "Узнайте, кто лучший игрок",
+    "homeworkAssist": "Домашнее задание",
+    "homeworkAssistDesc": "Получите объяснения ИИ для вашего домашнего задания"
   },
   "guest": {
     "linkBannerCta": "Нажмите, чтобы привязать прогресс к родительскому аккаунту",

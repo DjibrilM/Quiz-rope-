@@ -43,12 +43,6 @@
           <string>exp+quizrope</string>
         </array>
       </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>app-1-1097849103209-ios-44e71ea8f4d371c3add3f8</string>
-        </array>
-      </dict>
     </array>
     <key>CFBundleVersion</key>
     <string>1</string>
@@ -67,6 +61,8 @@
     </dict>
     <key>NSCameraUsageDescription</key>
     <string>QuizRope uses your camera to scan QR codes when joining a quiz match and to photograph homework assignments for AI-powered step-by-step explanations.</string>
+    <key>NSFaceIDUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to use Face ID</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your microphone</string>
     <key>NSPhotoLibraryUsageDescription</key>

@@ -86,6 +86,13 @@ async function openDb(): Promise<SQLite.SQLiteDatabase> {
         user_answer_index INTEGER NOT NULL,
         is_correct INTEGER NOT NULL
       );
+      CREATE TABLE IF NOT EXISTS child_profiles (
+        id TEXT PRIMARY KEY,
+        display_name TEXT NOT NULL,
+        avatar_url TEXT NOT NULL DEFAULT '',
+        grade TEXT NOT NULL DEFAULT '',
+        updated_at INTEGER NOT NULL
+      );
     `);
     // Migrations for existing databases (no-op if columns already exist)
     try { await database.execAsync('ALTER TABLE guest_matches ADD COLUMN score_left INTEGER NOT NULL DEFAULT 0'); } catch { /* already exists */ }
@@ -498,6 +505,51 @@ export async function getCorrections(matchId: string): Promise<GuestCorrection[]
   }
 }
 
+// ─── Child Profile (Cached) ───────────────────────────────────────────────────
+
+export interface CachedChildProfile {
+  id: string;
+  displayName: string;
+  avatarUrl: string;
+  grade: string;
+  updatedAt: number;
+}
+
+export async function saveChildProfile(profile: { id: string; displayName: string; avatarUrl?: string; grade?: string }): Promise<void> {
+  console.log(`${TAG} saveChildProfile`, profile.id);
+  try {
+    await (await getDbAsync()).runAsync(
+      `INSERT OR REPLACE INTO child_profiles (id, display_name, avatar_url, grade, updated_at)
+       VALUES (?, ?, ?, ?, ?)`,
+      [profile.id, profile.displayName, profile.avatarUrl ?? '', profile.grade ?? '', Date.now()],
+    );
+    console.log(`${TAG} saveChildProfile OK`);
+  } catch (err) {
+    console.error(`${TAG} saveChildProfile FAILED`, err);
+    throw err;
+  }
+}
+
+export async function getChildProfile(id: string): Promise<CachedChildProfile | null> {
+  console.log(`${TAG} getChildProfile`, id);
+  try {
+    const row = await (await getDbAsync()).getFirstAsync<any>(
+      'SELECT * FROM child_profiles WHERE id = ?', [id]
+    );
+    if (!row) return null;
+    return {
+      id: row.id,
+      displayName: row.display_name,
+      avatarUrl: row.avatar_url,
+      grade: row.grade,
+      updatedAt: row.updated_at,
+    };
+  } catch (err) {
+    console.error(`${TAG} getChildProfile FAILED`, id, err);
+    throw err;
+  }
+}
+
 // ─── Profile stats (for leaderboard / profile view) ──────────────────────────
 
 export interface GuestProfileStats {
@@ -625,8 +677,10 @@ export async function getAllDataForMigration() {
         topics: JSON.parse(r.topics_json ?? '[]'),
         answersMarkdown: r.answers_markdown,
         imageBase64: r.image_base64, imageMimeType: r.image_mime_type,
+        linkedMatchIds: JSON.parse(r.linked_match_ids_json ?? '[]'),
         createdAt: r.created_at,
       })),
+
       chats: chats.map((r) => ({
         sessionLocalId: r.session_id, role: r.role,
         content: r.content, createdAt: r.created_at,
@@ -648,9 +702,91 @@ export async function clearAllGuestData(): Promise<void> {
     await d.execAsync('DELETE FROM guest_corrections');
     await d.execAsync('DELETE FROM guest_homework_sessions');
     await d.execAsync('DELETE FROM guest_homework_chats');
+    await d.execAsync('DELETE FROM child_profiles');
     console.log(`${TAG} clearAllGuestData OK`);
   } catch (err) {
     console.error(`${TAG} clearAllGuestData FAILED`, err);
     throw err;
   }
 }
+
+export async function syncFromBackend(payload: {
+  matches: any[];
+  homeworkSessions: any[];
+  profile?: any;
+}): Promise<void> {
+  console.log(`${TAG} syncFromBackend matches=${payload.matches.length} hw=${payload.homeworkSessions.length} profile=${!!payload.profile}`);
+  const d = await getDbAsync();
+  // expo-sqlite's withTransactionAsync has a known bug in WAL mode where it
+  // attempts ROLLBACK after a successful COMMIT, crashing with
+  // "cannot rollback - no transaction is active". Use explicit statements instead.
+  await d.execAsync('BEGIN TRANSACTION');
+  try {
+    // 1. Sync Matches
+    for (const m of payload.matches) {
+      await d.runAsync(
+        `INSERT OR REPLACE INTO guest_matches
+          (id, subject, difficulty, game_mode, max_rounds, status, winner, rounds_played, score_left, score_right, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          m._id,
+          m.subject,
+          m.difficulty,
+          m.gameMode || 'solo',
+          m.maxRounds || 10,
+          m.status,
+          m.winner || null,
+          m.rounds || 0,
+          m.teamScoreLeft || 0,
+          m.teamScoreRight || 0,
+          new Date(m.createdAt).getTime(),
+        ],
+      );
+    }
+
+    // 2. Sync Homework Sessions
+    for (const s of payload.homeworkSessions) {
+      await d.runAsync(
+        `INSERT OR REPLACE INTO guest_homework_sessions
+          (id, title, subject, status, topics_json, answers_markdown, image_base64, image_mime_type, quiz_taken, linked_match_ids_json, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          s._id,
+          s.title || 'Homework',
+          s.subject || null,
+          s.status,
+          JSON.stringify(s.topics || []),
+          s.answersMarkdown || null,
+          s.imageBase64 || '',
+          s.imageMimeType || 'image/jpeg',
+          s.quizTaken ? 1 : 0,
+          JSON.stringify(s.linkedMatchIds || []),
+          new Date(s.createdAt).getTime(),
+        ],
+      );
+    }
+
+    // 3. Sync Profile
+    if (payload.profile) {
+      await d.runAsync(
+        `INSERT OR REPLACE INTO child_profiles (id, display_name, avatar_url, grade, updated_at)
+         VALUES (?, ?, ?, ?, ?)`,
+        [
+          payload.profile._id,
+          payload.profile.displayName,
+          payload.profile.avatarUrl || '',
+          payload.profile.grade || '',
+          Date.now(),
+        ],
+      );
+    }
+
+    await d.execAsync('COMMIT');
+    console.log(`${TAG} syncFromBackend OK`);
+  } catch (err) {
+    try { await d.execAsync('ROLLBACK'); } catch { /* ignore secondary error */ }
+    console.error(`${TAG} syncFromBackend FAILED`, err);
+    throw err;
+  }
+}
+

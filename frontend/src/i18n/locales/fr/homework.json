@@ -1,0 +1,84 @@
+{
+  "title": "Devoirs",
+  "status": {
+    "ready": "✓ Prêt",
+    "analyzing": "Analyse…",
+    "failed": "✕ Échec"
+  },
+  "session": {
+    "defaultTitle": "Session de devoirs",
+    "quizDone": "Quiz terminé ✓",
+    "reviewTitle": "Revoir la photo",
+    "notFound": "Session introuvable",
+    "assistTitle": "Assistance",
+    "noExplanation": "Aucune explication disponible."
+  },
+  "actions": {
+    "scanNew": "Scanner de nouveaux devoirs",
+    "scanNewDesc": "Photographiez une page et obtenez des explications IA",
+    "retake": "Reprendre",
+    "analyze": "Analyser",
+    "library": "Bibliothèque"
+  },
+  "filters": {
+    "all": "Tout"
+  },
+  "history": {
+    "recent": "Sessions récentes",
+    "childSessions": "Sessions de {{name}}"
+  },
+  "errors": {
+    "loadFailed": "Impossible de charger les sessions",
+    "pullToRetry": "Tirez vers le bas pour réessayer",
+    "processFailed": "Échec du traitement de l'image. Réessayez.",
+    "uploadFailed": "Téléchargement échoué",
+    "limitReached": "Limite journalière atteinte",
+    "limitDesc": "Vous pouvez scanner jusqu'à {{limit}} pages de devoirs par jour. Revenez demain !",
+    "analysisFailed": "Analyse échouée",
+    "analysisFailedDesc": "Impossible d'analyser les devoirs. Réessayez."
+  },
+  "empty": {
+    "noSessionsForChild": "Aucune session pour cet enfant",
+    "noHomeworkYet": "Pas encore de devoirs",
+    "assignToChild": "Scannez les devoirs et assignez-les à cet enfant",
+    "getStarted": "Scannez votre première page de devoirs pour commencer"
+  },
+  "capture": {
+    "hint": "Pointez vers vos devoirs, puis appuyez sur l'appareil photo",
+    "allowAccess": "Appuyez sur le bouton appareil photo pour autoriser l'accès",
+    "preparing": "Préparation de l'image…"
+  },
+  "processing": {
+    "title": "Analyse de vos devoirs",
+    "hint": "Cela prend environ 15 à 30 secondes",
+    "steps": [
+      "Lecture de vos devoirs…",
+      "Résolution des questions…",
+      "Rédaction des explications…",
+      "Presque terminé…"
+    ]
+  },
+  "chat": {
+    "title": "Demander à l'IA",
+    "subtitle": "Pose des questions sur tes devoirs",
+    "placeholder": "Pose une question…",
+    "emptyState": "Pose des questions sur tes devoirs"
+  },
+  "quiz": {
+    "title": "Quiz",
+    "emptyTitle": "Aucun quiz pour l'instant",
+    "emptySubtitle": "Teste ta compréhension en démarrant un quiz ci-dessus.",
+    "attempt": "Tentative {{number}}",
+    "tapToView": "Appuyer pour voir les résultats",
+    "viewResults": "Voir les résultats",
+    "startFirst": "Démarrer le premier quiz",
+    "startNew": "Démarrer un nouveau quiz",
+    "scoreDetail": "{{correct}} corrects · {{wrong}} incorrects"
+  },
+  "bottomBar": {
+    "quizzes": "Quiz",
+    "noQuizzesYet": "Aucun quiz pour l'instant",
+    "oneAttempt": "1 tentative",
+    "attempts": "{{count}} tentatives"
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "title": "الواجبات المنزلية",
+  "status": {
+    "ready": "✓ جاهز",
+    "analyzing": "جاري التحليل…",
+    "failed": "✕ فشل"
+  },
+  "session": {
+    "defaultTitle": "جلسة واجب منزلي",
+    "quizDone": "الاختبار منتهٍ ✓",
+    "reviewTitle": "مراجعة الصورة",
+    "notFound": "الجلسة غير موجودة",
+    "assistTitle": "المساعدة",
+    "noExplanation": "لا يوجد شرح متاح."
+  },
+  "actions": {
+    "scanNew": "مسح واجب جديد",
+    "scanNewDesc": "صوّر صفحة واحصل على شروحات الذكاء الاصطناعي",
+    "retake": "إعادة التصوير",
+    "analyze": "تحليل",
+    "library": "المكتبة"
+  },
+  "filters": {
+    "all": "الكل"
+  },
+  "history": {
+    "recent": "الجلسات الأخيرة",
+    "childSessions": "جلسات {{name}}"
+  },
+  "errors": {
+    "loadFailed": "تعذّر تحميل الجلسات",
+    "pullToRetry": "اسحب للأسفل للمحاولة مرة أخرى",
+    "processFailed": "فشلت معالجة الصورة. حاول مرة أخرى.",
+    "uploadFailed": "فشل الرفع",
+    "limitReached": "تم الوصول إلى الحد اليومي",
+    "limitDesc": "يمكنك مسح ما يصل إلى {{limit}} صفحة من الواجبات يومياً. عد غداً!",
+    "analysisFailed": "فشل التحليل",
+    "analysisFailedDesc": "تعذّر تحليل الواجب المنزلي. حاول مرة أخرى."
+  },
+  "empty": {
+    "noSessionsForChild": "لا توجد جلسات لهذا الطفل",
+    "noHomeworkYet": "لا توجد واجبات بعد",
+    "assignToChild": "امسح الواجب المنزلي وخصصه لهذا الطفل",
+    "getStarted": "امسح أول صفحة من الواجب للبدء"
+  },
+  "capture": {
+    "hint": "وجّه الكاميرا نحو واجبك، ثم اضغط على زر التصوير",
+    "allowAccess": "اضغط على زر الكاميرا للسماح بالوصول",
+    "preparing": "جارٍ تحضير الصورة…"
+  },
+  "processing": {
+    "title": "جارٍ تحليل واجبك المنزلي",
+    "hint": "يستغرق هذا حوالي 15–30 ثانية",
+    "steps": [
+      "قراءة واجبك…",
+      "حل الأسئلة…",
+      "كتابة الشروحات…",
+      "على وشك الانتهاء…"
+    ]
+  },
+  "chat": {
+    "title": "اسأل الذكاء الاصطناعي",
+    "subtitle": "اسأل أي شيء عن واجبك",
+    "placeholder": "اطرح سؤالاً…",
+    "emptyState": "اسأل أي شيء عن واجبك"
+  },
+  "quiz": {
+    "title": "الاختبارات",
+    "emptyTitle": "لا اختبارات بعد",
+    "emptySubtitle": "اختبر فهمك بإجراء اختبار أعلاه.",
+    "attempt": "المحاولة {{number}}",
+    "tapToView": "اضغط لعرض النتائج",
+    "viewResults": "عرض النتائج",
+    "startFirst": "ابدأ الاختبار الأول",
+    "startNew": "ابدأ اختباراً جديداً",
+    "scoreDetail": "{{correct}} صحيح · {{wrong}} خطأ"
+  },
+  "bottomBar": {
+    "quizzes": "الاختبارات",
+    "noQuizzesYet": "لا اختبارات بعد",
+    "oneAttempt": "محاولة واحدة",
+    "attempts": "{{count}} محاولات"
+  }
+}

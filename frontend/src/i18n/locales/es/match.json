@@ -4,16 +4,31 @@
     "subtitle": "¿Qué aprendemos hoy? ¡Elige tu arena!",
     "modeLabel": "Modo de juego",
     "solo": "Solo",
-    "splitScreen": "Pantalla dividida"
+    "splitScreen": "Pantalla dividida",
+    "startButton": "¡Jugar {{subject}}!",
+    "createFailed": "Error al crear la partida. Inténtalo de nuevo.",
+    "subjectHint": {
+      "MATH": "Números y puzzles",
+      "SCIENCE": "Experimentos y descubrimientos",
+      "ENGLISH": "Palabras e historias",
+      "HISTORY": "Aventuras del pasado",
+      "GEOGRAPHY": "Explora el mundo"
+    }
   },
   "lobby": {
-    "codeLabel": "CODIGO",
+    "codeLabel": "CÓDIGO",
     "matchInfo": "{{subject}} · {{difficulty}} · {{rounds}} rondas",
     "startMatch": "¡Iniciar partida!"
   },
   "solo": {
     "title": "Solo - {{subject}}",
-    "startButton": "Empezar"
+    "startButton": "Empezar",
+    "contextLabel": "Personaliza tu práctica",
+    "contextPlaceholder": "ej. raíces cuadradas, fracciones con denominadores hasta 20…",
+    "contextHint": "Opcional — describe exactamente qué quieres practicar",
+    "contextDisabled": "La personalización está desactivada para esta asignatura.",
+    "contextNotRelated": "Este contexto no está relacionado con el tema.",
+    "playingAs": "Jugando como"
   },
   "selectors": {
     "subject": "Asignatura",
@@ -25,7 +40,12 @@
     "loadingMessage": "Cargando tu historial de batallas...",
     "emptyTitle": "Aún no hay partidas",
     "emptySubtitle": "¡Empieza un juego para ver tu historial de batallas aquí!",
-    "won": "Ganada"
+    "won": "Ganada",
+    "completed": "Completada",
+    "review": "Revisar respuestas",
+    "inProgress": "En curso",
+    "waiting": "No iniciada",
+    "abandoned": "Abandonada"
   },
   "detail": {
     "title": "Detalles de la partida",
@@ -37,6 +57,46 @@
     "playerStatistics": "Estadísticas de jugadores",
     "score": "Puntuación",
     "accuracy": "Precisión",
-    "avgTime": "Tiempo promedio"
+    "avgTime": "Tiempo promedio",
+    "reviewAnswers": "Revisar respuestas",
+    "completed": "Completada",
+    "soloMode": "Práctica solo",
+    "splitMode": "Pantalla dividida",
+    "yourPerformance": "Tu rendimiento",
+    "teamScores": "Puntuaciones del equipo",
+    "correct": "Correcto",
+    "total": "Total",
+    "noStats": "No hay respuestas registradas",
+    "mode": "Modo",
+    "players": "Jugadores",
+    "redWins": "¡Gana el equipo rojo!",
+    "blueWins": "¡Gana el equipo azul!",
+    "draw": "¡Empate!",
+    "soloComplete": "¡Sesión completada!"
+  },
+  "join": {
+    "title": "Unirse a una partida",
+    "subtitle": "Pide el código de 6 caracteres al anfitrión",
+    "joinButton": "Unirse al match",
+    "codeLengthError": "Por favor introduce un código de 6 caracteres",
+    "notFoundError": "Partida no encontrada. Comprueba el código e inténtalo de nuevo.",
+    "matchEndedError": "Esta partida ya ha terminado.",
+    "networkError": "Algo salió mal. Por favor inténtalo de nuevo."
+  },
+  "split": {
+    "title": "Pantalla dividida · {{subject}}",
+    "subtitle": "Dos jugadores · Mismo dispositivo",
+    "ageGroupLabel": "Grupo de edad",
+    "playersLabel": "Jugadores",
+    "player1": "Jugador 1",
+    "player2": "Jugador 2",
+    "redTeamPlaceholder": "Equipo rojo",
+    "blueTeamPlaceholder": "Equipo azul",
+    "startBattle": "Iniciar batalla",
+    "ageGroups": {
+      "EASY": { "label": "Niños", "age": "6–12 años" },
+      "MEDIUM": { "label": "Adolescentes", "age": "13–17 años" },
+      "HARD": { "label": "Jóvenes adultos", "age": "18+ años" }
+    }
   }
 }

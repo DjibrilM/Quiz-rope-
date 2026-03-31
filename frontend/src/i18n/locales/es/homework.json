@@ -1,0 +1,84 @@
+{
+  "title": "Tareas",
+  "status": {
+    "ready": "✓ Listo",
+    "analyzing": "Analizando…",
+    "failed": "✕ Fallido"
+  },
+  "session": {
+    "defaultTitle": "Sesión de tarea",
+    "quizDone": "Cuestionario completado ✓",
+    "reviewTitle": "Revisar foto",
+    "notFound": "Sesión no encontrada",
+    "assistTitle": "Asistir",
+    "noExplanation": "No hay explicación disponible."
+  },
+  "actions": {
+    "scanNew": "Escanear nueva tarea",
+    "scanNewDesc": "Fotografía una página y obtén explicaciones de IA",
+    "retake": "Volver a tomar",
+    "analyze": "Analizar",
+    "library": "Biblioteca"
+  },
+  "filters": {
+    "all": "Todo"
+  },
+  "history": {
+    "recent": "Sesiones recientes",
+    "childSessions": "Sesiones de {{name}}"
+  },
+  "errors": {
+    "loadFailed": "No se pudieron cargar las sesiones",
+    "pullToRetry": "Desliza hacia abajo para reintentar",
+    "processFailed": "Error al procesar la imagen. Inténtalo de nuevo.",
+    "uploadFailed": "Subida fallida",
+    "limitReached": "Límite diario alcanzado",
+    "limitDesc": "Puedes escanear hasta {{limit}} páginas de tarea por día. ¡Vuelve mañana!",
+    "analysisFailed": "Análisis fallido",
+    "analysisFailedDesc": "No se pudo analizar la tarea. Inténtalo de nuevo."
+  },
+  "empty": {
+    "noSessionsForChild": "No hay sesiones para este niño",
+    "noHomeworkYet": "Aún no hay tareas",
+    "assignToChild": "Escanea la tarea y asígnala a este niño",
+    "getStarted": "Escanea tu primera página de tarea para empezar"
+  },
+  "capture": {
+    "hint": "Apunta a tu tarea, luego toca la cámara",
+    "allowAccess": "Toca el botón de la cámara para permitir el acceso",
+    "preparing": "Preparando imagen…"
+  },
+  "processing": {
+    "title": "Analizando tu tarea",
+    "hint": "Esto tarda unos 15–30 segundos",
+    "steps": [
+      "Leyendo tu tarea…",
+      "Resolviendo preguntas…",
+      "Escribiendo explicaciones…",
+      "Casi listo…"
+    ]
+  },
+  "chat": {
+    "title": "Preguntar a la IA",
+    "subtitle": "Pregunta cualquier cosa sobre tu tarea",
+    "placeholder": "Haz una pregunta…",
+    "emptyState": "Pregunta cualquier cosa sobre tu tarea"
+  },
+  "quiz": {
+    "title": "Cuestionarios",
+    "emptyTitle": "Sin cuestionarios aún",
+    "emptySubtitle": "Pon a prueba tu comprensión iniciando un cuestionario arriba.",
+    "attempt": "Intento {{number}}",
+    "tapToView": "Toca para ver resultados",
+    "viewResults": "Ver resultados",
+    "startFirst": "Empezar primer cuestionario",
+    "startNew": "Empezar nuevo cuestionario",
+    "scoreDetail": "{{correct}} correctas · {{wrong}} incorrectas"
+  },
+  "bottomBar": {
+    "quizzes": "Cuestionarios",
+    "noQuizzesYet": "Sin cuestionarios aún",
+    "oneAttempt": "1 intento",
+    "attempts": "{{count}} intentos"
+  }
+}

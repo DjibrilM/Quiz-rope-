@@ -11,6 +11,7 @@ import {
 } from "@gorhom/bottom-sheet";
 import type { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 import { apiService } from "../../services/api";
 import { useGameStore } from "../../stores/gameStore";
@@ -33,6 +34,7 @@ export const HomeworkQuizSheet = forwardRef<
   BottomSheetModal,
   HomeworkQuizSheetProps
 >(({ sessionId, session, onSessionUpdate }, ref) => {
+  const { t } = useTranslation("homework");
   const { height: screenHeight } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const { setCurrentMatch, setCorrections } = useGameStore();
@@ -209,7 +211,7 @@ export const HomeworkQuizSheet = forwardRef<
         {/* Sheet header */}
         <View className="flex-row items-center justify-between px-5 pb-4 pt-2">
           <Text className="text-white font-['Bungee_400Regular'] text-xl">
-            Quizzes
+            {t("quiz.title")}
           </Text>
           <Pressable
             onPress={() => {
@@ -233,10 +235,10 @@ export const HomeworkQuizSheet = forwardRef<
               <Ionicons name="trophy-outline" size={32} color="#3D2E4A" />
             </View>
             <Text className="text-[#B8A9C9] font-['Bungee_400Regular'] text-base">
-              No quizzes yet
+              {t("quiz.emptyTitle")}
             </Text>
             <Text className="text-[#5A4B6B] font-body text-[13px] text-center leading-5">
-              Test your understanding by starting a quiz above.
+              {t("quiz.emptySubtitle")}
             </Text>
           </View>
         ) : (
@@ -288,7 +290,7 @@ export const HomeworkQuizSheet = forwardRef<
                           />
                         </View>
                         <Text className="text-white font-['Bungee_400Regular'] text-sm tracking-[0.3px]">
-                          Attempt {i + 1}
+                          {t("quiz.attempt", { number: i + 1 })}
                         </Text>
                       </View>
 
@@ -324,8 +326,8 @@ export const HomeworkQuizSheet = forwardRef<
                     <View className="flex-row items-center justify-between">
                       <Text className="text-[#7B6B8A] font-body text-xs">
                         {score
-                          ? `${score.correct} correct · ${score.total - score.correct} wrong`
-                          : "Tap to view results"}
+                          ? t("quiz.scoreDetail", { correct: score.correct, wrong: score.total - score.correct })
+                          : t("quiz.tapToView")}
                       </Text>
 
                       {isLoading ? (
@@ -333,7 +335,7 @@ export const HomeworkQuizSheet = forwardRef<
                       ) : (
                         <View className="flex-row items-center gap-1">
                           <Text className="text-[#6C5CE7] font-bodyBold text-xs">
-                            View Results
+                            {t("quiz.viewResults")}
                           </Text>
                           <Ionicons
                             name="arrow-forward"
@@ -350,11 +352,11 @@ export const HomeworkQuizSheet = forwardRef<
           </View>
         )}
 
-        <View className="mt-auto border-t border-white/5 pt-4 px-4 bg-[#1A1520]">
+        <View className="mt-auto border-t border-white/5 pb-3 pt-2 px-4 bg-[#1A1520]">
           <Button
             onPress={handleStartQuiz}
             loading={startQuizMutation.isPending}
-            label={quizCount === 0 ? "Start First Quiz" : "Start New Quiz"}
+            label={quizCount === 0 ? t("quiz.startFirst") : t("quiz.startNew")}
             className="min-w-full"
           />
         </View>

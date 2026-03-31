@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { HomeworkController } from './homework.controller';
 import { HomeworkService } from './homework.service';
@@ -11,14 +11,16 @@ import {
   HomeworkChatSchema,
 } from './schemas/homework-chat.schema';
 import { AuthModule } from '../auth/auth.module';
+import { Child, ChildSchema } from '../children/schemas/child.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: HomeworkSession.name, schema: HomeworkSessionSchema },
       { name: HomeworkChat.name, schema: HomeworkChatSchema },
+      { name: Child.name, schema: ChildSchema },
     ]),
-    AuthModule,
+    forwardRef(() => AuthModule),
   ],
   controllers: [HomeworkController],
   providers: [HomeworkService],

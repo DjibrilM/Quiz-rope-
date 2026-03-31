@@ -144,7 +144,7 @@ export default function GameScreen() {
             // Guest: questions are already in the store (set by solo.tsx/split.tsx)
             const storeQuestions = (currentMatch as any)?.questions;
             let fetched: StoreQuestion[];
-            if (isChildDevice && storeQuestions?.length > 0) {
+            if (userRole === "guest" && storeQuestions?.length > 0) {
               fetched = storeQuestions
                 .filter((q: any) => q?.text && Array.isArray(q.options))
                 .map((q: any) =>
@@ -223,7 +223,7 @@ export default function GameScreen() {
 
         if (matchId) {
           const winner = newLeftScore >= newRightScore ? "LEFT" : "RIGHT";
-          if (isChildDevice) {
+          if (userRole === "guest") {
             guestDb.updateMatch(matchId as string, {
               status: "COMPLETED", winner, roundsPlayed: nextRound - 1,
               scoreLeft: newLeftScore, scoreRight: newRightScore,
@@ -313,7 +313,7 @@ export default function GameScreen() {
       isCorrect: false,
     } as CorrectionItem);
 
-    if (isChildDevice && matchId) {
+    if (userRole === "guest" && matchId) {
       guestDb.saveCorrection({
         id: `${matchId}-corr-${currentRound}-timeout`,
         matchId: matchId as string,
@@ -378,7 +378,7 @@ export default function GameScreen() {
                 : ((p2Id as string) || (p2Name as string) || "player-blue"))
             : teamSide === "LEFT" ? "player-red" : "player-blue";
 
-        if (isChildDevice) {
+        if (userRole === "guest") {
           guestDb.saveAnswer({
             id: `${matchId}-${Date.now()}-${Math.random().toString(36).slice(2)}`,
             matchId: matchId as string,
@@ -414,7 +414,7 @@ export default function GameScreen() {
         isCorrect,
       } as CorrectionItem);
 
-      if (isChildDevice && matchId) {
+      if (userRole === "guest" && matchId) {
         guestDb.saveCorrection({
           id: `${matchId}-corr-${currentRound}`,
           matchId: matchId as string,
@@ -489,9 +489,9 @@ export default function GameScreen() {
             socketService.getSocket()?.emit("game:abandon", { matchId, playerId: "mock-player" });
           }
           const roundsPlayed = currentRound - 1;
-          if (isChildDevice && matchId) {
+          if (userRole === "guest" && matchId) {
             guestDb.updateMatch(matchId as string, { status: 'ABANDONED', roundsPlayed }).catch(() => {});
-          } else if (!isChildDevice && matchId) {
+          } else if (userRole !== "guest" && matchId) {
             apiService.abandonMatch(matchId as string, roundsPlayed).catch(() => {});
           }
           resetGame();

@@ -1,18 +1,16 @@
 {
   "childJoin": {
     "title": "¡Únete a un juego!",
-    "instruction": "Muestra este código a tu padre/madre",
-    "waitingStatus": "Esperando a que el padre/madre escanee...",
-    "generateNewCode": "Generar nuevo código",
-    "errorToken": "Error al obtener el token del niño. Toca abajo para reintentar."
+    "instruction": "Ingresa el código que se muestra en el dispositivo de tu padre/madre",
+    "codeInputPlaceholder": "Ingresar código de sesión",
+    "scanQR": "Escanear QR Code",
+    "enterCodeInstead": "Ingresar código",
+    "errorToken": "Error al obtener el token del niño. Toca abajo para reintentar.",
+    "invalidCode": "Código inválido o expirado. Por favor intenta de nuevo."
   },
   "connectDevice": {
     "title": "Conectar dispositivo",
-    "scanTitle": "Escanear código del niño",
-    "scanInstruction": "Apunta la cámara al código QR en el dispositivo del niño",
-    "manualEntryDivider": "o ingresa el código manualmente",
-    "manualCodePlaceholder": "Ingresar código de sesión",
-    "loadingTitle": "Cargando...",
+    "loadingTitle": "Configurando...",
     "loadingMessage": "Obteniendo jugadores...",
     "selectChildTitle": "¿Quién juega?",
     "selectChildInstruction": "Selecciona un hijo para este dispositivo",
@@ -21,9 +19,8 @@
     "linkingTitle": "Vinculando dispositivo...",
     "settingUpSession": "Configurando la sesión de {{name}}",
     "errorTitle": "Algo salió mal",
-    "successTitle": "¡Dispositivo vinculado!",
-    "successStatus": "Conectado",
-    "successMessage": "El dispositivo de {{name}} está vinculado"
+    "showCodeTitle": "Comparte este código",
+    "showCodeInstruction": "Muestra esto a {{name}} para escanear o escribir en su dispositivo"
   },
   "qrCode": {
     "cameraPermission": "Se necesita acceso a la cámara para escanear códigos QR",

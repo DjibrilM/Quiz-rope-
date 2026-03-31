@@ -19,19 +19,6 @@ export function AppTitle() {
       >
         {t("appTitle")}
       </Text>
-
-      <Text
-        style={{
-          fontFamily: getAccentFont(),
-          fontSize: FONT_SIZES.lg,
-          color: "#FFD93D",
-          letterSpacing: 6,
-          marginTop: 4,
-          textAlign: "center",
-        }}
-      >
-        {t("appSubtitle")}
-      </Text>
     </View>
   );
 }

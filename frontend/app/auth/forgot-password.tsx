@@ -113,7 +113,7 @@ export default function ForgotPasswordScreen() {
                 fontSize: 13,
                 fontFamily: FONTS.body,
                 textAlign: "center",
-                marginBottom: 32,
+                marginBottom: 12,
                 lineHeight: 20,
               }}
             >
@@ -121,6 +121,18 @@ export default function ForgotPasswordScreen() {
                 "auth:forgotPassword.tapLinkInstruction",
                 "Tap the link in the email to set a new password, then come back here to log in.",
               )}
+            </Text>
+            <Text
+              style={{
+                color: "#4A3D5A",
+                fontSize: 12,
+                fontFamily: FONTS.body,
+                textAlign: "center",
+                marginBottom: 32,
+                lineHeight: 18,
+              }}
+            >
+              {t("auth:forgotPassword.spamNote")}
             </Text>
 
             <Pressable

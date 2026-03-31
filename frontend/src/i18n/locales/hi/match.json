@@ -4,7 +4,16 @@
     "subtitle": "आज क्या सीखना है? अपना अखाड़ा चुनें!",
     "modeLabel": "गेम मोड",
     "solo": "एकल",
-    "splitScreen": "स्प्लिट स्क्रीन"
+    "splitScreen": "स्प्लिट स्क्रीन",
+    "startButton": "{{subject}} खेलें!",
+    "createFailed": "मैच बनाने में विफल। कृपया पुनः प्रयास करें।",
+    "subjectHint": {
+      "MATH": "नंबर और पहेलियाँ",
+      "SCIENCE": "प्रयोग और खोज",
+      "ENGLISH": "शब्द और कहानियाँ",
+      "HISTORY": "अतीत के साहसिक कार्य",
+      "GEOGRAPHY": "दुनिया की सैर"
+    }
   },
   "lobby": {
     "codeLabel": "कोड",
@@ -12,8 +21,14 @@
     "startMatch": "मैच शुरू करें!"
   },
   "solo": {
-    "title": "\u090f\u0915\u0932 - {{subject}}",
-    "startButton": "\u0916\u0947\u0932 \u0936\u0941\u0930\u0942 \u0915\u0930\u0947\u0902"
+    "title": "एकल - {{subject}}",
+    "startButton": "खेल शुरू करें",
+    "contextLabel": "अपना अभ्यास अनुकूलित करें",
+    "contextPlaceholder": "जैसे. वर्गमूल, 20 तक के हर वाले भिन्न...",
+    "contextHint": "वैकल्पिक — बिल्कुल बताएं कि आप क्या अभ्यास करना चाहते हैं",
+    "contextDisabled": "इस विषय के लिए अभ्यास अक्षम है।",
+    "contextNotRelated": "यह संदर्भ विषय से संबंधित नहीं है।",
+    "playingAs": "किस रूप में खेल रहे हैं"
   },
   "selectors": {
     "subject": "विषय",
@@ -25,7 +40,12 @@
     "loadingMessage": "आपका मैच इतिहास लोड हो रहा है...",
     "emptyTitle": "अभी कोई मैच नहीं",
     "emptySubtitle": "अपना मैच इतिहास यहां देखने के लिए एक गेम शुरू करें!",
-    "won": "जीता"
+    "won": "जीता",
+    "completed": "पूर्ण",
+    "review": "उत्तर समीक्षा करें",
+    "inProgress": "जारी है",
+    "waiting": "शुरू नहीं हुआ",
+    "abandoned": "छोड़ दिया"
   },
   "detail": {
     "title": "मैच विवरण",
@@ -37,6 +57,46 @@
     "playerStatistics": "खिलाड़ी के आंकड़े",
     "score": "स्कोर",
     "accuracy": "सटीकता",
-    "avgTime": "औसत समय"
+    "avgTime": "औसत समय",
+    "reviewAnswers": "उत्तर समीक्षा करें",
+    "completed": "पूर्ण",
+    "soloMode": "एकल अभ्यास",
+    "splitMode": "स्प्लिट स्क्रीन",
+    "yourPerformance": "आपका प्रदर्शन",
+    "teamScores": "टीम स्कोर",
+    "correct": "सही",
+    "total": "कुल",
+    "noStats": "कोई उत्तर दर्ज नहीं",
+    "mode": "मोड",
+    "players": "खिलाड़ी",
+    "redWins": "लाल टीम जीती!",
+    "blueWins": "नीली टीम जीती!",
+    "draw": "बराबरी!",
+    "soloComplete": "सत्र पूर्ण!"
+  },
+  "join": {
+    "title": "मैच में शामिल हों",
+    "subtitle": "होस्ट से 6-वर्ण वाला मैच कोड मांगें",
+    "joinButton": "मैच में शामिल हों",
+    "codeLengthError": "कृपया 6-वर्ण वाला कोड दर्ज करें",
+    "notFoundError": "मैच नहीं मिला। कोड जांचें और फिर प्रयास करें।",
+    "matchEndedError": "यह मैच पहले ही समाप्त हो चुका है।",
+    "networkError": "कुछ गलत हुआ। कृपया पुनः प्रयास करें।"
+  },
+  "split": {
+    "title": "स्प्लिट स्क्रीन · {{subject}}",
+    "subtitle": "दो खिलाड़ी · एक ही डिवाइस",
+    "ageGroupLabel": "आयु समूह",
+    "playersLabel": "खिलाड़ी",
+    "player1": "खिलाड़ी 1",
+    "player2": "खिलाड़ी 2",
+    "redTeamPlaceholder": "लाल टीम",
+    "blueTeamPlaceholder": "नीली टीम",
+    "startBattle": "युद्ध शुरू करें",
+    "ageGroups": {
+      "EASY": { "label": "बच्चे", "age": "6–12 वर्ष" },
+      "MEDIUM": { "label": "किशोर", "age": "13–17 वर्ष" },
+      "HARD": { "label": "युवा वयस्क", "age": "18+ वर्ष" }
+    }
   }
 }
