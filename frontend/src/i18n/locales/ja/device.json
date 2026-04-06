@@ -1,12 +1,13 @@
 {
   "childJoin": {
-    "title": "ゲームに参加しよう！",
+    "title": "アカウントを接続",
     "instruction": "保護者のデバイスに表示されたコードを入力してね",
     "codeInputPlaceholder": "セッションコードを入力",
     "scanQR": "QRコードをスキャン",
     "enterCodeInstead": "コードを入力する",
     "errorToken": "トークンの取得に失敗しました。下をタップして再試行してください。",
-    "invalidCode": "無効または期限切れのコードです。もう一度お試しください。"
+    "invalidCode": "無効または期限切れのコードです。もう一度お試しください。",
+    "connectAccount": "アカウントを接続"
   },
   "connectDevice": {
     "title": "デバイスを接続",

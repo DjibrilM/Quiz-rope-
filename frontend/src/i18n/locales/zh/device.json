@@ -1,12 +1,13 @@
 {
   "childJoin": {
-    "title": "加入游戏！",
+    "title": "连接帐户",
     "instruction": "输入家长设备上显示的代码",
     "codeInputPlaceholder": "输入会话代码",
     "scanQR": "扫描二维码",
     "enterCodeInstead": "改为输入代码",
     "errorToken": "获取儿童令牌失败。请点击下方重试。",
-    "invalidCode": "无效或已过期的代码，请重试。"
+    "invalidCode": "无效或已过期的代码，请重试。",
+    "connectAccount": "连接帐户"
   },
   "connectDevice": {
     "title": "连接设备",

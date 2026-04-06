@@ -1,12 +1,13 @@
 {
   "childJoin": {
-    "title": "Entre no Jogo!",
+    "title": "Conectar Conta",
     "instruction": "Digite o codigo mostrado no dispositivo do seu responsavel",
     "codeInputPlaceholder": "Digite o codigo da sessao",
     "scanQR": "Escanear QR Code",
     "enterCodeInstead": "Digitar codigo",
     "errorToken": "Falha ao obter token. Toque abaixo para tentar novamente.",
-    "invalidCode": "Codigo invalido ou expirado. Por favor tente novamente."
+    "invalidCode": "Codigo invalido ou expirado. Por favor tente novamente.",
+    "connectAccount": "Conectar Conta"
   },
   "connectDevice": {
     "title": "Conectar Dispositivo",

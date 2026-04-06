@@ -20,20 +20,20 @@ function EmailIcon() {
         cx="12"
         cy="12"
         r="11"
-        fill="#1A1520"
-        stroke="#6C5CE7"
+        fill="rgba(255, 255, 255, 0.04)"
+        stroke="#A78BFA"
         strokeWidth="1.5"
       />
       <Path
         d="M4 8l8 5 8-5"
-        stroke="#9B59B6"
+        stroke="#A78BFA"
         strokeWidth={1.5}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <Path
         d="M4 8h16v9a1 1 0 01-1 1H5a1 1 0 01-1-1V8z"
-        stroke="#9B59B6"
+        stroke="#A78BFA"
         strokeWidth={1.5}
         strokeLinejoin="round"
       />
@@ -158,11 +158,18 @@ export default function VerifyEmailScreen() {
           paddingHorizontal: 12,
         }}
       >
-        <View className="border-2 mb-4 items-center bg-purple-500/10 justify-center border-purple-500 rounded-full p-6">
+        <View
+          className="mb-4 items-center justify-center rounded-full p-6"
+          style={{
+            backgroundColor: "rgba(255, 255, 255, 0.04)",
+            borderWidth: 1,
+            borderColor: "rgba(255, 255, 255, 0.08)",
+          }}
+        >
           <MaterialCommunityIcons
             name="email-fast-outline"
             size={42}
-            color="#FFFFFF"
+            color="#A78BFA"
           />
         </View>
 
@@ -228,10 +235,10 @@ export default function VerifyEmailScreen() {
               marginBottom: 8,
             }}
           >
-            <AnimatedLoader color="#9B59B6" size="sm" />
+            <AnimatedLoader color="#A78BFA" size="sm" />
             <Text
               style={{
-                color: "#9B59B6",
+                color: "#A78BFA",
                 fontSize: 14,
                 fontFamily: FONTS.bodySemiBold,
               }}
@@ -274,10 +281,10 @@ export default function VerifyEmailScreen() {
           style={{ paddingVertical: 12, alignItems: "center" }}
         >
           {resendLoading ? (
-            <AnimatedLoader color="#9B59B6" size="sm" />
+            <AnimatedLoader color="#A78BFA" size="sm" />
           ) : (
             <Text
-              style={{ fontFamily: FONTS.body, fontSize: 14, color: "#9B59B6" }}
+              style={{ fontFamily: FONTS.body, fontSize: 14, color: "#A78BFA" }}
             >
               {t("verifyEmail.resendButton")}
             </Text>

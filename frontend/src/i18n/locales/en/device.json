@@ -1,12 +1,13 @@
 {
   "childJoin": {
-    "title": "Join a Game!",
+    "title": "Connect Account",
     "instruction": "Enter the code shown on your parent's device",
     "codeInputPlaceholder": "Enter session code",
     "scanQR": "Scan QR Code",
     "enterCodeInstead": "Enter code instead",
     "errorToken": "Failed to get child token. Tap below to retry.",
-    "invalidCode": "Invalid or expired code. Please try again."
+    "invalidCode": "Invalid or expired code. Please try again.",
+    "connectAccount": "Connect Account"
   },
   "connectDevice": {
     "title": "Connect Device",

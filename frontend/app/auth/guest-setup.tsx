@@ -114,9 +114,9 @@ export default function GuestSetupScreen() {
               width: 96,
               height: 96,
               borderRadius: 48,
-              backgroundColor: "#1A1520",
-              borderWidth: 3,
-              borderColor: "#9B59B6",
+              backgroundColor: "rgba(255, 255, 255, 0.04)",
+              borderWidth: 1,
+              borderColor: "rgba(255, 255, 255, 0.08)",
               alignItems: "center",
               justifyContent: "center",
               marginBottom: 28,
@@ -149,10 +149,10 @@ export default function GuestSetupScreen() {
                   alignItems: "center",
                   justifyContent: "center",
                   backgroundColor:
-                    selectedAvatar === avatar.id ? "#9B59B6" : "#1A1520",
-                  borderWidth: 2,
+                    selectedAvatar === avatar.id ? "rgba(255, 255, 255, 0.04)" : "transparent",
+                  borderWidth: 1.5,
                   borderColor:
-                    selectedAvatar === avatar.id ? "#C084FC" : "transparent",
+                    selectedAvatar === avatar.id ? "#A78BFA" : "rgba(255, 255, 255, 0.04)",
                 }}
               >
                 <AvatarIcon avatarId={avatar.id} size={34} />
@@ -180,18 +180,18 @@ export default function GuestSetupScreen() {
                 setNameError("");
               }}
               placeholder={t("auth:guest.namePlaceholder")}
-              placeholderTextColor="#5A4B6B"
+              placeholderTextColor="#9CA3AF"
               maxLength={20}
               style={{
-                backgroundColor: "#1A1520",
+                backgroundColor: "rgba(255, 255, 255, 0.04)",
                 borderRadius: 14,
                 paddingHorizontal: 18,
                 paddingVertical: 14,
                 fontSize: 18,
                 color: "#FFFFFF",
                 fontFamily: FONTS.bodyBold,
-                borderWidth: 1.5,
-                borderColor: nameError ? "#EF4444" : "#3D2E4A",
+                borderWidth: 1,
+                borderColor: nameError ? "#EF4444" : "rgba(255, 255, 255, 0.08)",
               }}
               autoFocus
               returnKeyType="done"

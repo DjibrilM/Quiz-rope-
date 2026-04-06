@@ -1,12 +1,13 @@
 {
   "childJoin": {
-    "title": "Rejoindre une partie !",
+    "title": "Connecter le compte",
     "instruction": "Entrez le code affiché sur l'appareil de votre parent",
     "codeInputPlaceholder": "Entrer le code de session",
     "scanQR": "Scanner le QR Code",
     "enterCodeInstead": "Entrer le code à la place",
     "errorToken": "Impossible d'obtenir le code enfant. Appuyez ci-dessous pour réessayer.",
-    "invalidCode": "Code invalide ou expiré. Veuillez réessayer."
+    "invalidCode": "Code invalide ou expiré. Veuillez réessayer.",
+    "connectAccount": "Connecter le compte"
   },
   "connectDevice": {
     "title": "Connecter l'appareil",
