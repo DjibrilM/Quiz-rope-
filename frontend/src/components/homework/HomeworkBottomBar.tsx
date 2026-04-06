@@ -35,7 +35,7 @@ export function HomeworkBottomBar({
             <Text className="text-white font-['Bungee_400Regular'] text-sm tracking-[0.3px]">
               {t("bottomBar.quizzes")}
             </Text>
-            <Text className="text-[#5A4B6B] font-body text-xs mt-px">
+            <Text className="text-white/60 font-body text-xs mt-px">
               {quizCount === 0
                 ? t("bottomBar.noQuizzesYet")
                 : quizCount === 1

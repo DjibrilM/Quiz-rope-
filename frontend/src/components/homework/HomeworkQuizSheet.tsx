@@ -221,7 +221,7 @@ export const HomeworkQuizSheet = forwardRef<
             }}
             className="w-8 h-8 rounded-full bg-[#2D1F3D] items-center justify-center"
           >
-            <Ionicons name="close" size={18} color="#B8A9C9" />
+            <Ionicons name="close" size={18} color="#FFFFFF" />
           </Pressable>
         </View>
 
@@ -237,7 +237,7 @@ export const HomeworkQuizSheet = forwardRef<
             <Text className="text-[#B8A9C9] font-['Bungee_400Regular'] text-base">
               {t("quiz.emptyTitle")}
             </Text>
-            <Text className="text-[#5A4B6B] font-body text-[13px] text-center leading-5">
+            <Text className="text-white/60 font-body text-[13px] text-center leading-5">
               {t("quiz.emptySubtitle")}
             </Text>
           </View>
@@ -324,7 +324,7 @@ export const HomeworkQuizSheet = forwardRef<
 
                     {/* Bottom row */}
                     <View className="flex-row items-center justify-between">
-                      <Text className="text-[#7B6B8A] font-body text-xs">
+                      <Text className="text-white/60 font-body text-xs">
                         {score
                           ? t("quiz.scoreDetail", { correct: score.correct, wrong: score.total - score.correct })
                           : t("quiz.tapToView")}

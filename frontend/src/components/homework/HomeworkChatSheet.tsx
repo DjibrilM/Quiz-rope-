@@ -261,40 +261,34 @@ HomeworkChatSheet.displayName = "HomeworkChatSheet";
 
 const mdStyles = {
   body: {
-    color: "#C4B5D4",
+    color: "#FFFFFF",
     fontFamily: FONTS.body,
     fontSize: 14,
     lineHeight: 21,
   },
   strong: { fontFamily: FONTS.bodyBold, color: "#FFFFFF" },
-  em: { fontStyle: "italic" as const, color: "#C4B5D4" },
-  heading2: {
+  em: { fontStyle: "italic" as const, color: "#FFFFFF" },
+  h2: {
     color: "#FFFFFF",
     fontFamily: FONTS.bodyBold,
     fontSize: 15,
     marginTop: 6,
     marginBottom: 2,
   },
-  heading3: {
+  h3: {
     color: "#D4C5E4",
     fontFamily: FONTS.bodyBold,
     fontSize: 14,
     marginTop: 4,
     marginBottom: 2,
   },
-  code_inline: {
+  code: {
     backgroundColor: "#0D0B14",
     color: "#A78BFA",
     fontFamily: "monospace",
     fontSize: 13,
   },
-  fence: {
-    backgroundColor: "#0D0B14",
-    borderRadius: 10,
-    padding: 12,
-    marginVertical: 6,
-  },
-  code_block: {
+  codeBlock: {
     backgroundColor: "#0D0B14",
     borderRadius: 10,
     padding: 12,
@@ -303,9 +297,8 @@ const mdStyles = {
     fontFamily: "monospace",
     fontSize: 13,
   },
-  bullet_list: { marginTop: 4, marginBottom: 4 },
-  ordered_list: { marginTop: 4, marginBottom: 4 },
-  list_item: { marginBottom: 3 },
+  list: { marginTop: 4, marginBottom: 4 },
+  listItem: { marginBottom: 3 },
   paragraph: { marginTop: 0, marginBottom: 6 },
   blockquote: {
     borderLeftWidth: 3,

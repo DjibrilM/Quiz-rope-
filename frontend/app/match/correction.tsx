@@ -3,7 +3,6 @@ import {
   Text,
   ScrollView,
   ActivityIndicator,
-  Linking,
   Pressable,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
@@ -19,23 +18,62 @@ import { ScreenHeader } from "@/components/common";
 import { MathMarkdown } from "../../src/components/common/MathMarkdown";
 import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
-import { useMemo } from "react";
 
 const OPTION_LABELS = ["A", "B", "C", "D"];
 
 const getMarkdownStyles = (textColor: string) => ({
-  body: { fontFamily: FONTS.body, fontSize: 13, color: textColor, lineHeight: 22 },
-  paragraph: { color: textColor, marginBottom: 8, fontSize: 13, lineHeight: 22 },
-  heading1: { color: textColor, fontSize: 18, fontFamily: FONTS.bodyBold, marginBottom: 8, marginTop: 12 },
-  heading2: { color: textColor, fontSize: 16, fontFamily: FONTS.bodyBold, marginBottom: 8, marginTop: 10 },
-  heading3: { color: textColor, fontSize: 14, fontFamily: FONTS.bodyBold, marginBottom: 6, marginTop: 8 },
+  body: {
+    fontFamily: FONTS.body,
+    fontSize: 13,
+    color: textColor,
+    lineHeight: 22,
+  },
+  paragraph: {
+    color: textColor,
+    marginBottom: 8,
+    fontSize: 13,
+    lineHeight: 22,
+  },
+  h1: {
+    color: textColor,
+    fontSize: 18,
+    fontFamily: FONTS.bodyBold,
+    marginBottom: 8,
+    marginTop: 12,
+  },
+  h2: {
+    color: textColor,
+    fontSize: 16,
+    fontFamily: FONTS.bodyBold,
+    marginBottom: 8,
+    marginTop: 10,
+  },
+  h3: {
+    color: textColor,
+    fontSize: 14,
+    fontFamily: FONTS.bodyBold,
+    marginBottom: 6,
+    marginTop: 8,
+  },
   strong: { fontFamily: FONTS.bodyBold, color: textColor },
   em: { fontStyle: "italic" as const, color: textColor },
-  list_item: { marginBottom: 6 },
-  bullet_list: { marginBottom: 12 },
-  ordered_list: { marginBottom: 12 },
-  code_inline: { backgroundColor: "rgba(255, 255, 255, 0.1)", color: "#A78BFA", fontFamily: FONTS.body, borderRadius: 4, paddingHorizontal: 4 },
-  code_block: { backgroundColor: "rgba(255, 255, 255, 0.05)", color: textColor, padding: 12, borderRadius: 8, marginBottom: 12, fontFamily: FONTS.body },
+  list: { marginBottom: 12, color: textColor },
+  listItem: { marginBottom: 6, color: textColor },
+  code_inline: {
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    color: "#A78BFA",
+    fontFamily: FONTS.body,
+    borderRadius: 4,
+    paddingHorizontal: 4,
+  },
+  code_block: {
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
+    color: textColor,
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+    fontFamily: FONTS.body,
+  },
 });
 
 /**
@@ -77,7 +115,7 @@ export default function CorrectionScreen() {
   const handleCopy = async (item: CorrectionItem) => {
     let text = `Question:\n${item.questionText}\n\n`;
     item.options.forEach((opt, idx) => {
-      text += `${OPTION_LABELS[idx]}. ${opt}${idx === item.correctIndex ? ' (Correct)' : ''}\n`;
+      text += `${OPTION_LABELS[idx]}. ${opt}${idx === item.correctIndex ? " (Correct)" : ""}\n`;
     });
     if (item.explanation) {
       text += `\nExplanation:\n${item.explanation}\n`;
@@ -167,7 +205,7 @@ export default function CorrectionScreen() {
                 style={{
                   fontSize: 15,
                   fontFamily: FONTS.bodyBold,
-                  color: FORTNITE_COLORS.textPrimary,
+                  color: "#FFFFFF",
                 }}
               >
                 {t("game:correction.summary", {
@@ -210,7 +248,7 @@ export default function CorrectionScreen() {
                     style={{
                       flexDirection: "row",
                       justifyContent: "space-between",
-                      alignItems: "center"
+                      alignItems: "center",
                     }}
                   >
                     <Text
@@ -224,13 +262,25 @@ export default function CorrectionScreen() {
                         number: index + 1,
                       })}
                     </Text>
-                    <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-                      <Pressable 
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 12,
+                      }}
+                    >
+                      <Pressable
                         onPress={() => handleCopy(item)}
                         hitSlop={8}
-                        style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
+                        style={({ pressed }) => ({
+                          opacity: pressed ? 0.6 : 1,
+                        })}
                       >
-                        <Ionicons name="copy-outline" size={16} color={FORTNITE_COLORS.textMuted} />
+                        <Ionicons
+                          name="copy-outline"
+                          size={16}
+                          color={FORTNITE_COLORS.textMuted}
+                        />
                       </Pressable>
                       {item.isCorrect ? <CheckIcon /> : <XIcon />}
                     </View>
@@ -239,7 +289,7 @@ export default function CorrectionScreen() {
                   {/* Question */}
                   <MathMarkdown
                     content={item.questionText}
-                    style={getMarkdownStyles(FORTNITE_COLORS.textPrimary)}
+                    style={getMarkdownStyles("#FFFFFF")}
                   />
 
                   {/* Options */}
@@ -253,7 +303,7 @@ export default function CorrectionScreen() {
                         ? "#10B981"
                         : isUserWrong
                           ? "#EF4444"
-                          : FORTNITE_COLORS.textSecondary;
+                          : "#FFFFFF";
 
                       return (
                         <View
@@ -323,7 +373,7 @@ export default function CorrectionScreen() {
 
                       <MathMarkdown
                         content={item.explanation}
-                        style={getMarkdownStyles(FORTNITE_COLORS.textPrimary)}
+                        style={getMarkdownStyles("white")}
                       />
                     </View>
                   ) : null}
