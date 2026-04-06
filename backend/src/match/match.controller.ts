@@ -12,60 +12,6 @@ const VALID_TEAM_SIDES = ['LEFT', 'RIGHT'];
 export class MatchController {
   constructor(private readonly matchService: MatchService) {}
 
-  @Post()
-  @UseGuards(FirebaseAuthGuard)
-  async createMatch(
-    @Req() req,
-    @Body()
-    body: {
-      subject: string;
-      difficulty: string;
-      maxRounds: number;
-      gameMode?: string;
-      context?: string;
-      teams: { name: string; color: string; side: string; players?: string[] }[];
-      childIds?: string[];
-      language?: string;
-    },
-  ) {
-    if (!body.subject || !VALID_SUBJECTS.includes(body.subject.toUpperCase())) {
-      throw new BadRequestException(`subject must be one of: ${VALID_SUBJECTS.join(', ')}`);
-    }
-    if (!body.difficulty || !VALID_DIFFICULTIES.includes(body.difficulty.toUpperCase())) {
-      throw new BadRequestException(`difficulty must be one of: ${VALID_DIFFICULTIES.join(', ')}`);
-    }
-    const maxRounds = body.maxRounds || 10;
-    if (maxRounds < 1 || maxRounds > 30) {
-      throw new BadRequestException('maxRounds must be between 1 and 30');
-    }
-    const gameMode = body.gameMode || 'splitscreen';
-    if (!VALID_GAME_MODES.includes(gameMode)) {
-      throw new BadRequestException(`gameMode must be one of: ${VALID_GAME_MODES.join(', ')}`);
-    }
-
-    const hostId = req.user.role === 'child' ? String(req.user.parentId) : String(req.user._id);
-    const childIds = Array.isArray(body.childIds) ? [...body.childIds] : [];
-    const userStringId = String(req.user._id);
-    if (req.user.role === 'child' && !childIds.includes(userStringId)) {
-      childIds.push(userStringId);
-    }
-
-    return this.matchService.createMatch(
-      hostId,
-      body.subject.toUpperCase(),
-      body.difficulty.toUpperCase(),
-      maxRounds,
-      body.teams || [
-        { name: 'Red Team', color: '#EF4444', side: 'LEFT' },
-        { name: 'Blue Team', color: '#3B82F6', side: 'RIGHT' },
-      ],
-      gameMode,
-      body.context,
-      childIds,
-      body.language,
-    );
-  }
-
   /** Stateless: generate questions only — no DB writes, no auth required. For guest mode. */
   @Post('questions-only')
   async generateQuestionsOnly(
@@ -134,6 +80,60 @@ export class MatchController {
       maxRounds,
       gameMode,
       body.context,
+      body.language,
+    );
+  }
+
+  @Post()
+  @UseGuards(FirebaseAuthGuard)
+  async createMatch(
+    @Req() req,
+    @Body()
+    body: {
+      subject: string;
+      difficulty: string;
+      maxRounds: number;
+      gameMode?: string;
+      context?: string;
+      teams: { name: string; color: string; side: string; players?: string[] }[];
+      childIds?: string[];
+      language?: string;
+    },
+  ) {
+    if (!body.subject || !VALID_SUBJECTS.includes(body.subject.toUpperCase())) {
+      throw new BadRequestException(`subject must be one of: ${VALID_SUBJECTS.join(', ')}`);
+    }
+    if (!body.difficulty || !VALID_DIFFICULTIES.includes(body.difficulty.toUpperCase())) {
+      throw new BadRequestException(`difficulty must be one of: ${VALID_DIFFICULTIES.join(', ')}`);
+    }
+    const maxRounds = body.maxRounds || 10;
+    if (maxRounds < 1 || maxRounds > 30) {
+      throw new BadRequestException('maxRounds must be between 1 and 30');
+    }
+    const gameMode = body.gameMode || 'splitscreen';
+    if (!VALID_GAME_MODES.includes(gameMode)) {
+      throw new BadRequestException(`gameMode must be one of: ${VALID_GAME_MODES.join(', ')}`);
+    }
+
+    const hostId = req.user.role === 'child' ? String(req.user.parentId) : String(req.user._id);
+    const childIds = Array.isArray(body.childIds) ? [...body.childIds] : [];
+    const userStringId = String(req.user._id);
+    if (req.user.role === 'child' && !childIds.includes(userStringId)) {
+      childIds.push(userStringId);
+    }
+
+    return this.matchService.createMatch(
+      hostId,
+      body.subject.toUpperCase(),
+      body.difficulty.toUpperCase(),
+      maxRounds,
+      body.teams || [
+        { name: 'Red Team', color: '#EF4444', side: 'LEFT' },
+        { name: 'Blue Team', color: '#3B82F6', side: 'RIGHT' },
+      ],
+      gameMode,
+      body.context,
+      childIds,
       body.language,
     );
   }

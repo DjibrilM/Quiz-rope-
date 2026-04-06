@@ -1,16 +1,13 @@
-import { View, Text, Pressable, Alert } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
-import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { usePortrait } from "../src/hooks/useOrientation";
-import { apiService } from "../src/services/api";
 import { useGameStore } from "../src/stores/gameStore";
 import { firebaseAuthService } from "../src/services/firebase";
 import * as guestDb from "../src/services/guestDb";
-import * as WebBrowser from "expo-web-browser";
-import * as Linking from "expo-linking";
+import { apiService } from "../src/services/api";
 import { FONTS } from "../src/constants/theme";
 
 const FEATURE_KEYS = [
@@ -25,71 +22,17 @@ export default function SubscriptionScreen() {
   usePortrait();
   const queryClient = useQueryClient();
   const { t } = useTranslation(["subscription", "auth", "common"]);
-  const [loading, setLoading] = useState(false);
   const { isMockMode, setSubscriptionStatus } = useGameStore();
 
-  const handleSubscribe = async () => {
-    setLoading(true);
-    try {
-      const result = await apiService.initializeSubscription();
-      const redirectUrl = Linking.createURL("payment/callback");
-      const authResult = await WebBrowser.openAuthSessionAsync(
-        result.paymentLink,
-        redirectUrl
-      );
-
-      if (authResult.type === "success" && authResult.url) {
-        const urlObj = new URL(authResult.url);
-        const status = urlObj.searchParams.get("status") || "unknown";
-        const transactionId = urlObj.searchParams.get("transaction_id") || urlObj.searchParams.get("tx_ref");
-
-        if (status.includes("success") && transactionId) {
-          handlePaymentSuccess(transactionId, result.txRef);
-        } else {
-          Alert.alert(t("subscription:errors.paymentFailedTitle"), t("subscription:errors.paymentVerifyFailed"));
-        }
-      }
-    } catch (error: any) {
-      Alert.alert(t("common:errors.error"), t("subscription:errors.paymentStartFailed"));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handlePaymentSuccess = async (transactionId: string, txRefOrId: string) => {
-    setLoading(true);
-    try {
-      const result = await apiService.verifySubscription(transactionId, txRefOrId);
-      if (result.verified) {
-        setSubscriptionStatus("active", result.subscription?.currentPeriodEnd);
-        router.replace("/home");
-      } else {
-        Alert.alert(t("subscription:errors.paymentFailedTitle"), t("subscription:errors.paymentVerifyFailed"));
-      }
-    } catch {
-      Alert.alert(t("common:errors.error"), t("subscription:errors.paymentVerifyError"));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-
-
   const handleMockActivate = async () => {
-    setLoading(true);
     try {
       const result = await apiService.mockActivateSubscription();
       if (result.activated) {
-        setSubscriptionStatus(
-          "active",
-          result.subscription?.currentPeriodEnd,
-        );
+        setSubscriptionStatus("active", result.subscription?.currentPeriodEnd);
         router.replace("/home");
       }
     } catch {
-      Alert.alert(t("common:errors.error"), t("subscription:errors.mockActivationFailed"));
-    } finally {
-      setLoading(false);
+      // ignore
     }
   };
 
@@ -143,42 +86,39 @@ export default function SubscriptionScreen() {
           ))}
         </View>
 
-        {/* Subscribe Button */}
-        <Pressable
-          onPress={handleSubscribe}
-          disabled={loading}
+        {/* Coming Soon Notice */}
+        <View
           style={{
-            backgroundColor: "#6C5CE7",
+            backgroundColor: "rgba(108, 92, 231, 0.15)",
+            borderWidth: 1,
+            borderColor: "rgba(108, 92, 231, 0.4)",
             paddingVertical: 16,
+            paddingHorizontal: 20,
             borderRadius: 16,
             alignItems: "center",
-            opacity: loading ? 0.5 : 1,
           }}
         >
-          <Text
-            style={{ color: "#FFFFFF", fontSize: 16, fontFamily: "Bungee_400Regular" }}
-          >
-            {loading ? t("subscription:processing") : t("subscription:subscribeNow")}
+          <Text style={{ color: "#6C5CE7", fontSize: 16, fontFamily: "Bungee_400Regular", marginBottom: 4 }}>
+            Coming Soon
           </Text>
-        </Pressable>
+          <Text style={{ color: "#B8A9C9", fontSize: 13, textAlign: "center", fontFamily: FONTS.body }}>
+            Payments are not yet available. Check back soon!
+          </Text>
+        </View>
 
         {/* Mock Mode Button */}
         {isMockMode && (
           <Pressable
             onPress={handleMockActivate}
-            disabled={loading}
             style={{
               backgroundColor: "#D97706",
               paddingVertical: 16,
               borderRadius: 16,
               alignItems: "center",
               marginTop: 12,
-              opacity: loading ? 0.5 : 1,
             }}
           >
-            <Text
-              style={{ color: "#FFFFFF", fontSize: 16, fontFamily: "Bungee_400Regular" }}
-            >
+            <Text style={{ color: "#FFFFFF", fontSize: 16, fontFamily: "Bungee_400Regular" }}>
               {t("subscription:mockActivate")}
             </Text>
           </Pressable>

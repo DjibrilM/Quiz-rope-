@@ -96,9 +96,11 @@
         }
       ],
       "./plugins/withFmtPatch",
+      "./plugins/withNodePath",
       "expo-sqlite",
       "expo-web-browser",
-      "expo-audio"
+      "expo-audio",
+      "expo-system-ui"
     ],
     "experiments": {
       "typedRoutes": true

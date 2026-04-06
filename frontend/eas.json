@@ -3,11 +3,21 @@
     "preview": {
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "1097849103209-gtrfrku4ob7mhmhgeg02qo4gef7ka4ce.apps.googleusercontent.com",
+        "EXPO_PUBLIC_SERVER_URL": "https://quiz-rope.onrender.com",
+        "NODE_BINARY": "/usr/local/bin/node"
       }
     },
     "preview2": {
       "android": {
         "gradleCommand": ":app:assembleRelease"
+      },
+      "env": {
+        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "1097849103209-gtrfrku4ob7mhmhgeg02qo4gef7ka4ce.apps.googleusercontent.com",
+        "EXPO_PUBLIC_SERVER_URL": "https://quiz-rope.onrender.com",
+        "NODE_BINARY": "/usr/local/bin/node"
       }
     },
     "preview3": {
@@ -16,6 +26,12 @@
     "preview4": {
       "distribution": "internal"
     },
-    "production": {}
+    "production": {
+      "env": {
+        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "1097849103209-gtrfrku4ob7mhmhgeg02qo4gef7ka4ce.apps.googleusercontent.com",
+        "EXPO_PUBLIC_SERVER_URL": "https://quiz-rope.onrender.com",
+        "NODE_BINARY": "/usr/local/bin/node"
+      }
+    }
   }
 }
