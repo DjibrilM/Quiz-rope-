@@ -8,8 +8,7 @@ import { useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { EnrichedMarkdownText } from "react-native-enriched-markdown";
-
+import { MathMarkdown } from "../../../src/components/common/MathMarkdown";
 import { apiService } from "../../../src/services/api";
 import * as guestDb from "../../../src/services/guestDb";
 import { useGameStore } from "../../../src/stores/gameStore";
@@ -24,21 +23,6 @@ import {
   ScreenHeader,
   AnimatedLoader,
 } from "../../../src/components/common";
-
-/**
- * 🔥 SAME math fix used everywhere
- */
-const brightenMath = (text: string) => {
-  if (!text) return text;
-
-  return text
-    .replace(/\$\$(.*?)\$\$/gs, (_, expr) => {
-      return `$$\\color{#E5E7EB}{${expr}}$$`;
-    })
-    .replace(/\$(.*?)\$/g, (_, expr) => {
-      return `$\\color{#E5E7EB}{${expr}}$`;
-    });
-};
 
 export default function HomeworkSessionScreen() {
   const { t } = useTranslation("homework");
@@ -59,13 +43,6 @@ export default function HomeworkSessionScreen() {
         : apiService.getHomeworkSession(sessionId),
   });
 
-  const processedMarkdown = useMemo(() => {
-    return session?.answersMarkdown
-      ? brightenMath(session.answersMarkdown)
-      : "";
-  }, [session?.answersMarkdown]);
-
-  console.log(processedMarkdown);
 
   const linkedMatchIds: string[] = session?.linkedMatchIds?.length
     ? session.linkedMatchIds
@@ -147,53 +124,12 @@ export default function HomeworkSessionScreen() {
         <View className="mb-20">
           {/* Markdown Answer */}
           {session.answersMarkdown ? (
-            <EnrichedMarkdownText
-              flavor="github"
-              markdown={processedMarkdown}
-              onLinkPress={({ url }) => Linking.openURL(url)}
-              markdownStyle={{
-                list: {
-                  color: "#ffff",
-                },
-                paragraph: {
-                  color: "#D1D5DB",
-                  marginBottom: 10,
-                },
-                h3: { color: "#FFFFFF" },
-                h4: { color: "#FFFFFF" },
-                h5: { color: "#FFFFFF" },
-                h6: { color: "#FFFFFF" },
-
-                h1: {
-                  fontSize: 22,
-                  fontWeight: "700",
-                  color: "#FFFFFF",
-                },
-                h2: {
-                  fontSize: 18,
-                  fontWeight: "700",
-                  color: "#F3F4F6",
-                },
-
-                link: {
-                  color: "#60A5FA",
-                },
-
-                code: {
-                  backgroundColor: "#1F2937",
-                  color: "#F9FAFB",
-                },
-
-                codeBlock: {
-                  backgroundColor: "#020617",
-                  color: "#E2E8F0",
-                  padding: 12,
-                  borderRadius: 8,
-                },
-
-                blockquote: {
-                  color: "#9CA3AF",
-                },
+            <MathMarkdown
+              content={session.answersMarkdown}
+              style={{
+                h1: { fontSize: 22, fontWeight: "700", color: "#FFFFFF" },
+                h2: { fontSize: 18, fontWeight: "700", color: "#FFFFFF" },
+                paragraph: { color: "#FFFFFF", marginBottom: 10 },
               }}
             />
           ) : (

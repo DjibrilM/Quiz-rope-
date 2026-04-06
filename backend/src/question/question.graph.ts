@@ -231,14 +231,15 @@ Return ONLY a JSON array:
 Rules for Options:
 - Each question must have between 2 and 4 options.
 - DYNAMIC OPTION COUNT: If the answers are short (1-3 words), provide 4 options. If the answers are long sentences or complex explanations, provide only 2 or 3 options.
-- **MATH RENDERING**: ALWAYS use LaTeX for math. Use $ ... $ for inline math and $$ ... $$ for centered formulas.
+- **MATH RENDERING**: ONLY use LaTeX ($ ... $ or $$ ... $$) for complex mathematical expressions (fractions, square roots, powers, etc.). Use plain text for simple arithmetic like "10 + 10 = 20" or "4 - 2".
 
 Rules for Content:
 - Question Text: Keep it CONCISE (max 100 characters).
 - Explanation:
-  - Provide a highly readable, encouraging educational explanation.
-  - USE STRICT MARKDOWN: Use headings (###) for concepts/steps, bullet points (-) for lists, **bold text** for key terms, and keep paragraphs short (1-2 sentences).
-  - MATH RENDERING: ALWAYS use $ for inline math and $$ for block math. Do not mix normal text inside math blocks, strictly isolate them.
+  - Provide a warm, encouraging, and highly descriptive educational explanation. Assume you are a friendly tutor talking directly to the child.
+  - Explain the "why" and "how" behind the concept before showing any steps. Avoid just giving a dry list of steps.
+  - USE ENRICHED MARKDOWN: Use headings (###) for main concepts, **bold text** for key vocabulary, and short, friendly paragraphs (1-3 sentences). Use bullet points ONLY if truly necessary for a list of items, otherwise preferred descriptive prose.
+  - MATH RENDERING: ONLY use $ for inline math and $$ for block math for complex formulas (fractions, roots, exponents, variables). Use plain text for simple arithmetic. Do not mix normal text inside math blocks, strictly isolate them.
   - Target audience: ${ageRange}.`
   );
 
