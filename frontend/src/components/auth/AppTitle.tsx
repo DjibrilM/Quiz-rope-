@@ -12,25 +12,12 @@ export function AppTitle() {
       <Text
         style={{
           fontFamily: getHeadingFont(),
-          fontSize: FONT_SIZES["7xl"],
+          fontSize: 30,
           color: "#FFFFFF",
           letterSpacing: 2,
         }}
       >
         {t("appTitle")}
-      </Text>
-
-      <Text
-        style={{
-          fontFamily: getAccentFont(),
-          fontSize: FONT_SIZES.lg,
-          color: "#FFD93D",
-          letterSpacing: 6,
-          marginTop: 4,
-          textAlign: "center",
-        }}
-      >
-        {t("appSubtitle")}
       </Text>
     </View>
   );

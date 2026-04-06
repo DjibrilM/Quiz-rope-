@@ -1,39 +1,47 @@
-import { NestFactory } from '@nestjs/core';
-import { ValidationPipe, Logger } from '@nestjs/common';
-import { AppModule } from './app.module';
+import { NestFactory } from "@nestjs/core";
+import { ValidationPipe, Logger } from "@nestjs/common";
+import { AppModule } from "./app.module";
 
 async function bootstrap() {
-  const logger = new Logger('Bootstrap');
+  const logger = new Logger("Bootstrap");
 
   // Warn if using default JWT secret in production
   const jwtSecret = process.env.JWT_SECRET;
-  if (!jwtSecret && process.env.NODE_ENV === 'production') {
+  if (!jwtSecret && process.env.NODE_ENV === "production") {
     logger.error(
-      'JWT_SECRET environment variable is not set! This is a critical security risk in production.',
+      "JWT_SECRET environment variable is not set! This is a critical security risk in production.",
     );
     process.exit(1);
   }
   if (!jwtSecret) {
     logger.warn(
-      'JWT_SECRET not set — using dev fallback. Set JWT_SECRET in production!',
+      "JWT_SECRET not set — using dev fallback. Set JWT_SECRET in production!",
     );
   }
 
-  const app = await NestFactory.create(AppModule);
+  // Disable NestJS built-in body parser (default 100 kb) so our custom limit applies
+  const app = await NestFactory.create(AppModule, { bodyParser: false });
+
+  // Re-register body parser with a 10 mb limit for JSON endpoints (images now use multer)
+  app.use(require("express").json({ limit: "10mb" }));
+  app.use(require("express").urlencoded({ limit: "10mb", extended: true }));
 
   // CORS: allow specific origins in production, permissive in dev
   const allowedOrigins = process.env.CORS_ORIGINS
-    ? process.env.CORS_ORIGINS.split(',').map((o) => o.trim())
+    ? process.env.CORS_ORIGINS.split(",").map((o) => o.trim())
     : undefined;
 
   app.enableCors({
-    origin: allowedOrigins || (process.env.NODE_ENV === 'production' ? false : true),
+    origin: "*",
     credentials: true,
   });
+
+  console.log(process.env.GEMINI_API_KEY);
 
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
   const port = process.env.PORT || 3000;
+  console.log(port);
   await app.listen(port);
   logger.log(`Server running on http://localhost:${port}`);
 }

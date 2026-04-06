@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Match } from './schemas/match.schema';
@@ -28,9 +28,30 @@ export class MatchService {
     childIds?: string[],
     language?: string,
   ): Promise<Match> {
+    // Defensively ensure hostParentId is wrapped into a valid ObjectId without crashing
+    let hostOid: Types.ObjectId;
+    try {
+      hostOid = new Types.ObjectId(hostParentId);
+    } catch {
+      throw new BadRequestException('Invalid hostParentId format');
+    }
+
+    // Validate that all provided childIds actually belong to this parent
+    const validChildIds = (childIds || []).filter((id) => Types.ObjectId.isValid(id));
+    if (validChildIds.length > 0) {
+      const ownedCount = await this.childModel.countDocuments({
+        _id: { $in: validChildIds.map((id) => new Types.ObjectId(id)) },
+        parentId: hostOid,
+      });
+      if (ownedCount !== validChildIds.length) {
+        this.logger.warn(`Child ID validation failed: ownedCount=${ownedCount} validChildIds=${validChildIds.length} hostOid=${hostOid}`);
+        throw new ForbiddenException('One or more childIds do not belong to this parent');
+      }
+    }
+
     // Create match first so we have its _id as the conversation threadId
     const match = await this.matchModel.create({
-      hostParentId: new Types.ObjectId(hostParentId),
+      hostParentId: hostOid,
       subject,
       difficulty,
       maxRounds,
@@ -44,9 +65,7 @@ export class MatchService {
         players: (t.players || []).map((p) => new Types.ObjectId(p)),
       })),
       questions: [],
-      childIds: (childIds || [])
-        .filter((id) => Types.ObjectId.isValid(id))
-        .map((id) => new Types.ObjectId(id)),
+      childIds: validChildIds.map((id) => new Types.ObjectId(id)),
     });
 
     // Generate questions with match ID as threadId for conversation persistence
@@ -66,6 +85,59 @@ export class MatchService {
     return match;
   }
 
+  /** Stateless: generate questions for a guest match without any DB writes. */
+  async generateQuestionsOnly(
+    subject: string,
+    difficulty: string,
+    maxRounds: number,
+    context?: string,
+    language?: string,
+  ) {
+    const questions = await this.questionProvider.generateRaw(subject, difficulty, maxRounds, context, language);
+    return { questions };
+  }
+
+  async createGhostMatch(
+    guestId: string,
+    subject: string,
+    difficulty: string,
+    maxRounds: number,
+    gameMode: string = 'solo',
+    context?: string,
+    language?: string,
+  ): Promise<Match> {
+    const teams = [
+      { name: 'Red Team', color: '#EF4444', side: 'LEFT', players: [] },
+      { name: 'Blue Team', color: '#3B82F6', side: 'RIGHT', players: [] },
+    ];
+
+    const match = await this.matchModel.create({
+      guestOwnerId: guestId,
+      subject,
+      difficulty,
+      maxRounds,
+      gameMode,
+      status: 'IN_PROGRESS',
+      teams,
+      questions: [],
+    });
+
+    const questions = await this.questionProvider.getQuestions(
+      subject,
+      difficulty,
+      maxRounds,
+      match._id.toString(),
+      context,
+      language,
+    );
+
+    match.questions = questions.map((q) => q._id) as any;
+    await match.save();
+
+    this.logger.log(`Ghost match created: ${match._id} for guestId=${guestId}`);
+    return match;
+  }
+
   async getMatch(matchId: string): Promise<Match> {
     if (!Types.ObjectId.isValid(matchId)) {
       throw new BadRequestException('Invalid match ID');
@@ -75,10 +147,24 @@ export class MatchService {
     return match;
   }
 
-  async getMatchesByParent(parentId: string): Promise<Match[]> {
-    return this.matchModel
-      .find({ hostParentId: new Types.ObjectId(parentId) })
-      .sort({ createdAt: -1 });
+  async getMatchesForUser(userId: string, role: string): Promise<Match[]> {
+    const query =
+      role === 'child'
+        ? { childIds: new Types.ObjectId(userId) }
+        : { hostParentId: new Types.ObjectId(userId) };
+
+    return this.matchModel.find(query).sort({ createdAt: -1 });
+  }
+
+  async abandonMatch(matchId: string, roundsPlayed: number): Promise<void> {
+    if (!Types.ObjectId.isValid(matchId)) {
+      throw new BadRequestException('Invalid match ID');
+    }
+    await this.matchModel.findByIdAndUpdate(matchId, {
+      status: 'ABANDONED',
+      rounds: roundsPlayed,
+    });
+    this.logger.log(`Match abandoned: ${matchId} | roundsPlayed=${roundsPlayed}`);
   }
 
   async completeMatch(
@@ -145,6 +231,15 @@ export class MatchService {
       .findById(matchId)
       .populate('questions');
     if (!match) throw new NotFoundException('Match not found');
+
+    // For real child players (valid ObjectId), verify they are enrolled in this match
+    const SYSTEM_PLAYER_IDS = ['mock-player', 'ai-player', 'computer'];
+    if (Types.ObjectId.isValid(playerId) && !SYSTEM_PLAYER_IDS.includes(playerId)) {
+      const isEnrolled = (match.childIds || []).some((id) => id.toString() === playerId);
+      if (!isEnrolled) {
+        throw new ForbiddenException('Player is not enrolled in this match');
+      }
+    }
 
     // Prefer questionId from client (local mode); fall back to currentQuestionIndex
     let currentQuestion: any;
@@ -325,7 +420,13 @@ export class MatchService {
     if (matchIds.length === 0) return [];
 
     const pipeline = [
-      { $match: { matchId: { $in: matchIds } } },
+      {
+        $match: {
+          matchId: { $in: matchIds },
+          // Exclude AI/mock players used in solo mode
+          playerId: { $nin: ['mock-player', 'ai-player', 'computer'] },
+        },
+      },
       {
         $group: {
           _id: '$playerId',
@@ -355,6 +456,45 @@ export class MatchService {
           gamesPlayed: { $size: '$matchIds' },
         },
       },
+      {
+        $lookup: {
+          from: 'children',
+          let: { pid: '$playerId' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    {
+                      $eq: [
+                        '$_id',
+                        {
+                          $convert: {
+                            input: '$$pid',
+                            to: 'objectId',
+                            onError: '$$pid', // Fallback to original value if OID conversion fails (e.g. mock IDs)
+                            onNull: '$$pid',
+                          },
+                        },
+                      ],
+                    },
+                    { $eq: ['$parentId', new Types.ObjectId(parentId)] },
+                  ],
+                },
+              },
+            },
+            { $project: { displayName: 1, avatarUrl: 1 } },
+          ],
+          as: 'childInfo',
+        },
+      },
+      { $unwind: { path: '$childInfo', preserveNullAndEmptyArrays: true } },
+      {
+        $addFields: {
+          displayName: { $ifNull: ['$childInfo.displayName', '$playerId'] },
+          avatarUrl: '$childInfo.avatarUrl',
+        },
+      },
       { $sort: { correctAnswers: -1 as const } },
     ];
 
@@ -362,13 +502,24 @@ export class MatchService {
   }
 
   async getChildPerformance(parentId: string, childId: string) {
+    if (!Types.ObjectId.isValid(childId) || !Types.ObjectId.isValid(parentId)) {
+      throw new ForbiddenException('Access denied');
+    }
+
     const [parentMatchDocs, child] = await Promise.all([
       this.matchModel
         .find({ hostParentId: new Types.ObjectId(parentId) })
         .select('_id')
         .lean(),
-      this.childModel.findById(childId).select('displayName').lean(),
+      this.childModel
+        .findOne({ _id: new Types.ObjectId(childId), parentId: new Types.ObjectId(parentId) })
+        .select('displayName')
+        .lean(),
     ]);
+
+    if (!child) {
+      throw new ForbiddenException('Access denied');
+    }
 
     const matchIds = parentMatchDocs.map((m) => m._id);
 
@@ -385,10 +536,8 @@ export class MatchService {
       };
     }
 
-    // Include display name in player ID filter to catch games played without
-    // selecting the child chip (where name string was used as playerId).
+    // Match only by the child's MongoDB ID — display name is not unique across users.
     const playerIds: string[] = [childId];
-    if ((child as any)?.displayName) playerIds.push((child as any).displayName);
 
     // Run all three aggregations in parallel for performance
     const [rawTotals, childMatchIds, subjectStats] = await Promise.all([
@@ -509,28 +658,31 @@ export class MatchService {
   }
 
   async getChildMatches(parentId: string, childId: string) {
-    if (!Types.ObjectId.isValid(childId)) {
-      throw new BadRequestException('Invalid child ID');
+    if (!Types.ObjectId.isValid(childId) || !Types.ObjectId.isValid(parentId)) {
+      throw new ForbiddenException('Access denied');
     }
 
-    // Step 1: all matches owned by this parent + child's display name for fuzzy matching
-    const [parentMatches, childDoc] = await Promise.all([
-      this.matchModel
-        .find({ hostParentId: new Types.ObjectId(parentId) })
-        .select('_id subject difficulty gameMode maxRounds winner createdAt')
-        .sort({ createdAt: -1 })
-        .lean(),
-      this.childModel.findById(childId).select('displayName').lean(),
-    ]);
+    const child = await this.childModel
+      .findOne({ _id: new Types.ObjectId(childId), parentId: new Types.ObjectId(parentId) })
+      .lean();
+
+    if (!child) {
+      throw new ForbiddenException('Access denied');
+    }
+
+    // Step 1: all matches owned by this parent
+    const parentMatches = await this.matchModel
+      .find({ hostParentId: new Types.ObjectId(parentId) })
+      .select('_id subject difficulty gameMode maxRounds winner createdAt')
+      .sort({ createdAt: -1 })
+      .lean();
 
     if (parentMatches.length === 0) return [];
 
     const parentMatchIds = parentMatches.map((m) => m._id);
 
-    // Match by both the child's MongoDB ID AND their display name — catches games
-    // where the parent typed the name instead of selecting the child chip.
+    // Match only by the child's MongoDB ID — display name is not unique across users.
     const playerIds: string[] = [childId];
-    if (childDoc?.displayName) playerIds.push(childDoc.displayName);
 
     // Step 2: find matches where the child actually has recorded answers
     const [childMatchIdDocs, answerStats] = await Promise.all([
@@ -605,9 +757,14 @@ export class MatchService {
     const questions = match.questions as any[];
     if (questions.length === 0) return [];
 
+    const childId = match.childIds && match.childIds.length > 0 ? match.childIds[0].toString() : null;
+    const playerIds = ['mock-player'];
+    if (childId) playerIds.push(childId);
+
     const answers = await this.answerModel
-      .find({ matchId: new Types.ObjectId(matchId), playerId: 'mock-player' })
+      .find({ matchId: new Types.ObjectId(matchId), playerId: { $in: playerIds } })
       .sort({ round: 1 });
+
 
     const answerByQuestionId = new Map(
       answers.map((a) => [a.questionId.toString(), a]),
@@ -626,13 +783,17 @@ export class MatchService {
     });
   }
 
-  async getMatchAnswerReview(matchId: string, childId: string) {
+  async getMatchAnswerReview(matchId: string, childId: string, parentId: string) {
     if (!Types.ObjectId.isValid(matchId)) {
       throw new BadRequestException('Invalid match ID');
     }
 
     const match = await this.matchModel.findById(matchId).populate('questions');
     if (!match) throw new NotFoundException('Match not found');
+
+    if ((match as any).hostParentId?.toString() !== parentId) {
+      throw new ForbiddenException('Access denied');
+    }
 
     const questions = match.questions as any[];
     if (questions.length === 0) return [];
@@ -660,5 +821,26 @@ export class MatchService {
         responseTime: answer?.responseTime ?? 0,
       };
     });
+  }
+
+  /**
+   * Erases all data associated with a child (matches, answers).
+   */
+  async deleteAllByChild(childId: string): Promise<void> {
+    const oid = new Types.ObjectId(childId);
+
+    // 1. Delete all answers by this player
+    await this.answerModel.deleteMany({ playerId: childId });
+
+    // 2. Remove child from all matches they participated in (metadata)
+    await this.matchModel.updateMany({ childIds: oid }, { $pull: { childIds: oid } });
+
+    // 3. Remove child from team player lists
+    await this.matchModel.updateMany(
+      { "teams.players": oid },
+      { $pull: { "teams.players": oid } } as any,
+    );
+
+    this.logger.log(`All match data for child ${childId} erased.`);
   }
 }

@@ -1,6 +1,7 @@
 import { Controller, Post, Get, Patch, Body, Param, Req, UseGuards, BadRequestException } from '@nestjs/common';
 import { MatchService } from './match.service';
 import { FirebaseAuthGuard } from '../auth/guards/firebase-auth.guard';
+import { GhostAuthGuard } from '../auth/guards/ghost-auth.guard';
 
 const VALID_SUBJECTS = ['MATH', 'SCIENCE', 'ENGLISH', 'HISTORY', 'GEOGRAPHY'];
 const VALID_DIFFICULTIES = ['EASY', 'MEDIUM', 'HARD'];
@@ -42,8 +43,15 @@ export class MatchController {
       throw new BadRequestException(`gameMode must be one of: ${VALID_GAME_MODES.join(', ')}`);
     }
 
+    const hostId = req.user.role === 'child' ? String(req.user.parentId) : String(req.user._id);
+    const childIds = Array.isArray(body.childIds) ? [...body.childIds] : [];
+    const userStringId = String(req.user._id);
+    if (req.user.role === 'child' && !childIds.includes(userStringId)) {
+      childIds.push(userStringId);
+    }
+
     return this.matchService.createMatch(
-      req.user._id,
+      hostId,
       body.subject.toUpperCase(),
       body.difficulty.toUpperCase(),
       maxRounds,
@@ -53,7 +61,79 @@ export class MatchController {
       ],
       gameMode,
       body.context,
-      body.childIds,
+      childIds,
+      body.language,
+    );
+  }
+
+  /** Stateless: generate questions only — no DB writes, no auth required. For guest mode. */
+  @Post('questions-only')
+  async generateQuestionsOnly(
+    @Body()
+    body: {
+      subject: string;
+      difficulty: string;
+      maxRounds?: number;
+      context?: string;
+      language?: string;
+    },
+  ) {
+    if (!body.subject || !VALID_SUBJECTS.includes(body.subject.toUpperCase())) {
+      throw new BadRequestException(`subject must be one of: ${VALID_SUBJECTS.join(', ')}`);
+    }
+    if (!body.difficulty || !VALID_DIFFICULTIES.includes(body.difficulty.toUpperCase())) {
+      throw new BadRequestException(`difficulty must be one of: ${VALID_DIFFICULTIES.join(', ')}`);
+    }
+    const maxRounds = body.maxRounds || 10;
+    if (maxRounds < 1 || maxRounds > 30) {
+      throw new BadRequestException('maxRounds must be between 1 and 30');
+    }
+    return this.matchService.generateQuestionsOnly(
+      body.subject.toUpperCase(),
+      body.difficulty.toUpperCase(),
+      maxRounds,
+      body.context,
+      body.language,
+    );
+  }
+
+  /** Ghost (guest) creates a match — no parent account required. */
+  @Post('ghost')
+  @UseGuards(GhostAuthGuard)
+  async createGhostMatch(
+    @Req() req,
+    @Body()
+    body: {
+      subject: string;
+      difficulty: string;
+      maxRounds?: number;
+      gameMode?: string;
+      context?: string;
+      language?: string;
+    },
+  ) {
+    if (!body.subject || !VALID_SUBJECTS.includes(body.subject.toUpperCase())) {
+      throw new BadRequestException(`subject must be one of: ${VALID_SUBJECTS.join(', ')}`);
+    }
+    if (!body.difficulty || !VALID_DIFFICULTIES.includes(body.difficulty.toUpperCase())) {
+      throw new BadRequestException(`difficulty must be one of: ${VALID_DIFFICULTIES.join(', ')}`);
+    }
+    const maxRounds = body.maxRounds || 10;
+    if (maxRounds < 1 || maxRounds > 30) {
+      throw new BadRequestException('maxRounds must be between 1 and 30');
+    }
+    const gameMode = body.gameMode || 'solo';
+    if (!VALID_GAME_MODES.includes(gameMode)) {
+      throw new BadRequestException(`gameMode must be one of: ${VALID_GAME_MODES.join(', ')}`);
+    }
+
+    return this.matchService.createGhostMatch(
+      req.ghost.guestId,
+      body.subject.toUpperCase(),
+      body.difficulty.toUpperCase(),
+      maxRounds,
+      gameMode,
+      body.context,
       body.language,
     );
   }
@@ -61,25 +141,28 @@ export class MatchController {
   @Get('leaderboard')
   @UseGuards(FirebaseAuthGuard)
   async getLeaderboard(@Req() req) {
-    return this.matchService.getLeaderboard(req.user._id);
+    const parentId = req.user.role === 'child' ? req.user.parentId : req.user._id;
+    return this.matchService.getLeaderboard(parentId);
   }
 
   @Get()
   @UseGuards(FirebaseAuthGuard)
   async getMatches(@Req() req) {
-    return this.matchService.getMatchesByParent(req.user._id);
+    return this.matchService.getMatchesForUser(req.user._id, req.user.role);
   }
 
   @Get('child/:childId/stats')
   @UseGuards(FirebaseAuthGuard)
   async getChildStats(@Req() req, @Param('childId') childId: string) {
-    return this.matchService.getChildPerformance(req.user._id, childId);
+    const parentId = req.user.role === 'child' ? req.user.parentId : req.user._id;
+    return this.matchService.getChildPerformance(parentId, childId);
   }
 
   @Get('child/:childId/matches')
   @UseGuards(FirebaseAuthGuard)
   async getChildMatches(@Req() req, @Param('childId') childId: string) {
-    return this.matchService.getChildMatches(req.user._id, childId);
+    const parentId = req.user.role === 'child' ? req.user.parentId : req.user._id;
+    return this.matchService.getChildMatches(parentId, childId);
   }
 
   @Post(':id/answer')
@@ -115,6 +198,15 @@ export class MatchController {
     return this.matchService.completeMatch(id, body);
   }
 
+  @Patch(':id/abandon')
+  async abandonMatch(
+    @Param('id') id: string,
+    @Body() body: { roundsPlayed?: number },
+  ) {
+    await this.matchService.abandonMatch(id, body.roundsPlayed ?? 0);
+    return { success: true };
+  }
+
   @Get(':id')
   async getMatch(@Param('id') id: string) {
     return this.matchService.getMatch(id);
@@ -133,10 +225,12 @@ export class MatchController {
   @Get(':matchId/review/:childId')
   @UseGuards(FirebaseAuthGuard)
   async getMatchReview(
+    @Req() req,
     @Param('matchId') matchId: string,
     @Param('childId') childId: string,
   ) {
-    return this.matchService.getMatchAnswerReview(matchId, childId);
+    const parentId = req.user.role === 'child' ? req.user.parentId : req.user._id;
+    return this.matchService.getMatchAnswerReview(matchId, childId, parentId.toString());
   }
 
   /** Guest kids use this to look up a match by the 6-char lobby code. */

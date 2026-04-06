@@ -26,13 +26,20 @@
     "message": "Are you sure you want to remove {{name}}? This can't be undone.",
     "confirm": "Remove",
     "cancel": "Keep",
-    "removing": "Removing..."
+    "removing": "Removing...",
+    "biometricPrompt": "Authenticate to remove profile",
+    "usePasscode": "Use Passcode"
   },
   "linkCode": {
     "getCode": "Get Link Code",
+    "selectChild": "Select a Child",
     "title": "Link Code for {{name}}",
-    "body": "Code: {{code}}\nExpires in {{minutes}} minutes",
+    "expiresIn": "Expires in {{minutes}} minutes",
+    "expiresMinutes": "Expires in {{minutes}}m {{seconds}}s",
+    "expiresSeconds": "Expires in {{seconds}}s",
+    "expired": "Code expired",
     "ok": "Got It",
+    "generateNew": "Generate New Code",
     "errorTitle": "Failed to Generate Code",
     "errorBody": "Something went wrong. Please try again."
   }

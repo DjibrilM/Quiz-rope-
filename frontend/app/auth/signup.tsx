@@ -17,12 +17,7 @@ import { apiService } from "../../src/services/api";
 import { firebaseAuthService } from "../../src/services/firebase";
 import { useGameStore } from "../../src/stores/gameStore";
 import { AppTitle, LoginButton } from "../../src/components/auth";
-import {
-  BackButton,
-  Divider,
-  AnimatedLoader,
-  Button,
-} from "../../src/components/common";
+import { ScreenHeader, Divider, Button } from "../../src/components/common";
 import { FONTS } from "../../src/constants/theme";
 import { useToast } from "../../src/context/ToastContext";
 
@@ -60,43 +55,14 @@ export default function SignupScreen() {
     router.replace("/home");
   };
 
-  const handleMockSignUp = async () => {
-    try {
-      const result = await apiService.login("mock-token");
-      apiService.setToken(result.token || "mock-token");
-      const user = (result.user || result) as unknown as Record<
-        string,
-        unknown
-      >;
-      setAuth(
-        { ...result.user, ...user } as any,
-        true,
-        result.token || "mock-token",
-      );
-      router.replace("/home");
-    } catch {
-      setAuth(
-        {
-          id: "mock-parent",
-          email: "parent@test.com",
-          displayName: "Test Parent",
-          children: [],
-          createdAt: new Date(),
-        },
-        true,
-        "mock-token",
-      );
-      router.replace("/home");
-    }
-  };
-
   const handleEmailSignUp = async () => {
     if (!validate()) return;
     setLoading(true);
     try {
       if (!firebaseAuthService.isConfigured()) {
-        await handleMockSignUp();
-        return;
+        throw new Error(
+          "Authentication is not configured. Please contact support.",
+        );
       }
       await firebaseAuthService.signUpWithEmail(
         email.trim(),
@@ -119,8 +85,9 @@ export default function SignupScreen() {
     setLoading(true);
     try {
       if (!firebaseAuthService.isConfigured()) {
-        await handleMockSignUp();
-        return;
+        throw new Error(
+          "Authentication is not configured. Please contact support.",
+        );
       }
       const { idToken } = await firebaseAuthService.signInWithGoogle();
       await handleLogin(idToken);
@@ -133,7 +100,7 @@ export default function SignupScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-game-bg">
-      <BackButton absolute />
+      <ScreenHeader title={t("auth:signup.title")} />
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -144,31 +111,22 @@ export default function SignupScreen() {
             flexGrow: 1,
             alignItems: "center",
             justifyContent: "center",
-            paddingHorizontal: 32,
+            paddingHorizontal: 12,
             paddingVertical: 40,
           }}
           keyboardShouldPersistTaps="handled"
         >
-          <AppTitle />
-
-          <Text
-            className="text-white text-xl mb-6 text-center"
-            style={{ fontFamily: "Bungee_400Regular" }}
-          >
-            {t("auth:signup.title")}
-          </Text>
-
           <View className="w-full max-w-sm">
             <TextInput
               value={email}
               onChangeText={setEmail}
               placeholder={t("auth:login.emailPlaceholder")}
-              placeholderTextColor="#7B6B8A"
+              placeholderTextColor="#9CA3AF"
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
               style={{
-                backgroundColor: "#0D0B14",
+                backgroundColor: "rgba(255, 255, 255, 0.04)",
                 color: "#FFFFFF",
                 fontSize: 16,
                 fontFamily: FONTS.body,
@@ -176,7 +134,7 @@ export default function SignupScreen() {
                 paddingVertical: 16,
                 borderRadius: 16,
                 borderWidth: 1,
-                borderColor: "#3D2E4A",
+                borderColor: "rgba(255, 255, 255, 0.08)",
                 marginBottom: 12,
               }}
             />
@@ -184,15 +142,12 @@ export default function SignupScreen() {
             <View style={{ position: "relative", marginBottom: 4 }}>
               <TextInput
                 value={password}
-                onChangeText={(v) => {
-                  setPassword(v);
-                  if (error) setError("");
-                }}
+                onChangeText={setPassword}
                 placeholder={t("auth:login.passwordPlaceholder")}
-                placeholderTextColor="#7B6B8A"
+                placeholderTextColor="#9CA3AF"
                 secureTextEntry={!showPassword}
                 style={{
-                  backgroundColor: "#0D0B14",
+                  backgroundColor: "rgba(255, 255, 255, 0.04)",
                   color: "#FFFFFF",
                   fontSize: 16,
                   fontFamily: FONTS.body,
@@ -201,7 +156,7 @@ export default function SignupScreen() {
                   paddingRight: 52,
                   borderRadius: 16,
                   borderWidth: 1,
-                  borderColor: "#3D2E4A",
+                  borderColor: "rgba(255, 255, 255, 0.08)",
                 }}
               />
               <Pressable
@@ -270,7 +225,7 @@ export default function SignupScreen() {
               loading={loading}
               label={t("auth:signup.createAccount")}
               variant="primary"
-              className="bg-game-indigo! w-full mb-2"
+              className="bg-game-indigo! w-full my-5"
               onPress={handleEmailSignUp}
             />
 

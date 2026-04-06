@@ -1,5 +1,6 @@
 export interface ParentUser {
   id: string;
+  _id?: string;
   email: string;
   displayName: string;
   firebaseUid?: string;
@@ -12,7 +13,6 @@ export interface Child {
   parentId: string;
   displayName: string;
   avatarUrl: string;
-  age: number;
   grade: string;
 }
 

@@ -8,11 +8,22 @@
     "userInterfaceStyle": "dark",
     "scheme": "quizrope",
     "splash": {
-      "backgroundColor": "#0F172A"
+      "imageWidth": 300,
+      "image": "./assets/splashscreen_logo.png",
+      "backgroundColor": "#0D0B14"
     },
     "android": {
       "package": "com.quizrope.app",
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "softwareKeyboardLayoutMode": "resize",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/android_icons/ic_launcher_foreground.png",
+        "backgroundImage": "./assets/android_icons/ic_launcher_background.png"
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "ios": {
       "bundleIdentifier": "com.quizrope.app",
@@ -76,10 +87,27 @@
           "initialOrientation": "DEFAULT"
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#9B59B6"
+        }
+      ],
+      "./plugins/withFmtPatch",
+      "expo-sqlite",
+      "expo-web-browser",
+      "expo-audio"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c07dbe31-e3f5-437d-8a13-05d61c03aed6"
+      }
     }
   }
 }

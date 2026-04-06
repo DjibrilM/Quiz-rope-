@@ -4,7 +4,16 @@
     "subtitle": "Qu'apprenons-nous aujourd'hui ? Choisissez votre arène !",
     "modeLabel": "Mode de jeu",
     "solo": "Solo",
-    "splitScreen": "Écran partagé"
+    "splitScreen": "Écran partagé",
+    "startButton": "Jouer {{subject}} !",
+    "createFailed": "Impossible de créer la partie. Veuillez réessayer.",
+    "subjectHint": {
+      "MATH": "Chiffres et puzzles",
+      "SCIENCE": "Expériences et découvertes",
+      "ENGLISH": "Mots et histoires",
+      "HISTORY": "Aventures du passé",
+      "GEOGRAPHY": "Explore le monde"
+    }
   },
   "lobby": {
     "codeLabel": "CODE",
@@ -13,7 +22,13 @@
   },
   "solo": {
     "title": "Solo - {{subject}}",
-    "startButton": "Commencer"
+    "startButton": "Commencer",
+    "contextLabel": "Personnalise ta pratique",
+    "contextPlaceholder": "ex. racines carrées, fractions avec dénominateurs jusqu'à 20…",
+    "contextHint": "Facultatif — décris exactement ce que tu veux pratiquer",
+    "contextDisabled": "La personnalisation est désactivée pour cette matière.",
+    "contextNotRelated": "Ce contexte n'est pas lié au sujet.",
+    "playingAs": "Jouer en tant que"
   },
   "selectors": {
     "subject": "Matière",
@@ -25,7 +40,12 @@
     "loadingMessage": "Chargement de votre historique de combats...",
     "emptyTitle": "Aucun match pour le moment",
     "emptySubtitle": "Lancez une partie pour voir votre historique ici !",
-    "won": "Gagné"
+    "won": "Gagné",
+    "completed": "Terminé",
+    "review": "Revoir les réponses",
+    "inProgress": "En cours",
+    "waiting": "Pas commencé",
+    "abandoned": "Abandonné"
   },
   "detail": {
     "title": "Détails du match",
@@ -37,6 +57,46 @@
     "playerStatistics": "Statistiques des joueurs",
     "score": "Score",
     "accuracy": "Précision",
-    "avgTime": "Temps moy."
+    "avgTime": "Temps moy.",
+    "reviewAnswers": "Revoir les réponses",
+    "completed": "Terminé",
+    "soloMode": "Pratique solo",
+    "splitMode": "Écran partagé",
+    "yourPerformance": "Votre performance",
+    "teamScores": "Scores des équipes",
+    "correct": "Correct",
+    "total": "Total",
+    "noStats": "Aucune réponse enregistrée",
+    "mode": "Mode",
+    "players": "Joueurs",
+    "redWins": "L'équipe rouge gagne !",
+    "blueWins": "L'équipe bleue gagne !",
+    "draw": "Égalité !",
+    "soloComplete": "Session terminée !"
+  },
+  "join": {
+    "title": "Rejoindre un match",
+    "subtitle": "Demandez le code à 6 caractères à l'hôte",
+    "joinButton": "Rejoindre le match",
+    "codeLengthError": "Veuillez entrer un code à 6 caractères",
+    "notFoundError": "Match introuvable. Vérifiez le code et réessayez.",
+    "matchEndedError": "Ce match est déjà terminé.",
+    "networkError": "Une erreur s'est produite. Veuillez réessayer."
+  },
+  "split": {
+    "title": "Écran partagé · {{subject}}",
+    "subtitle": "Deux joueurs · Même appareil",
+    "ageGroupLabel": "Groupe d'âge",
+    "playersLabel": "Joueurs",
+    "player1": "Joueur 1",
+    "player2": "Joueur 2",
+    "redTeamPlaceholder": "Équipe rouge",
+    "blueTeamPlaceholder": "Équipe bleue",
+    "startBattle": "Lancer la bataille",
+    "ageGroups": {
+      "EASY": { "label": "Enfants", "age": "6–12 ans" },
+      "MEDIUM": { "label": "Ados", "age": "13–17 ans" },
+      "HARD": { "label": "Jeunes adultes", "age": "18 ans et +" }
+    }
   }
 }

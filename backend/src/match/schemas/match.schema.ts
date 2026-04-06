@@ -16,10 +16,32 @@ export class TeamSubDoc {
   side: string;
 }
 
-@Schema({ timestamps: true })
+@Schema({
+  timestamps: true,
+  toJSON: {
+    virtuals: true,
+    versionKey: false,
+    transform: (doc, ret: any) => {
+      ret.id = ret._id.toString();
+      delete ret._id;
+    },
+  },
+  toObject: {
+    virtuals: true,
+    versionKey: false,
+    transform: (doc, ret: any) => {
+      ret.id = ret._id.toString();
+      delete ret._id;
+    },
+  },
+})
 export class Match extends Document {
-  @Prop({ type: Types.ObjectId, ref: 'Parent', required: true })
+  @Prop({ type: Types.ObjectId, ref: 'Parent' })
   hostParentId: Types.ObjectId;
+
+  /** Set when the match was created by a ghost (guest) user. Cleared after migration. */
+  @Prop()
+  guestOwnerId: string;
 
   @Prop({ required: true })
   subject: string;
@@ -44,7 +66,7 @@ export class Match extends Document {
 
   @Prop({
     default: 'WAITING',
-    enum: ['WAITING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'],
+    enum: ['WAITING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED', 'ABANDONED'],
   })
   status: string;
 

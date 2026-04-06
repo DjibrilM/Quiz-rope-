@@ -12,6 +12,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { usePortrait } from "../../src/hooks/useOrientation";
 import { apiService } from "../../src/services/api";
+import * as guestDb from "../../src/services/guestDb";
 import { useGameStore } from "../../src/stores/gameStore";
 import {
   AnimatedLoader,
@@ -195,39 +196,59 @@ function ChildMatchCard({
 export default function MatchHistoryScreen() {
   usePortrait();
   const { t } = useTranslation(["match", "common"]);
-  const { children } = useGameStore();
+  const { children, userRole, parentUser, guestProfile, childSession } = useGameStore();
+  const isGuest = userRole === "guest";
+  const isChild = userRole === "child";
+  const uid = parentUser?._id ?? parentUser?.id ?? guestProfile?.guestId ?? null;
   const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
 
-  // All-matches query (no child filter)
+  // For child users, always show their own history directly
+  const activeChildId = isChild ? (childSession?.childId ?? null) : selectedChildId;
+
+  // All-matches query (no child filter) — parent/guest only
   const allMatchesQuery = useQuery({
-    queryKey: ["matches"],
-    queryFn: () => apiService.getMatches(),
-    enabled: selectedChildId === null,
+    queryKey: ["matches", uid],
+    queryFn: async () => {
+      const local = await guestDb.getMatches();
+      if (isGuest) return local;
+
+      try {
+        const remote = await apiService.getMatches();
+        // Sync to local in background (for offline access later)
+        guestDb.syncFromBackend({ matches: remote, homeworkSessions: [] }).catch(console.error);
+        return remote;
+      } catch (err) {
+        // If offline or error, fallback to local
+        if (local.length > 0) return local;
+        throw err;
+      }
+    },
+    enabled: activeChildId === null,
   });
 
   // Per-child query
   const childMatchesQuery = useQuery({
-    queryKey: ["childMatches", selectedChildId],
-    queryFn: () => apiService.getChildMatchHistory(selectedChildId!),
-    enabled: selectedChildId !== null,
+    queryKey: ["childMatches", uid, activeChildId],
+    queryFn: () => apiService.getChildMatchHistory(activeChildId!),
+    enabled: !isGuest && activeChildId !== null,
   });
 
   const isLoading =
-    selectedChildId === null
+    activeChildId === null
       ? allMatchesQuery.isLoading
       : childMatchesQuery.isLoading;
   const isError =
-    selectedChildId === null
+    activeChildId === null
       ? allMatchesQuery.isError
       : childMatchesQuery.isError;
   const isFetching =
-    selectedChildId === null
+    activeChildId === null
       ? allMatchesQuery.isFetching
       : childMatchesQuery.isFetching;
   const error =
-    selectedChildId === null ? allMatchesQuery.error : childMatchesQuery.error;
+    activeChildId === null ? allMatchesQuery.error : childMatchesQuery.error;
   const refetch =
-    selectedChildId === null ? allMatchesQuery.refetch : childMatchesQuery.refetch;
+    activeChildId === null ? allMatchesQuery.refetch : childMatchesQuery.refetch;
 
   const allMatches = allMatchesQuery.data ?? [];
   const childMatches = childMatchesQuery.data ?? [];
@@ -235,14 +256,14 @@ export default function MatchHistoryScreen() {
   const errorMessage = error instanceof Error ? error.message : "";
 
   const isEmpty =
-    selectedChildId === null ? allMatches.length === 0 : childMatches.length === 0;
+    activeChildId === null ? allMatches.length === 0 : childMatches.length === 0;
 
   return (
     <View className="flex-1 bg-game-bg">
       <ScreenHeader title={t("match:history.title")} />
 
-      {/* Child filter tabs */}
-      {children.length > 0 && (
+      {/* Child filter tabs — parent only */}
+      {!isChild && children.length > 0 && (
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -350,33 +371,40 @@ export default function MatchHistoryScreen() {
         )}
 
         {/* All-matches view */}
-        {!isLoading && !isError && selectedChildId === null && allMatches.length > 0 && (
+        {!isLoading && !isError && activeChildId === null && allMatches.length > 0 && (
           <StaggeredList staggerMs={60}>
-            {allMatches.map((match) => (
+            {allMatches.map((match: any) => (
               <View key={match._id}>
                 <MatchHistoryCard
                   match={match}
                   onPress={() => {
-                    router.push({
-                      pathname: "/match/detail" as any,
-                      params: { matchId: match._id },
-                    });
+                    if (!isGuest) {
+                      router.push({
+                        pathname: "/match/detail" as any,
+                        params: { matchId: match._id },
+                      });
+                    }
                   }}
                 />
                 {match.status === "COMPLETED" && (
                   <Pressable
                     onPress={() =>
-                      router.push({
-                        pathname: "/match/review" as any,
-                        params: {
-                          matchId: match._id,
-                          childId:
-                            (match as any).gameMode === "splitscreen"
-                              ? "player-red"
-                              : "mock-player",
-                          subject: match.subject,
-                        },
-                      })
+                      isGuest
+                        ? router.push({
+                            pathname: "/match/correction" as any,
+                            params: { matchId: match._id },
+                          })
+                        : router.push({
+                            pathname: "/match/review" as any,
+                            params: {
+                              matchId: match._id,
+                              childId:
+                                (match as any).gameMode === "splitscreen"
+                                  ? "player-red"
+                                  : "mock-player",
+                              subject: match.subject,
+                            },
+                          })
                     }
                     style={{
                       marginTop: -6,
@@ -409,7 +437,7 @@ export default function MatchHistoryScreen() {
         )}
 
         {/* Per-child match view */}
-        {!isLoading && !isError && selectedChildId !== null && childMatches.length > 0 && (
+        {!isLoading && !isError && activeChildId !== null && childMatches.length > 0 && (
           <StaggeredList staggerMs={60}>
             {childMatches.map((summary) => (
               <ChildMatchCard

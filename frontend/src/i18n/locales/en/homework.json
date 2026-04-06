@@ -1,0 +1,84 @@
+{
+  "title": "Homework",
+  "status": {
+    "ready": "✓ Ready",
+    "analyzing": "Analyzing…",
+    "failed": "✕ Failed"
+  },
+  "session": {
+    "defaultTitle": "Homework Session",
+    "quizDone": "Quiz done ✓",
+    "reviewTitle": "Review photo",
+    "notFound": "Session not found",
+    "assistTitle": "Assist",
+    "noExplanation": "No explanation available."
+  },
+  "actions": {
+    "scanNew": "Scan New Homework",
+    "scanNewDesc": "Photograph a page and get AI explanations",
+    "retake": "Retake",
+    "analyze": "Analyze",
+    "library": "Library"
+  },
+  "filters": {
+    "all": "All"
+  },
+  "history": {
+    "recent": "Recent Sessions",
+    "childSessions": "{{name}}'s Sessions"
+  },
+  "errors": {
+    "loadFailed": "Couldn't load sessions",
+    "pullToRetry": "Pull down to try again",
+    "processFailed": "Failed to process image. Try again.",
+    "uploadFailed": "Upload failed",
+    "limitReached": "Daily limit reached",
+    "limitDesc": "You can scan up to {{limit}} homework pages per day. Come back tomorrow!",
+    "analysisFailed": "Analysis failed",
+    "analysisFailedDesc": "Could not analyze the homework. Try again."
+  },
+  "empty": {
+    "noSessionsForChild": "No sessions for this child",
+    "noHomeworkYet": "No homework yet",
+    "assignToChild": "Scan homework and assign it to this child",
+    "getStarted": "Scan your first homework page to get started"
+  },
+  "capture": {
+    "hint": "Point at your homework, then tap the camera",
+    "allowAccess": "Tap the camera button to allow access",
+    "preparing": "Preparing image…"
+  },
+  "processing": {
+    "title": "Analyzing your homework",
+    "hint": "This takes about 15–30 seconds",
+    "steps": [
+      "Reading your homework…",
+      "Solving questions…",
+      "Writing explanations…",
+      "Almost done…"
+    ]
+  },
+  "chat": {
+    "title": "Ask AI",
+    "subtitle": "Ask anything about your homework",
+    "placeholder": "Ask a question…",
+    "emptyState": "Ask anything about your homework"
+  },
+  "quiz": {
+    "title": "Quizzes",
+    "emptyTitle": "No quizzes yet",
+    "emptySubtitle": "Test your understanding by starting a quiz above.",
+    "attempt": "Attempt {{number}}",
+    "tapToView": "Tap to view results",
+    "viewResults": "View Results",
+    "startFirst": "Start First Quiz",
+    "startNew": "Start New Quiz",
+    "scoreDetail": "{{correct}} correct · {{wrong}} wrong"
+  },
+  "bottomBar": {
+    "quizzes": "Quizzes",
+    "noQuizzesYet": "No quizzes yet",
+    "oneAttempt": "1 attempt",
+    "attempts": "{{count}} attempts"
+  }
+}

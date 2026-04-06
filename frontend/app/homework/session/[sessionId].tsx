@@ -1,16 +1,22 @@
-import { useState, useRef } from "react";
-import { View, Text, ScrollView, Image } from "react-native";
+import { useRef, useMemo } from "react";
+import { View, Text, ScrollView, Image, Linking } from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { useLocalSearchParams, router } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { EnrichedMarkdownText } from "react-native-enriched-markdown";
 
 import { apiService } from "../../../src/services/api";
-import { MarkdownAnswer } from "../../../src/components/homework/MarkdownAnswer";
-import { HomeworkChatSheet } from "../../../src/components/homework/HomeworkChatSheet";
+import * as guestDb from "../../../src/services/guestDb";
+import { useGameStore } from "../../../src/stores/gameStore";
+import {
+  HomeworkChatSheet,
+  type ChatSheetRef,
+} from "../../../src/components/homework/HomeworkChatSheet";
 import { HomeworkBottomBar } from "../../../src/components/homework/HomeworkBottomBar";
 import { HomeworkQuizSheet } from "../../../src/components/homework/HomeworkQuizSheet";
 import {
@@ -19,18 +25,47 @@ import {
   AnimatedLoader,
 } from "../../../src/components/common";
 
+/**
+ * 🔥 SAME math fix used everywhere
+ */
+const brightenMath = (text: string) => {
+  if (!text) return text;
+
+  return text
+    .replace(/\$\$(.*?)\$\$/gs, (_, expr) => {
+      return `$$\\color{#E5E7EB}{${expr}}$$`;
+    })
+    .replace(/\$(.*?)\$/g, (_, expr) => {
+      return `$\\color{#E5E7EB}{${expr}}$`;
+    });
+};
+
 export default function HomeworkSessionScreen() {
+  const { t } = useTranslation("homework");
   const { sessionId } = useLocalSearchParams<{ sessionId: string }>();
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
+  const { userRole } = useGameStore();
+  const isGuest = userRole === "guest";
 
-  const chatSheetRef = useRef<BottomSheetModal>(null);
+  const chatSheetRef = useRef<ChatSheetRef>(null);
   const quizSheetRef = useRef<BottomSheetModal>(null);
 
   const { data: session, isLoading: loading } = useQuery({
     queryKey: ["homeworkSession", sessionId],
-    queryFn: () => apiService.getHomeworkSession(sessionId),
+    queryFn: () =>
+      isGuest
+        ? guestDb.getHomeworkSession(sessionId)
+        : apiService.getHomeworkSession(sessionId),
   });
+
+  const processedMarkdown = useMemo(() => {
+    return session?.answersMarkdown
+      ? brightenMath(session.answersMarkdown)
+      : "";
+  }, [session?.answersMarkdown]);
+
+  console.log(processedMarkdown);
 
   const linkedMatchIds: string[] = session?.linkedMatchIds?.length
     ? session.linkedMatchIds
@@ -38,13 +73,8 @@ export default function HomeworkSessionScreen() {
       ? [session.linkedMatchId]
       : [];
 
-  const openQuizSheet = () => {
-    quizSheetRef.current?.present();
-  };
-
-  const openChatSheet = () => {
-    chatSheetRef.current?.present();
-  };
+  const openQuizSheet = () => quizSheetRef.current?.present();
+  const openChatSheet = () => chatSheetRef.current?.present();
 
   if (loading) {
     return (
@@ -62,7 +92,7 @@ export default function HomeworkSessionScreen() {
         <BackButton absolute />
         <View className="flex-1 items-center justify-center">
           <Text className="text-[#7B6B8A] font-body text-base">
-            Session not found
+            {t("session.notFound")}
           </Text>
         </View>
       </SafeAreaView>
@@ -73,37 +103,107 @@ export default function HomeworkSessionScreen() {
 
   return (
     <SafeAreaView edges={["bottom"]} className="flex-1 bg-[#0D0B14]">
-      <ScreenHeader title="Assist" />
+      <ScreenHeader title={t("session.assistTitle")} />
 
       <ScrollView
         contentContainerStyle={{ padding: 20, paddingBottom: 20 }}
         showsVerticalScrollIndicator={false}
       >
+        {/* Title */}
         {session.title && (
-          <Text className="text-center text-white font-['Bungee_400Regular'] text-[22px] mb-4 leading-[30px]">
+          <Text
+            style={{
+              textAlign: "center",
+              color: "#FFFFFF",
+              fontFamily: "Bungee_400Regular",
+              fontSize: 22,
+              marginBottom: 16,
+              lineHeight: 30,
+            }}
+          >
             {session.title}
           </Text>
         )}
 
+        {/* Image */}
         {session.imageBase64 && (
           <Image
             source={{
-              uri: `data:${session.imageMimeType || "image/jpeg"};base64,${session.imageBase64}`,
+              uri: `data:${
+                session.imageMimeType || "image/jpeg"
+              };base64,${session.imageBase64}`,
             }}
-            className="w-full h-60 rounded-2xl mb-5 bg-[#1A1520]"
+            style={{
+              width: "100%",
+              height: 240,
+              borderRadius: 16,
+              marginBottom: 20,
+              backgroundColor: "#1A1520",
+            }}
             resizeMode="contain"
           />
         )}
 
-        {session.answersMarkdown ? (
-          <MarkdownAnswer content={session.answersMarkdown} />
-        ) : (
-          <Text className="text-[#4A3D5A] font-body text-sm">
-            No explanation available.
-          </Text>
-        )}
+        <View className="mb-20">
+          {/* Markdown Answer */}
+          {session.answersMarkdown ? (
+            <EnrichedMarkdownText
+              flavor="github"
+              markdown={processedMarkdown}
+              onLinkPress={({ url }) => Linking.openURL(url)}
+              markdownStyle={{
+                list: {
+                  color: "#ffff",
+                },
+                paragraph: {
+                  color: "#D1D5DB",
+                  marginBottom: 10,
+                },
+                h3: { color: "#FFFFFF" },
+                h4: { color: "#FFFFFF" },
+                h5: { color: "#FFFFFF" },
+                h6: { color: "#FFFFFF" },
 
-        <View className="h-[120px]" />
+                h1: {
+                  fontSize: 22,
+                  fontWeight: "700",
+                  color: "#FFFFFF",
+                },
+                h2: {
+                  fontSize: 18,
+                  fontWeight: "700",
+                  color: "#F3F4F6",
+                },
+
+                link: {
+                  color: "#60A5FA",
+                },
+
+                code: {
+                  backgroundColor: "#1F2937",
+                  color: "#F9FAFB",
+                },
+
+                codeBlock: {
+                  backgroundColor: "#020617",
+                  color: "#E2E8F0",
+                  padding: 12,
+                  borderRadius: 8,
+                },
+
+                blockquote: {
+                  color: "#9CA3AF",
+                },
+              }}
+            />
+          ) : (
+            <Text className="text-[#4A3D5A] font-body text-sm">
+              {t("session.noExplanation")}
+            </Text>
+          )}
+        </View>
+
+        <View style={{ height: 120 }} />
       </ScrollView>
 
       <HomeworkBottomBar
@@ -118,13 +218,17 @@ export default function HomeworkSessionScreen() {
         sessionId={sessionId}
         session={session}
         onSessionUpdate={(updatedSession) => {
-          queryClient.setQueryData(["homeworkSession", sessionId], updatedSession);
+          queryClient.setQueryData(
+            ["homeworkSession", sessionId],
+            updatedSession,
+          );
         }}
       />
 
       <HomeworkChatSheet
         ref={chatSheetRef}
         sessionId={sessionId}
+        guestContext={isGuest ? session?.answersMarkdown || "" : undefined}
       />
     </SafeAreaView>
   );

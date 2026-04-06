@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { View, Text, Pressable } from "react-native";
+import React, { useEffect, useMemo } from "react";
+import { View, Text, Pressable, Linking } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -9,6 +9,7 @@ import Animated, {
   Easing,
 } from "react-native-reanimated";
 import Svg, { Path, Circle } from "react-native-svg";
+import { EnrichedMarkdownText } from "react-native-enriched-markdown";
 import { soundService } from "../../services/sound";
 import { hapticsService } from "../../services/haptics";
 import { FONTS } from "../../constants/theme";
@@ -28,16 +29,24 @@ interface AnimatedOptionProps {
   compact?: boolean;
 }
 
-const OPTION_COLORS = [
-  { bg: '#1E1A2E', border: '#6C5CE7', badgeBg: '#6C5CE7' },  // A - Indigo
-  { bg: '#1A2428', border: '#0EA5E9', badgeBg: '#0EA5E9' },  // B - Sky
-  { bg: '#1E2420', border: '#F59E0B', badgeBg: '#F59E0B' },  // C - Amber
-  { bg: '#241A22', border: '#E85D75', badgeBg: '#E85D75' },  // D - Pink
-];
+/**
+ * 🔥 SAME math brightening logic (shared with QuestionCard)
+ */
+const brightenMath = (text: string) => {
+  if (!text) return text;
+
+  return text
+    .replace(/\$\$(.*?)\$\$/gs, (_, expr) => {
+      return `$$\\color{#E5E7EB}{${expr}}$$`;
+    })
+    .replace(/\$(.*?)\$/g, (_, expr) => {
+      return `$\\color{#E5E7EB}{${expr}}$`;
+    });
+};
 
 function CheckIcon() {
   return (
-    <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
+    <Svg width={18} height={18} viewBox="0 0 24 24">
       <Circle cx="12" cy="12" r="11" fill="#10B981" />
       <Path
         d="M7 12l3.5 3.5 6.5-7"
@@ -52,7 +61,7 @@ function CheckIcon() {
 
 function XIcon() {
   return (
-    <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
+    <Svg width={18} height={18} viewBox="0 0 24 24">
       <Circle cx="12" cy="12" r="11" fill="#EF4444" />
       <Path
         d="M8 8l8 8M16 8L8 16"
@@ -82,7 +91,6 @@ export function AnimatedOption({
   const feedbackScale = useSharedValue(1);
   const shakeX = useSharedValue(0);
 
-  // Entry animation on new question — fast and snappy
   useEffect(() => {
     scale.value = 0;
     translateY.value = 8;
@@ -90,29 +98,26 @@ export function AnimatedOption({
     dimOpacity.value = 1;
     feedbackScale.value = 1;
     shakeX.value = 0;
+
     const ease = { duration: 80, easing: Easing.out(Easing.cubic) };
     scale.value = withDelay(staggerDelay, withTiming(1, ease));
     translateY.value = withDelay(staggerDelay, withTiming(0, ease));
     opacity.value = withDelay(staggerDelay, withTiming(1, { duration: 70 }));
   }, [questionId]);
 
-  // Fade out unchosen options once this player has locked in
   useEffect(() => {
     if (disabled && variant === "default") {
-      dimOpacity.value = withTiming(0.3, { duration: 120, easing: Easing.out(Easing.cubic) });
+      dimOpacity.value = withTiming(0.3, { duration: 120 });
     }
   }, [disabled, variant]);
 
-  // Instant feedback animations on answer
   useEffect(() => {
     if (variant === "correct") {
-      // Quick celebratory pulse
       feedbackScale.value = withSequence(
-        withTiming(1.07, { duration: 70, easing: Easing.out(Easing.cubic) }),
-        withTiming(1, { duration: 100, easing: Easing.out(Easing.cubic) }),
+        withTiming(1.07, { duration: 70 }),
+        withTiming(1, { duration: 100 }),
       );
     } else if (variant === "wrong") {
-      // Fast shake to signal error
       shakeX.value = withSequence(
         withTiming(-6, { duration: 40 }),
         withTiming(6, { duration: 40 }),
@@ -131,34 +136,46 @@ export function AnimatedOption({
     opacity: opacity.value * dimOpacity.value,
   }));
 
+  const processedMarkdown = useMemo(() => {
+    return brightenMath(optionText);
+  }, [optionText]);
+
   const handlePress = () => {
     onPress();
     soundService.play("buttonPress");
     hapticsService.selection();
   };
 
-  let bg: string, border: string, badgeBg: string, textC: string;
+  let bg: string,
+    border: string,
+    badgeBg: string,
+    textC: string,
+    labelC: string;
+
   if (variant === "correct") {
-    bg = "#0A2E1A";
-    border = "#10B981";
-    badgeBg = "#10B981";
+    bg = "rgba(16, 185, 129, 0.1)";
+    border = "rgba(16, 185, 129, 0.3)";
+    badgeBg = "rgba(16, 185, 129, 0.2)";
     textC = "#10B981";
+    labelC = "#10B981";
   } else if (variant === "wrong") {
-    bg = "#350a0a";
-    border = "#EF4444";
-    badgeBg = "#EF4444";
+    bg = "rgba(239, 68, 68, 0.1)";
+    border = "rgba(239, 68, 68, 0.3)";
+    badgeBg = "rgba(239, 68, 68, 0.2)";
     textC = "#EF4444";
+    labelC = "#EF4444";
   } else if (variant === "selected") {
-    bg = "#231C2B";
-    border = "#B8A9C9";
-    badgeBg = "#B8A9C9";
-    textC = "#ffffff";
+    bg = "rgba(255,255,255,0.95)";
+    border = "rgba(255,255,255,0.95)";
+    badgeBg = "rgba(0,0,0,0.05)";
+    textC = "#000000";
+    labelC = "#000000";
   } else {
-    const optColor = OPTION_COLORS[index % 4];
-    bg = optColor.bg;
-    border = optColor.border;
-    badgeBg = optColor.badgeBg;
-    textC = "#E0D4EC";
+    bg = "rgba(255,255,255,0.03)";
+    border = "rgba(255,255,255,0.08)";
+    badgeBg = "rgba(255,255,255,0.05)";
+    textC = "#E5E7EB";
+    labelC = "rgba(255,255,255,0.5)";
   }
 
   return (
@@ -168,25 +185,25 @@ export function AnimatedOption({
       style={[
         animatedStyle,
         {
-          flex: 1,
           flexDirection: "row",
           alignItems: "center",
           backgroundColor: bg,
           borderColor: border,
-          borderWidth: 1.5,
-          borderRadius: compact ? 10 : 14,
-          paddingHorizontal: compact ? 8 : 14,
-          paddingVertical: compact ? 7 : 12,
-          gap: compact ? 6 : 10,
+          borderWidth: 1,
+          borderRadius: compact ? 12 : 16,
+          minHeight: compact ? 48 : 56,
+          width: "100%",
+          paddingHorizontal: compact ? 10 : 16,
+          paddingVertical: compact ? 10 : 16,
+          gap: compact ? 8 : 12,
         },
       ]}
-      accessibilityRole="button"
-      accessibilityLabel={`Option ${label}: ${optionText}`}
     >
+      {/* Label */}
       <View
         style={{
-          width: compact ? 22 : 28,
-          height: compact ? 22 : 28,
+          width: compact ? 24 : 32,
+          height: compact ? 24 : 32,
           borderRadius: compact ? 6 : 8,
           backgroundColor: badgeBg,
           alignItems: "center",
@@ -195,27 +212,33 @@ export function AnimatedOption({
       >
         <Text
           style={{
-            color: "#fff",
-            fontSize: compact ? 11 : 13,
-            fontFamily: "Bungee_400Regular",
+            color: labelC,
+            fontSize: compact ? 12 : 14,
+            fontFamily: FONTS.bodyBold,
           }}
         >
           {label}
         </Text>
       </View>
-      <Text
-        style={{
-          color: textC,
-          fontSize: compact ? 12 : 15,
-          lineHeight: compact ? 16 : 21,
-          fontFamily: FONTS.bodySemiBold,
-          flex: 1,
-        }}
-        numberOfLines={2}
-      >
-        {optionText}
-      </Text>
-      {/* Instant result icons */}
+
+      {/* Markdown content */}
+      <View style={{ flex: 1 }}>
+        <EnrichedMarkdownText
+          flavor="github"
+          markdown={processedMarkdown}
+          onLinkPress={({ url }) => Linking.openURL(url)}
+          markdownStyle={{
+            paragraph: {
+              color: textC,
+            },
+            code: {
+              backgroundColor: "rgba(255,255,255,0.1)",
+              color: textC,
+            },
+          }}
+        />
+      </View>
+
       {variant === "correct" && <CheckIcon />}
       {variant === "wrong" && <XIcon />}
     </AnimatedPressable>

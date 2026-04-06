@@ -39,6 +39,12 @@ interface ChildSession {
   jwtToken: string | null;
 }
 
+interface ChildProfile {
+  displayName: string;
+  avatarUrl: string;
+  grade: string;
+}
+
 interface GuestProfile {
   /** Locally generated ID so we can reference the profile across sessions. */
   guestId: string;
@@ -55,6 +61,10 @@ interface GameState {
   childSession: ChildSession | null;
   /** Persisted local guest profile — survives logouts and app restarts. */
   guestProfile: GuestProfile | null;
+  /** Fresh profile for the currently logged-in child, fetched on startup. */
+  childProfile: ChildProfile | null;
+  /** JWT for ghost (guest) API access. Persisted alongside guestProfile. */
+  ghostToken: string | null;
   currentMatch: Match | null;
   ropePosition: number;
   teamScores: { left: number; right: number };
@@ -74,11 +84,15 @@ interface GameState {
   incrementStreak: () => void;
   resetStreak: () => void;
   setAuth: (user: ParentUser & Record<string, unknown>, mockMode: boolean, token: string) => void;
+  updateParentUser: (user: Partial<ParentUser>) => void;
+  setChildProfile: (profile: ChildProfile | null) => void;
   setChildSession: (session: ChildSession) => void;
   /** Set the persistent guest profile and mark the user as authenticated. */
   setGuestProfile: (profile: GuestProfile) => void;
   /** Re-authenticate an existing guest profile without changing it. */
   loginAsGuest: () => void;
+  /** Set the ghost JWT received from POST /auth/ghost-token. */
+  setGhostToken: (token: string | null) => void;
   /** Clear guest identity entirely (used when the guest links to a real account). */
   clearGuestProfile: () => void;
   setLocale: (locale: SupportedLanguage) => void;
@@ -100,7 +114,7 @@ interface GameState {
   setHasHydrated: (hydrated: boolean) => void;
 }
 
-export type { StoreQuestion, StoreRoundResult, CorrectionItem, ChildSession, GuestProfile };
+export type { StoreQuestion, StoreRoundResult, CorrectionItem, ChildSession, GuestProfile, ChildProfile };
 
 export const useGameStore = create<GameState>()(
   persist(
@@ -113,6 +127,8 @@ export const useGameStore = create<GameState>()(
       userRole: null,
       childSession: null,
       guestProfile: null,
+      childProfile: null,
+      ghostToken: null,
       currentMatch: null,
       ropePosition: 0,
       teamScores: { left: 0, right: 0 },
@@ -139,6 +155,13 @@ export const useGameStore = create<GameState>()(
           subscriptionExpiresAt: null,
         }),
 
+      updateParentUser: (user) =>
+        set((state) => ({
+          parentUser: state.parentUser ? { ...state.parentUser, ...user } : (user as ParentUser),
+        })),
+
+      setChildProfile: (profile) => set({ childProfile: profile }),
+
       setChildSession: (session) =>
         set({ childSession: session, userRole: 'child', isAuthenticated: true, authToken: session.jwtToken }),
 
@@ -148,8 +171,11 @@ export const useGameStore = create<GameState>()(
       loginAsGuest: () =>
         set({ userRole: 'guest', isAuthenticated: true }),
 
+      setGhostToken: (token) =>
+        set({ ghostToken: token }),
+
       clearGuestProfile: () =>
-        set({ guestProfile: null }),
+        set({ guestProfile: null, ghostToken: null }),
 
       setLocale: (locale) => {
         i18n.changeLanguage(locale);
@@ -171,10 +197,12 @@ export const useGameStore = create<GameState>()(
           authToken: null,
           userRole: null,
           childSession: null,
+          guestProfile: null,
+          childProfile: null,
+          ghostToken: null,
           subscriptionStatus: 'active',
           subscriptionExpiresAt: null,
           isMockMode: false,
-          // guestProfile intentionally NOT cleared — persists across logouts
         }),
 
       setCurrentMatch: (match) => set({ currentMatch: match }),
@@ -228,6 +256,7 @@ export const useGameStore = create<GameState>()(
         userRole: state.userRole,
         childSession: state.childSession,
         guestProfile: state.guestProfile,
+        ghostToken: state.ghostToken,
         locale: state.locale,
         subscriptionStatus: state.subscriptionStatus,
         subscriptionExpiresAt: state.subscriptionExpiresAt,

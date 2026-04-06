@@ -1,0 +1,84 @@
+{
+  "title": "作业",
+  "status": {
+    "ready": "✓ 就绪",
+    "analyzing": "分析中…",
+    "failed": "✕ 失败"
+  },
+  "session": {
+    "defaultTitle": "作业会话",
+    "quizDone": "测验完成 ✓",
+    "reviewTitle": "查看照片",
+    "notFound": "找不到会话",
+    "assistTitle": "辅助",
+    "noExplanation": "暂无解释。"
+  },
+  "actions": {
+    "scanNew": "扫描新作业",
+    "scanNewDesc": "拍摄页面并获取AI解释",
+    "retake": "重拍",
+    "analyze": "分析",
+    "library": "图库"
+  },
+  "filters": {
+    "all": "全部"
+  },
+  "history": {
+    "recent": "最近会话",
+    "childSessions": "{{name}}的会话"
+  },
+  "errors": {
+    "loadFailed": "无法加载会话",
+    "pullToRetry": "下拉重试",
+    "processFailed": "图片处理失败，请重试。",
+    "uploadFailed": "上传失败",
+    "limitReached": "已达到每日限制",
+    "limitDesc": "每天最多可扫描{{limit}}页作业，明天再来！",
+    "analysisFailed": "分析失败",
+    "analysisFailedDesc": "无法分析作业，请重试。"
+  },
+  "empty": {
+    "noSessionsForChild": "该孩子暂无会话",
+    "noHomeworkYet": "暂无作业",
+    "assignToChild": "扫描作业并分配给该孩子",
+    "getStarted": "扫描第一页作业开始使用"
+  },
+  "capture": {
+    "hint": "对准作业，然后点击拍摄",
+    "allowAccess": "点击相机按钮以允许访问",
+    "preparing": "正在准备图片…"
+  },
+  "processing": {
+    "title": "正在分析您的作业",
+    "hint": "大约需要15–30秒",
+    "steps": [
+      "正在读取作业…",
+      "正在解答问题…",
+      "正在撰写解释…",
+      "即将完成…"
+    ]
+  },
+  "chat": {
+    "title": "向AI提问",
+    "subtitle": "询问任何关于作业的问题",
+    "placeholder": "提问…",
+    "emptyState": "询问任何关于作业的问题"
+  },
+  "quiz": {
+    "title": "测验",
+    "emptyTitle": "暂无测验",
+    "emptySubtitle": "通过上方的测验来检验您的理解程度。",
+    "attempt": "第{{number}}次尝试",
+    "tapToView": "点击查看结果",
+    "viewResults": "查看结果",
+    "startFirst": "开始第一个测验",
+    "startNew": "开始新测验",
+    "scoreDetail": "{{correct}}题正确 · {{wrong}}题错误"
+  },
+  "bottomBar": {
+    "quizzes": "测验",
+    "noQuizzesYet": "暂无测验",
+    "oneAttempt": "1次尝试",
+    "attempts": "{{count}}次尝试"
+  }
+}

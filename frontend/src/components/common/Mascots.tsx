@@ -7,6 +7,7 @@ import Svg, {
   Stop,
   G,
 } from "react-native-svg";
+import { View } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedProps,
@@ -194,5 +195,80 @@ export function BrainMascot({ size = 150, variant = "floatUp", speed = 1 }: Masc
         />
       </Svg>
     </Animated.View>
+  );
+}
+
+export function SadBrainMascot({ size = 150 }: { size?: number }) {
+  return (
+    <View>
+      <Svg width={size} height={size} viewBox="0 0 100 100" fill="none">
+        <Defs>
+          <RadialGradient
+            id="brainVolumeSad"
+            cx="30%"
+            cy="30%"
+            r="70%"
+            fx="30%"
+            fy="30%"
+          >
+            <Stop offset="0%" stopColor="#D1D5DB" />
+            <Stop offset="50%" stopColor="#9CA3AF" />
+            <Stop offset="100%" stopColor="#4B5563" />
+          </RadialGradient>
+
+          <RadialGradient id="eyeShadowSad" cx="50%" cy="50%" r="50%">
+            <Stop offset="70%" stopColor="#FFFFFF" />
+            <Stop offset="100%" stopColor="#E5E7EB" />
+          </RadialGradient>
+        </Defs>
+
+        {/* Brain volume - Grayish/Sad color */}
+        <Path
+          d="M50 20 C 20 20, 10 40, 15 60 C 5 70, 15 90, 35 85 C 45 95, 60 95, 65 85 C 85 90, 95 70, 85 60 C 90 40, 80 20, 50 20 Z"
+          fill="url(#brainVolumeSad)"
+        />
+
+        {/* Folds */}
+        <Path
+          d="M50 20 Q 50 80 50 85 M 30 35 Q 40 50 20 55 M 70 35 Q 60 50 80 55 M 25 70 Q 35 60 45 75 M 75 70 Q 65 60 55 75"
+          stroke="#374151"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          opacity="0.4"
+        />
+
+        {/* Sad Eyes - Closed/Downward arches */}
+        <Path
+          d="M25 55 Q 35 45 45 55"
+          stroke="#374151"
+          strokeWidth="3"
+          strokeLinecap="round"
+          fill="none"
+        />
+        <Path
+          d="M55 55 Q 65 45 75 55"
+          stroke="#374151"
+          strokeWidth="3"
+          strokeLinecap="round"
+          fill="none"
+        />
+
+        {/* Tear */}
+        <Path
+          d="M32 60 Q 32 68 35 68 Q 38 68 38 60 Q 38 58 35 55 Q 32 58 32 60 Z"
+          fill="#60A5FA"
+          opacity="0.8"
+        />
+
+        {/* Frown */}
+        <Path
+          d="M38 80 Q 50 72 62 80"
+          stroke="#374151"
+          strokeWidth="3"
+          strokeLinecap="round"
+          fill="none"
+        />
+      </Svg>
+    </View>
   );
 }

@@ -3,8 +3,12 @@ import { Document, Types } from 'mongoose';
 
 @Schema({ timestamps: true })
 export class HomeworkSession extends Document {
-  @Prop({ type: Types.ObjectId, ref: 'Parent', required: true })
+  @Prop({ type: Types.ObjectId, ref: 'Parent' })
   parentId: Types.ObjectId;
+
+  /** Set when created by a ghost (guest) user. Cleared after migration. */
+  @Prop()
+  guestId: string;
 
   @Prop()
   imageBase64: string;

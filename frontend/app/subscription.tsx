@@ -1,13 +1,16 @@
-import { View, Text, Pressable, Alert, Modal } from "react-native";
+import { View, Text, Pressable, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { usePortrait } from "../src/hooks/useOrientation";
 import { apiService } from "../src/services/api";
 import { useGameStore } from "../src/stores/gameStore";
 import { firebaseAuthService } from "../src/services/firebase";
-import { FlutterwaveWebView } from "../src/components/payment";
+import * as guestDb from "../src/services/guestDb";
+import * as WebBrowser from "expo-web-browser";
+import * as Linking from "expo-linking";
 import { FONTS } from "../src/constants/theme";
 
 const FEATURE_KEYS = [
@@ -20,20 +23,32 @@ const FEATURE_KEYS = [
 
 export default function SubscriptionScreen() {
   usePortrait();
+  const queryClient = useQueryClient();
   const { t } = useTranslation(["subscription", "auth", "common"]);
   const [loading, setLoading] = useState(false);
-  const [showWebView, setShowWebView] = useState(false);
-  const [paymentLink, setPaymentLink] = useState("");
-  const [txRef, setTxRef] = useState("");
   const { isMockMode, setSubscriptionStatus } = useGameStore();
 
   const handleSubscribe = async () => {
     setLoading(true);
     try {
       const result = await apiService.initializeSubscription();
-      setPaymentLink(result.paymentLink);
-      setTxRef(result.txRef);
-      setShowWebView(true);
+      const redirectUrl = Linking.createURL("payment/callback");
+      const authResult = await WebBrowser.openAuthSessionAsync(
+        result.paymentLink,
+        redirectUrl
+      );
+
+      if (authResult.type === "success" && authResult.url) {
+        const urlObj = new URL(authResult.url);
+        const status = urlObj.searchParams.get("status") || "unknown";
+        const transactionId = urlObj.searchParams.get("transaction_id") || urlObj.searchParams.get("tx_ref");
+
+        if (status.includes("success") && transactionId) {
+          handlePaymentSuccess(transactionId, result.txRef);
+        } else {
+          Alert.alert(t("subscription:errors.paymentFailedTitle"), t("subscription:errors.paymentVerifyFailed"));
+        }
+      }
     } catch (error: any) {
       Alert.alert(t("common:errors.error"), t("subscription:errors.paymentStartFailed"));
     } finally {
@@ -41,11 +56,10 @@ export default function SubscriptionScreen() {
     }
   };
 
-  const handlePaymentSuccess = async (transactionId: string) => {
-    setShowWebView(false);
+  const handlePaymentSuccess = async (transactionId: string, txRefOrId: string) => {
     setLoading(true);
     try {
-      const result = await apiService.verifySubscription(transactionId, txRef);
+      const result = await apiService.verifySubscription(transactionId, txRefOrId);
       if (result.verified) {
         setSubscriptionStatus("active", result.subscription?.currentPeriodEnd);
         router.replace("/home");
@@ -59,9 +73,7 @@ export default function SubscriptionScreen() {
     }
   };
 
-  const handleWebViewClose = () => {
-    setShowWebView(false);
-  };
+
 
   const handleMockActivate = async () => {
     setLoading(true);
@@ -87,8 +99,10 @@ export default function SubscriptionScreen() {
     } catch (err) {
       console.warn("Firebase sign-out error (non-critical):", err);
     }
+    guestDb.clearAllGuestData().catch(() => {});
     apiService.clearToken();
     useGameStore.getState().logout();
+    queryClient.clear();
     router.replace("/");
   };
 
@@ -176,15 +190,6 @@ export default function SubscriptionScreen() {
         <Text style={{ color: "#7B6B8A", fontSize: 16, fontFamily: FONTS.body }}>{t("auth:logout.title")}</Text>
       </Pressable>
 
-      {/* Payment WebView Modal */}
-      <Modal visible={showWebView} animationType="slide">
-        <FlutterwaveWebView
-          paymentLink={paymentLink}
-          txRef={txRef}
-          onSuccess={handlePaymentSuccess}
-          onClose={handleWebViewClose}
-        />
-      </Modal>
     </SafeAreaView>
   );
 }

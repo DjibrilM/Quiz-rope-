@@ -10,5 +10,12 @@
     "install:all": "cd backend && npm install && cd ../frontend && npm install",
     "dev": "./dev.sh"
   },
-  "packageManager": "yarn@4.13.0+sha512.5c20ba010c99815433e5c8453112165e673f1c7948d8d2b267f4b5e52097538658388ebc9f9580656d9b75c5cc996f990f611f99304a2197d4c56d21eea370e7"
+  "packageManager": "yarn@4.13.0+sha512.5c20ba010c99815433e5c8453112165e673f1c7948d8d2b267f4b5e52097538658388ebc9f9580656d9b75c5cc996f990f611f99304a2197d4c56d21eea370e7",
+  "dependencies": {
+    "react-katex": "^3.1.0",
+    "react-native-enriched-markdown": "^0.4.1",
+    "react-native-markdown-display": "^7.0.2",
+    "react-native-maths": "^0.1.26",
+    "react-native-modal": "^14.0.0-rc.1"
+  }
 }

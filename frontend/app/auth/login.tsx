@@ -18,13 +18,14 @@ import { firebaseAuthService } from "../../src/services/firebase";
 import { useGameStore } from "../../src/stores/gameStore";
 import { AppTitle, LoginButton } from "../../src/components/auth";
 import {
-  BackButton,
+  ScreenHeader,
   Divider,
   AnimatedLoader,
   Button,
 } from "../../src/components/common";
 import { FONTS } from "../../src/constants/theme";
 import { useToast } from "../../src/context/ToastContext";
+import { NotificationService } from "../../src/services/NotificationService";
 
 export default function LoginScreen() {
   const { t } = useTranslation(["auth", "common"]);
@@ -64,37 +65,8 @@ export default function LoginScreen() {
 
     // Subscription disabled — app is free for now
 
+    NotificationService.sendSignInNotification(result.user.displayName);
     router.replace("/home");
-  };
-
-  const handleMockLogin = async () => {
-    try {
-      const result = await apiService.login("mock-token");
-      apiService.setToken(result.token || "mock-token");
-      const user = (result.user || result) as unknown as Record<
-        string,
-        unknown
-      >;
-      setAuth(
-        { ...result.user, ...user } as any,
-        true,
-        result.token || "mock-token",
-      );
-      router.replace("/home");
-    } catch {
-      setAuth(
-        {
-          id: "mock-parent",
-          email: "parent@test.com",
-          displayName: "Test Parent",
-          children: [],
-          createdAt: new Date(),
-        },
-        true,
-        "mock-token",
-      );
-      router.replace("/home");
-    }
   };
 
   const handleEmailSignIn = async () => {
@@ -102,8 +74,9 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       if (!firebaseAuthService.isConfigured()) {
-        await handleMockLogin();
-        return;
+        throw new Error(
+          "Authentication is not configured. Please contact support.",
+        );
       }
       const { idToken } = await firebaseAuthService.signInWithEmail(
         email.trim(),
@@ -129,8 +102,9 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       if (!firebaseAuthService.isConfigured()) {
-        await handleMockLogin();
-        return;
+        throw new Error(
+          "Authentication is not configured. Please contact support.",
+        );
       }
       const { idToken } = await firebaseAuthService.signInWithGoogle();
       await handleLogin(idToken);
@@ -147,7 +121,7 @@ export default function LoginScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-game-bg">
-      <BackButton absolute />
+      <ScreenHeader title={t("auth:login.signIn")} />
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -158,13 +132,11 @@ export default function LoginScreen() {
             flexGrow: 1,
             alignItems: "center",
             justifyContent: "center",
-            paddingHorizontal: 32,
+            paddingHorizontal: 12,
             paddingVertical: 40,
           }}
           keyboardShouldPersistTaps="handled"
         >
-          <AppTitle />
-
           <View className="w-full max-w-sm">
             <TextInput
               value={email}
@@ -172,12 +144,12 @@ export default function LoginScreen() {
                 setEmail(v);
               }}
               placeholder={t("auth:login.emailPlaceholder")}
-              placeholderTextColor="#7B6B8A"
+              placeholderTextColor="#9CA3AF"
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
               style={{
-                backgroundColor: "#0D0B14",
+                backgroundColor: "rgba(255, 255, 255, 0.04)",
                 color: "#FFFFFF",
                 fontSize: 16,
                 fontFamily: FONTS.body,
@@ -185,7 +157,7 @@ export default function LoginScreen() {
                 paddingVertical: 16,
                 borderRadius: 16,
                 borderWidth: 1,
-                borderColor: "#3D2E4A",
+                borderColor: "rgba(255, 255, 255, 0.08)",
                 marginBottom: 12,
               }}
             />
@@ -193,15 +165,12 @@ export default function LoginScreen() {
             <View style={{ position: "relative", marginBottom: 4 }}>
               <TextInput
                 value={password}
-                onChangeText={(v) => {
-                  setPassword(v);
-                  if (error) setError("");
-                }}
+                onChangeText={setPassword}
                 placeholder={t("auth:login.passwordPlaceholder")}
-                placeholderTextColor="#7B6B8A"
+                placeholderTextColor="#9CA3AF"
                 secureTextEntry={!showPassword}
                 style={{
-                  backgroundColor: "#0D0B14",
+                  backgroundColor: "rgba(255, 255, 255, 0.04)",
                   color: "#FFFFFF",
                   fontSize: 16,
                   fontFamily: FONTS.body,
@@ -210,7 +179,7 @@ export default function LoginScreen() {
                   paddingRight: 52,
                   borderRadius: 16,
                   borderWidth: 1,
-                  borderColor: "#3D2E4A",
+                  borderColor: "rgba(255, 255, 255, 0.08)",
                 }}
               />
               <Pressable
@@ -275,10 +244,10 @@ export default function LoginScreen() {
               </Pressable>
             </View>
 
-            <Pressable onPress={handleForgotPassword} className="self-end mb-5">
+            <Pressable onPress={handleForgotPassword} className="self-end my-5">
               <Text
                 style={{
-                  color: "#9B59B6",
+                  color: "#A78BFA",
                   fontSize: 12,
                   fontFamily: FONTS.body,
                 }}

@@ -18,5 +18,17 @@
     "nameMaxLength": "Le nom doit faire moins de 30 caractères",
     "ageRange": "L'âge doit être entre 3 et 18 ans",
     "gradeRequired": "La classe est requise"
+  },
+  "linkCode": {
+    "getCode": "Obtenir le code",
+    "selectChild": "Sélectionner un enfant",
+    "title": "Code de liaison pour {{name}}",
+    "expiresIn": "Expire dans {{minutes}} minutes",
+    "expiresMinutes": "Expire dans {{minutes}}m {{seconds}}s",
+    "expiresSeconds": "Expire dans {{seconds}}s",
+    "expired": "Code expiré",
+    "ok": "Compris",
+    "errorTitle": "Échec de la génération du code",
+    "errorBody": "Une erreur s'est produite. Veuillez réessayer."
   }
 }

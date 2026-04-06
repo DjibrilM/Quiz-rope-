@@ -1,17 +1,17 @@
 {
   "childJoin": {
-    "title": "انضم إلى لعبة!",
-    "instruction": "أظهر هذا الرمز لولي أمرك",
-    "waitingStatus": "في انتظار مسح ولي الأمر...",
-    "generateNewCode": "إنشاء رمز جديد",
-    "errorToken": "فشل الحصول على رمز الطفل. اضغط أدناه للمحاولة مرة أخرى."
+    "title": "ربط الحساب",
+    "instruction": "أدخل الرمز المعروض على جهاز ولي أمرك",
+    "codeInputPlaceholder": "أدخل رمز الجلسة",
+    "scanQR": "مسح رمز QR",
+    "enterCodeInstead": "أدخل الرمز بدلاً من ذلك",
+    "errorToken": "فشل الحصول على رمز الطفل. اضغط أدناه للمحاولة مرة أخرى.",
+    "invalidCode": "الرمز غير صالح أو منتهي الصلاحية. حاول مرة أخرى.",
+    "connectAccount": "ربط الحساب"
   },
   "connectDevice": {
-    "scanTitle": "مسح رمز الطفل",
-    "scanInstruction": "وجّه الكاميرا نحو رمز QR على جهاز الطفل",
-    "manualEntryDivider": "أو أدخل الرمز يدوياً",
-    "manualCodePlaceholder": "أدخل رمز الجلسة",
-    "loadingTitle": "جارٍ التحميل...",
+    "title": "ربط الجهاز",
+    "loadingTitle": "جارٍ الإعداد...",
     "loadingMessage": "جارٍ جلب اللاعبين...",
     "selectChildTitle": "من يلعب؟",
     "selectChildInstruction": "اختر طفلاً لهذا الجهاز",
@@ -20,9 +20,8 @@
     "linkingTitle": "جارٍ ربط الجهاز...",
     "settingUpSession": "جارٍ إعداد جلسة {{name}}",
     "errorTitle": "حدث خطأ ما",
-    "successTitle": "تم ربط الجهاز!",
-    "successStatus": "متصل",
-    "successMessage": "جهاز {{name}} مربوط الآن"
+    "showCodeTitle": "شارك هذا الرمز",
+    "showCodeInstruction": "أظهر هذا لـ{{name}} للمسح أو الكتابة على جهازه"
   },
   "qrCode": {
     "cameraPermission": "يلزم الوصول إلى الكاميرا لمسح رموز QR",

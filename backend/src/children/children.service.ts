@@ -1,10 +1,14 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, forwardRef, Inject } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import { Child } from './schemas/child.schema';
 import { DeviceSession } from './schemas/device-session.schema';
 import { GuestLink } from './schemas/guest-link.schema';
+import { MatchService } from '../match/match.service';
+import { HomeworkService } from '../homework/homework.service';
+import { RealtimeGateway } from '../realtime/realtime.gateway';
+import { NotificationAiService } from './notification-ai.service';
 
 @Injectable()
 export class ChildrenService {
@@ -16,11 +20,17 @@ export class ChildrenService {
     private sessionModel: Model<DeviceSession>,
     @InjectModel(GuestLink.name)
     private guestLinkModel: Model<GuestLink>,
+    @Inject(forwardRef(() => MatchService))
+    private matchService: MatchService,
+    @Inject(forwardRef(() => HomeworkService))
+    private homeworkService: HomeworkService,
+    private realtimeGateway: RealtimeGateway,
+    private notificationAiService: NotificationAiService,
   ) {}
 
   async createChild(
     parentId: string,
-    data: { displayName: string; age: number; grade: string },
+    data: { displayName: string; grade: string; avatarUrl?: string },
   ): Promise<Child> {
     const child = await this.childModel.create({
       ...data,
@@ -39,13 +49,44 @@ export class ChildrenService {
   }
 
   async deleteChild(parentId: string, childId: string): Promise<Child | null> {
+    const oid = new Types.ObjectId(childId);
+    const poid = new Types.ObjectId(parentId);
+
     const child = await this.childModel.findOneAndDelete({
-      _id: new Types.ObjectId(childId),
-      parentId: new Types.ObjectId(parentId),
+      _id: oid,
+      parentId: poid,
     });
+
     if (child) {
-      this.logger.log(`Child deleted: ${child.displayName}`);
+      this.logger.log(`Child deleted: ${child.displayName}. Starting data erasure...`);
+
+      // 1. Erase matches and answers
+      await this.matchService.deleteAllByChild(childId);
+
+      // 2. Erase homework and chats
+      await this.homeworkService.deleteAllByChild(childId);
+
+      // 3. Delete guest links
+      await this.guestLinkModel.deleteMany({ childId: oid });
+
+      // 4. Handle active sessions/logout
+      const activeSessions = await this.sessionModel.find({
+        childId: oid,
+        isActive: true,
+      });
+
+      for (const session of activeSessions) {
+        // Emit real-time "logout" event to the kid's device
+        this.realtimeGateway.emitChildDeleted(session.sessionToken, childId);
+
+        // Deactivate the session
+        session.isActive = false;
+        await session.save();
+      }
+
+      this.logger.log(`Child ${childId} cleanup complete.`);
     }
+
     return child;
   }
 
@@ -166,7 +207,10 @@ export class ChildrenService {
       used: false,
     });
 
-    const code = uuidv4().replace(/-/g, '').slice(0, 6).toUpperCase();
+    const child = await this.childModel.findById(childId);
+    const prefix = child ? child.displayName.replace(/[^a-zA-Z]/g, '').slice(0, 3).toUpperCase() : 'KID';
+    const randomPart = Math.floor(100 + Math.random() * 899).toString();
+    const code = `${prefix}${randomPart}`;
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
     await this.guestLinkModel.create({
@@ -177,7 +221,7 @@ export class ChildrenService {
     });
 
     this.logger.log(
-      `Guest link code ${code} generated for child ${childId} by parent ${parentId}`,
+      `Guest link code ${code} generated for child ${childId} (${child?.displayName})`,
     );
     return { code, expiresAt };
   }
@@ -209,5 +253,58 @@ export class ChildrenService {
       parentId: link.parentId.toString(),
       childId: link.childId.toString(),
     };
+  }
+
+  /**
+   * Returns child profile info for a given link code.
+   * Does not mark the code as used.
+   */
+  async getLinkInfo(code: string) {
+    const link = await this.guestLinkModel.findOne({
+      code: code.toUpperCase(),
+      used: false,
+      expiresAt: { $gt: new Date() },
+    });
+
+    if (!link) return null;
+
+    const child = await this.childModel.findById(link.childId);
+    if (!child) return null;
+
+    return {
+      displayName: child.displayName,
+      avatarUrl: child.avatarUrl,
+      parentId: link.parentId.toString(),
+      childId: link.childId.toString(),
+    };
+  }
+
+  async updateLastActive(childId: string): Promise<void> {
+    if (!Types.ObjectId.isValid(childId)) return;
+    await this.childModel.findByIdAndUpdate(childId, {
+      lastActiveAt: new Date(),
+    });
+  }
+
+  async getInactivityMessage(childId: string): Promise<string> {
+    const child = await this.childModel.findById(childId);
+    if (!child) return 'We miss you! Come back and play! 🚀';
+
+    // Fetch performance stats for personalization
+    let stats: any = undefined;
+    try {
+      stats = await this.matchService.getChildPerformance(
+        child.parentId.toString(),
+        childId,
+      );
+    } catch (e) {
+      this.logger.warn(`Failed to fetch stats for child ${childId}: ${e.message}`);
+    }
+
+    return this.notificationAiService.generateInactivityMessage(
+      child.displayName,
+      child.grade,
+      stats,
+    );
   }
 }

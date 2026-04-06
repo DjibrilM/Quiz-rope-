@@ -1,17 +1,17 @@
 {
   "childJoin": {
-    "title": "Rejoindre une partie !",
-    "instruction": "Montrez ce code à votre parent",
-    "waitingStatus": "En attente du scan par le parent...",
-    "generateNewCode": "Générer un nouveau code",
-    "errorToken": "Impossible d'obtenir le code enfant. Appuyez ci-dessous pour réessayer."
+    "title": "Connecter le compte",
+    "instruction": "Entrez le code affiché sur l'appareil de votre parent",
+    "codeInputPlaceholder": "Entrer le code de session",
+    "scanQR": "Scanner le QR Code",
+    "enterCodeInstead": "Entrer le code à la place",
+    "errorToken": "Impossible d'obtenir le code enfant. Appuyez ci-dessous pour réessayer.",
+    "invalidCode": "Code invalide ou expiré. Veuillez réessayer.",
+    "connectAccount": "Connecter le compte"
   },
   "connectDevice": {
-    "scanTitle": "Scanner le code de l'enfant",
-    "scanInstruction": "Pointez la caméra vers le QR code sur l'appareil de l'enfant",
-    "manualEntryDivider": "ou entrez le code manuellement",
-    "manualCodePlaceholder": "Entrer le code de session",
-    "loadingTitle": "Chargement...",
+    "title": "Connecter l'appareil",
+    "loadingTitle": "Configuration...",
     "loadingMessage": "Récupération des joueurs...",
     "selectChildTitle": "Qui joue ?",
     "selectChildInstruction": "Sélectionnez un enfant pour cet appareil",
@@ -20,9 +20,8 @@
     "linkingTitle": "Association de l'appareil...",
     "settingUpSession": "Configuration de la session de {{name}}",
     "errorTitle": "Une erreur est survenue",
-    "successTitle": "Appareil associé !",
-    "successStatus": "Connecté",
-    "successMessage": "L'appareil de {{name}} est maintenant associé"
+    "showCodeTitle": "Partagez ce code",
+    "showCodeInstruction": "Montrez ceci à {{name}} pour scanner ou saisir sur son appareil"
   },
   "qrCode": {
     "cameraPermission": "L'accès à la caméra est nécessaire pour scanner les QR codes",

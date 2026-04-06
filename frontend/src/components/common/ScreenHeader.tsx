@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, Pressable, Platform } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
@@ -16,6 +17,7 @@ export function ScreenHeader({
   rightElement,
 }: ScreenHeaderProps) {
   const { t } = useTranslation("common");
+  const insets = useSafeAreaInsets();
 
   if (Platform.OS === "ios") {
     return (
@@ -49,9 +51,10 @@ export function ScreenHeader({
       style={{
         flexDirection: "row",
         alignItems: "center",
-        height: 48,
+        paddingTop: insets.top + 8,
+        paddingBottom: 8,
         paddingHorizontal: 16,
-        marginTop: 8,
+        minHeight: 54 + insets.top,
       }}
     >
       <View style={{ width: 48, alignItems: "flex-start" }}>
@@ -89,9 +92,7 @@ export function ScreenHeader({
         </Text>
       </View>
 
-      <View style={{ width: 48, alignItems: "flex-end" }}>
-        {rightElement}
-      </View>
+      <View style={{ minWidth: 48, alignItems: "flex-end" }}>{rightElement}</View>
     </View>
   );
 }

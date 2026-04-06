@@ -1,24 +1,27 @@
 {
   "greeting": "准备好了吗，{{name}}？",
   "appName": "QuizRope",
+  "welcomeBack": "欢迎回来",
   "activeUntil": "有效期至 {{date}}",
   "menu": {
     "quickPlay": "快速开始",
     "quickPlayDesc": "直接跳入一场测试游戏",
-    "startNewGame": "开始新游戏",
-    "startNewGameDesc": "创建一场比赛并挑战玩家",
+    "startNewGame": "开始游戏",
+    "startNewGameDesc": "单人或分屏 — 选择你的模式",
     "connectDevice": "连接设备",
     "connectDeviceDesc": "通过二维码关联孩子的平板",
     "myChildren": "我的孩子",
     "myChildrenDesc": "添加和管理玩家资料",
     "matchHistory": "比赛记录",
     "matchHistoryDesc": "查看过去的比赛和统计",
-    "soloPlay": "单人游戏",
-    "soloPlayDesc": "按自己的节奏独自游玩",
+    "soloPlay": "开始游戏",
+    "soloPlayDesc": "单人或分屏 — 选择你的模式",
     "joinMatch": "加入比赛",
     "joinMatchDesc": "输入代码加入实时比赛",
     "leaderboard": "排行榜",
-    "leaderboardDesc": "看看谁是最强玩家"
+    "leaderboardDesc": "看看谁是最强玩家",
+    "homeworkAssist": "作业",
+    "homeworkAssistDesc": "获取AI对你作业的解释"
   },
   "guest": {
     "linkBannerCta": "点击将进度与家长账号关联",

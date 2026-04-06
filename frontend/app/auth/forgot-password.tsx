@@ -14,7 +14,11 @@ import { useTranslation } from "react-i18next";
 import { usePortrait } from "../../src/hooks/useOrientation";
 import { firebaseAuthService } from "../../src/services/firebase";
 import { AppTitle } from "../../src/components/auth";
-import { BackButton, AnimatedLoader, Button } from "../../src/components/common";
+import {
+  ScreenHeader,
+  AnimatedLoader,
+  Button,
+} from "../../src/components/common";
 import { FONTS } from "../../src/constants/theme";
 import { useToast } from "../../src/context/ToastContext";
 
@@ -46,7 +50,7 @@ export default function ForgotPasswordScreen() {
   };
 
   const inputStyle = {
-    backgroundColor: "#0D0B14",
+    backgroundColor: "rgba(255, 255, 255, 0.04)",
     color: "#FFFFFF",
     fontSize: 16,
     fontFamily: FONTS.body,
@@ -54,7 +58,7 @@ export default function ForgotPasswordScreen() {
     paddingVertical: 16,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#3D2E4A",
+    borderColor: "rgba(255, 255, 255, 0.08)",
     marginBottom: 12,
   };
 
@@ -69,7 +73,7 @@ export default function ForgotPasswordScreen() {
             flexGrow: 1,
             alignItems: "center",
             justifyContent: "center",
-            paddingHorizontal: 32,
+            paddingHorizontal: 12,
             paddingVertical: 40,
           }}
         >
@@ -98,7 +102,7 @@ export default function ForgotPasswordScreen() {
             </Text>
             <Text
               style={{
-                color: "#9B59B6",
+                color: "#A78BFA",
                 fontSize: 13,
                 fontFamily: FONTS.bodySemiBold,
                 textAlign: "center",
@@ -113,7 +117,7 @@ export default function ForgotPasswordScreen() {
                 fontSize: 13,
                 fontFamily: FONTS.body,
                 textAlign: "center",
-                marginBottom: 32,
+                marginBottom: 12,
                 lineHeight: 20,
               }}
             >
@@ -121,6 +125,18 @@ export default function ForgotPasswordScreen() {
                 "auth:forgotPassword.tapLinkInstruction",
                 "Tap the link in the email to set a new password, then come back here to log in.",
               )}
+            </Text>
+            <Text
+              style={{
+                color: "#4A3D5A",
+                fontSize: 12,
+                fontFamily: FONTS.body,
+                textAlign: "center",
+                marginBottom: 32,
+                lineHeight: 18,
+              }}
+            >
+              {t("auth:forgotPassword.spamNote")}
             </Text>
 
             <Pressable
@@ -143,7 +159,7 @@ export default function ForgotPasswordScreen() {
             >
               <Text
                 style={{
-                  color: "#9B59B6",
+                  color: "#A78BFA",
                   fontSize: 14,
                   fontFamily: FONTS.bodyBold,
                 }}
@@ -160,7 +176,7 @@ export default function ForgotPasswordScreen() {
   // ── Step: email ────────────────────────────────────────────────────────────
   return (
     <SafeAreaView className="flex-1 bg-game-bg">
-      <BackButton absolute />
+      <ScreenHeader title={t("auth:forgotPassword.title")} />
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -171,7 +187,7 @@ export default function ForgotPasswordScreen() {
             flexGrow: 1,
             alignItems: "center",
             justifyContent: "center",
-            paddingHorizontal: 32,
+            paddingHorizontal: 12,
             paddingVertical: 40,
           }}
           keyboardShouldPersistTaps="handled"
@@ -201,7 +217,7 @@ export default function ForgotPasswordScreen() {
               value={email}
               onChangeText={setEmail}
               placeholder={t("auth:forgotPassword.emailPlaceholder")}
-              placeholderTextColor="#7B6B8A"
+              placeholderTextColor="#9CA3AF"
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
@@ -237,7 +253,7 @@ export default function ForgotPasswordScreen() {
             </Text>
             <Text
               style={{
-                color: "#9B59B6",
+                color: "#A78BFA",
                 fontSize: 14,
                 fontFamily: FONTS.bodyBold,
               }}

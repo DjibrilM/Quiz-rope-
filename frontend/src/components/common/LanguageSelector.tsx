@@ -53,13 +53,15 @@ export const LanguageSelector = forwardRef<BottomSheetModal>((_props, ref) => {
   return (
     <BottomSheetModal
       ref={ref}
-      snapPoints={["60%"]}
+      snapPoints={["60%", "90%"]}
+      enableDynamicSizing={false}
       backgroundStyle={{ backgroundColor: "#1A1520" }}
       handleIndicatorStyle={{ backgroundColor: "#7B6B8A" }}
       backdropComponent={renderBackdrop}
     >
       <BottomSheetScrollView
-        style={{ flex: 1, paddingHorizontal: 24, paddingBottom: 20 }}
+        style={{ flex: 1, paddingHorizontal: 24 }}
+        contentContainerStyle={{ paddingBottom: 32 }}
       >
         {(Object.keys(SUPPORTED_LANGUAGES) as SupportedLanguage[]).map(
           (lang) => {

@@ -1,17 +1,17 @@
 {
   "childJoin": {
-    "title": "गेम में शामिल हों!",
-    "instruction": "यह कोड अपने अभिभावक को दिखाएं",
-    "waitingStatus": "अभिभावक के स्कैन का इंतज़ार...",
-    "generateNewCode": "नया कोड जनरेट करें",
-    "errorToken": "चाइल्ड टोकन प्राप्त करने में विफल। पुनः प्रयास करने के लिए नीचे टैप करें।"
+    "title": "खाता कनेक्ट करें",
+    "instruction": "अपने अभिभावक के डिवाइस पर दिखाया गया कोड दर्ज करें",
+    "codeInputPlaceholder": "सत्र कोड दर्ज करें",
+    "scanQR": "QR कोड स्कैन करें",
+    "enterCodeInstead": "कोड दर्ज करें",
+    "errorToken": "चाइल्ड टोकन प्राप्त करने में विफल। पुनः प्रयास करने के लिए नीचे टैप करें।",
+    "invalidCode": "अमान्य या समाप्त कोड। कृपया पुनः प्रयास करें।",
+    "connectAccount": "खाता कनेक्ट करें"
   },
   "connectDevice": {
-    "scanTitle": "बच्चे का कोड स्कैन करें",
-    "scanInstruction": "बच्चे के डिवाइस पर QR कोड की ओर कैमरा करें",
-    "manualEntryDivider": "या मैन्युअली कोड दर्ज करें",
-    "manualCodePlaceholder": "सत्र कोड दर्ज करें",
-    "loadingTitle": "लोड हो रहा है...",
+    "title": "डिवाइस कनेक्ट करें",
+    "loadingTitle": "सेट हो रहा है...",
     "loadingMessage": "खिलाड़ी लोड हो रहे हैं...",
     "selectChildTitle": "कौन खेल रहा है?",
     "selectChildInstruction": "इस डिवाइस के लिए एक बच्चा चुनें",
@@ -20,9 +20,8 @@
     "linkingTitle": "डिवाइस लिंक हो रहा है...",
     "settingUpSession": "{{name}} का सत्र सेट हो रहा है",
     "errorTitle": "कुछ गलत हो गया",
-    "successTitle": "डिवाइस लिंक हो गया!",
-    "successStatus": "कनेक्टेड",
-    "successMessage": "{{name}} का डिवाइस अब लिंक है"
+    "showCodeTitle": "यह कोड शेयर करें",
+    "showCodeInstruction": "{{name}} को उनके डिवाइस पर स्कैन या टाइप करने के लिए यह दिखाएं"
   },
   "qrCode": {
     "cameraPermission": "QR कोड स्कैन करने के लिए कैमरा एक्सेस आवश्यक है",

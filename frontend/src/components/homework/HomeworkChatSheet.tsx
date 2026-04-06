@@ -1,49 +1,90 @@
-import { useRef, useState, useEffect, useCallback, forwardRef } from "react";
+import {
+  useRef,
+  useState,
+  useEffect,
+  useCallback,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
+
 import {
   View,
   Text,
-  FlatList,
-  TextInput,
   Pressable,
-  Platform,
-  StyleSheet,
-  useWindowDimensions,
+  KeyboardAvoidingView,
+  Modal,
+  TextInput,
+  FlatList,
+  ActivityIndicator,
+  Animated,
 } from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import Markdown from "react-native-markdown-display";
-import {
-  BottomSheetModal,
-  BottomSheetBackdrop,
-  BottomSheetView,
-  BottomSheetTextInput,
-} from "@gorhom/bottom-sheet";
-import type { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
+import { useTranslation } from "react-i18next";
+import { MathMarkdown } from "../common/MathMarkdown";
 import { useHomeworkChat, type ChatMessage } from "../../hooks/useHomeworkChat";
 import { FONTS } from "../../constants/theme";
 
 interface Props {
   sessionId: string;
+  guestContext?: string;
 }
 
-export const HomeworkChatSheet = forwardRef<BottomSheetModal, Props>(
-  ({ sessionId }, ref) => {
-    const { height: screenHeight } = useWindowDimensions();
-    const insets = useSafeAreaInsets();
-    const { messages, send, stop, streaming } = useHomeworkChat(sessionId);
-    const [input, setInput] = useState("");
-    const listRef = useRef<FlatList<ChatMessage>>(null);
+export interface ChatSheetRef {
+  present: () => void;
+  dismiss: () => void;
+}
 
-    useEffect(() => {
-      if (messages.length > 0) {
-        setTimeout(() => {
-          listRef.current?.scrollToEnd({ animated: true });
-        }, 80);
-      }
-    }, [messages.length, messages[messages.length - 1]?.content]);
+function BlinkingCursor() {
+  const opacity = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    const anim = Animated.loop(
+      Animated.sequence([
+        Animated.timing(opacity, {
+          toValue: 0,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+    anim.start();
+    return () => anim.stop();
+  }, [opacity]);
+
+  return (
+    <Animated.Text
+      style={{
+        opacity,
+        color: "#6C5CE7",
+        fontSize: 16,
+        lineHeight: 10,
+        marginTop: -4,
+      }}
+    >
+      ▋
+    </Animated.Text>
+  );
+}
+
+export const HomeworkChatSheet = forwardRef<ChatSheetRef, Props>(
+  ({ sessionId, guestContext }, ref) => {
+    const { t } = useTranslation("homework");
+    const [isInputFocused, setIsInputFocused] = useState(false);
+    const insets = useSafeAreaInsets();
+    const [visible, setVisible] = useState(false);
+    const { messages, send, stop, streaming, loadMore, isLoadingMore } =
+      useHomeworkChat(sessionId, guestContext);
+    const [input, setInput] = useState("");
+    const scrollRef = useRef<FlatList>(null);
 
     const handleSend = useCallback(() => {
       const text = input.trim();
@@ -52,272 +93,172 @@ export const HomeworkChatSheet = forwardRef<BottomSheetModal, Props>(
       send(text);
     }, [input, streaming, send]);
 
-    const renderMessage = useCallback(({ item }: { item: ChatMessage }) => {
+    const renderMessage = useCallback((item: ChatMessage) => {
       const isUser = item.role === "user";
       return (
         <View
-          style={[styles.bubble, isUser ? styles.bubbleUser : styles.bubbleAi]}
+          key={item._id}
+          className={`max-w-[85%] rounded-[18px] px-3.5 py-2.5 my-[1px] ${
+            isUser
+              ? "self-end bg-[#6C5CE7] rounded-br-[4px]"
+              : "self-start bg-[#1E1828] rounded-bl-[4px]"
+          }`}
         >
           {isUser ? (
-            <Text style={styles.userText}>{item.content}</Text>
+            <Text className="text-white font-body text-sm leading-[21px]">
+              {item.content}
+            </Text>
           ) : (
             <>
-              <Markdown style={mdStyles}>{item.content}</Markdown>
-              {item.isStreaming && <Text style={styles.cursor}>▋</Text>}
+              <MathMarkdown
+                content={item.content}
+                style={mdStyles}
+                bgColor="#1E1828"
+              />
+              {item.isStreaming && <BlinkingCursor />}
             </>
           )}
         </View>
       );
     }, []);
 
-    const renderBackdrop = useCallback(
-      (props: BottomSheetBackdropProps) => (
-        <BottomSheetBackdrop
-          {...props}
-          disappearsOnIndex={-1}
-          appearsOnIndex={0}
-          opacity={0.65}
-        />
-      ),
-      [],
-    );
-
     const handleClose = () => {
-      if (ref && "current" in ref && ref.current) {
-        ref.current.dismiss();
-      }
+      setVisible(false);
     };
 
+    useImperativeHandle(ref, () => ({
+      present: () => setVisible(true),
+      dismiss: () => setVisible(false),
+    }));
+
     return (
-      <BottomSheetModal
-        ref={ref}
-        snapPoints={["93%", "95%"]}
-        enablePanDownToClose
-        keyboardBehavior="extend"
-        keyboardBlurBehavior="restore"
-        android_keyboardInputMode="adjustResize"
-        backdropComponent={renderBackdrop}
-        backgroundStyle={{
-          backgroundColor: "#13101C",
-          borderTopLeftRadius: 28,
-          borderTopRightRadius: 28,
-        }}
-        handleIndicatorStyle={{
-          backgroundColor: "#3D2E4A",
-          width: 40,
-          height: 4,
-        }}
+      <Modal
+        style={{ height: "100%" }}
+        visible={visible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={handleClose}
       >
-        <BottomSheetView
-          style={[
-            styles.sheet,
-            { paddingBottom: Math.max(insets.bottom, 16) },
-          ]}
-        >
-            {/* Header */}
-            <View style={styles.header}>
-              <View>
-                <Text style={styles.headerTitle}>Ask AI</Text>
-                <Text style={styles.headerSub}>
-                  Ask anything about your homework
-                </Text>
+        <SafeAreaView className="flex-1">
+          <KeyboardAvoidingView
+            behavior={"padding"}
+            style={{ flex: 1 }}
+            keyboardVerticalOffset={isInputFocused ? 0 : -insets.bottom}
+          >
+            {/* Backdrop (hidden but functional for tapping to close) */}
+            <Pressable style={{ flex: 1 }} onPress={handleClose} />
+
+            {/* Sheet Content */}
+            <View
+              className="bg-[#13101C] rounded-t-[28px]"
+              style={{
+                height: "100%",
+              }}
+            >
+              <View className="flex-row items-center justify-between px-5 pb-3 border-b border-[#1E1828] pt-4">
+                <View>
+                  <Text className="text-white font-['Bungee_400Regular'] text-lg">
+                    {t("chat.title")}
+                  </Text>
+                  <Text className="text-[#5A4B6B] font-body text-xs mt-0.5">
+                    {t("chat.subtitle")}
+                  </Text>
+                </View>
+                <Pressable
+                  onPress={handleClose}
+                  className="w-9 h-9 rounded-full bg-[#1E1828] items-center justify-center"
+                >
+                  <Ionicons name="close" size={20} color="#B8A9C9" />
+                </Pressable>
               </View>
-              <Pressable onPress={handleClose} style={styles.closeBtn}>
-                <Ionicons name="close" size={20} color="#B8A9C9" />
-              </Pressable>
-            </View>
 
-            <View style={{ height: screenHeight * 0.72 }}>
-              {/* Messages */}
-              <FlatList
-                ref={listRef}
-                data={messages}
-                keyExtractor={(m: ChatMessage) => m._id}
-                style={styles.list}
-                contentContainerStyle={styles.listContent}
-                renderItem={renderMessage}
-                keyboardShouldPersistTaps="handled"
-                ListEmptyComponent={
-                  <View style={styles.emptyState}>
-                    <Ionicons
-                      name="chatbubble-ellipses-outline"
-                      size={32}
-                      color="#3D2E4A"
-                    />
-                    <Text style={styles.emptyText}>
-                      Ask anything about your homework
-                    </Text>
-                  </View>
-                }
-              />
-            </View>
+              <View className="flex-1 justify-between">
+                <FlatList
+                  ref={scrollRef}
+                  data={messages}
+                  extraData={messages[0]?.content}
+                  keyExtractor={(item) => item._id}
+                  renderItem={({ item }) => renderMessage(item)}
+                  inverted={true}
+                  className="flex-1"
+                  contentContainerStyle={{
+                    flexGrow: 1,
+                    paddingVertical: 12,
+                  }}
+                  contentContainerClassName="px-4 gap-2.5"
+                  keyboardShouldPersistTaps="handled"
+                  onEndReached={loadMore}
+                  onEndReachedThreshold={0.5}
+                  showsVerticalScrollIndicator={false}
+                  ListEmptyComponent={
+                    <View className="flex-1 items-center pt-12 gap-3 scale-y-[-1]">
+                      <Ionicons
+                        name="chatbubble-ellipses-outline"
+                        size={32}
+                        color="#3D2E4A"
+                      />
+                      <Text className="text-[#3D2E4A] font-body text-sm text-center">
+                        {t("chat.emptyState")}
+                      </Text>
+                    </View>
+                  }
+                  ListFooterComponent={
+                    isLoadingMore ? (
+                      <View className="py-4 items-center justify-center">
+                        <ActivityIndicator color="#6C5CE7" />
+                      </View>
+                    ) : null
+                  }
+                />
 
-            {/* Input row */}
-            <View style={styles.inputRow}>
-              <BottomSheetTextInput
-                value={input}
-                onChangeText={setInput}
-                placeholder="Ask a question…"
-                placeholderTextColor="#4A3D5A"
-                multiline
-                onSubmitEditing={handleSend}
-                blurOnSubmit={false}
-                editable={!streaming}
-                style={[styles.input, streaming && { opacity: 0.5 }]}
-              />
-
-              {streaming ? (
-                /* Stop button */
-                <Pressable
-                  onPress={stop}
-                  style={[styles.actionBtn, styles.stopBtn]}
+                <View
+                  className="flex-row items-end px-3 pt-3 my-2.5 gap-2 border-t border-[#1E1828]"
+                  // style={{ paddingBottom: Math.max(insets.bottom, 16) }}
                 >
-                  <Ionicons name="stop" size={20} color="#FFFFFF" />
-                </Pressable>
-              ) : (
-                /* Send button */
-                <Pressable
-                  onPress={handleSend}
-                  disabled={!input.trim()}
-                  style={[
-                    styles.actionBtn,
-                    !input.trim()
-                      ? styles.sendBtnDisabled
-                      : styles.sendBtnActive,
-                  ]}
-                >
-                  <Ionicons name="arrow-up" size={20} color="#FFFFFF" />
-                </Pressable>
-              )}
+                  <TextInput
+                    onFocus={() => setIsInputFocused(true)}
+                    onBlur={() => setIsInputFocused(false)}
+                    value={input}
+                    onChangeText={setInput}
+                    placeholder={t("chat.placeholder")}
+                    placeholderTextColor="#4A3D5A"
+                    multiline
+                    onSubmitEditing={handleSend}
+                    blurOnSubmit={false}
+                    editable={!streaming}
+                    className="flex-1 bg-[#0D0B14] text-white rounded-[20px] px-4 py-1 font-body text-sm max-h-[120px] min-h-[48px] border border-[#2D1F3D]"
+                    style={streaming && { opacity: 0.5 }}
+                  />
+
+                  {streaming ? (
+                    <Pressable
+                      onPress={stop}
+                      className="w-12 h-12 rounded-full items-center justify-center bg-[#E85D75]"
+                    >
+                      <Ionicons name="stop" size={20} color="#FFFFFF" />
+                    </Pressable>
+                  ) : (
+                    <Pressable
+                      onPress={handleSend}
+                      disabled={!input.trim()}
+                      className={`w-12 h-12 rounded-full items-center justify-center ${
+                        !input.trim() ? "bg-[#2D1F3D]" : "bg-[#6C5CE7]"
+                      }`}
+                    >
+                      <Ionicons name="arrow-up" size={20} color="#FFFFFF" />
+                    </Pressable>
+                  )}
+                </View>
+              </View>
             </View>
-          </BottomSheetView>
-      </BottomSheetModal>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
+      </Modal>
     );
   },
 );
 HomeworkChatSheet.displayName = "HomeworkChatSheet";
 
-const styles = StyleSheet.create({
-  kav: { flex: 1 },
-  sheet: {
-    flex: 1,
-    backgroundColor: "#13101C",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#1E1828",
-    paddingTop: 8,
-  },
-  headerTitle: {
-    color: "#FFFFFF",
-    fontFamily: "Bungee_400Regular",
-    fontSize: 18,
-  },
-  headerSub: {
-    color: "#5A4B6B",
-    fontFamily: FONTS.body,
-    fontSize: 12,
-    marginTop: 2,
-  },
-  closeBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "#1E1828",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  list: { flex: 1 },
-  listContent: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 10,
-  },
-  emptyState: {
-    alignItems: "center",
-    paddingTop: 48,
-    gap: 12,
-  },
-  emptyText: {
-    color: "#3D2E4A",
-    fontFamily: FONTS.body,
-    fontSize: 14,
-    textAlign: "center",
-  },
-  bubble: {
-    maxWidth: "85%",
-    borderRadius: 18,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    marginVertical: 1,
-  },
-  bubbleUser: {
-    alignSelf: "flex-end",
-    backgroundColor: "#6C5CE7",
-    borderBottomRightRadius: 4,
-  },
-  bubbleAi: {
-    alignSelf: "flex-start",
-    backgroundColor: "#1E1828",
-    borderBottomLeftRadius: 4,
-  },
-  userText: {
-    color: "#FFFFFF",
-    fontFamily: FONTS.body,
-    fontSize: 14,
-    lineHeight: 21,
-  },
-  cursor: {
-    color: "#6C5CE7",
-    fontSize: 16,
-    lineHeight: 22,
-    marginTop: -4,
-  },
-  inputRow: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    paddingHorizontal: 12,
-    paddingTop: 10,
-    paddingBottom: 8,
-    gap: 8,
-    borderTopWidth: 1,
-    borderTopColor: "#1E1828",
-  },
-  input: {
-    flex: 1,
-    backgroundColor: "#0D0B14",
-    color: "#FFFFFF",
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 12,
-    fontFamily: FONTS.body,
-    fontSize: 14,
-    maxHeight: 120,
-    minHeight: 48,
-    borderWidth: 1,
-    borderColor: "#2D1F3D",
-  },
-  actionBtn: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  sendBtnActive: { backgroundColor: "#6C5CE7" },
-  sendBtnDisabled: { backgroundColor: "#2D1F3D" },
-  stopBtn: {
-    backgroundColor: "#E85D75",
-  },
-});
-
-// Markdown styles for AI bubbles
 const mdStyles = {
   body: {
     color: "#C4B5D4",
@@ -325,21 +266,8 @@ const mdStyles = {
     fontSize: 14,
     lineHeight: 21,
   },
-  strong: {
-    fontFamily: FONTS.bodyBold,
-    color: "#FFFFFF",
-  },
-  em: {
-    fontStyle: "italic" as const,
-    color: "#C4B5D4",
-  },
-  heading1: {
-    color: "#FFFFFF",
-    fontFamily: "Bungee_400Regular",
-    fontSize: 16,
-    marginTop: 8,
-    marginBottom: 4,
-  },
+  strong: { fontFamily: FONTS.bodyBold, color: "#FFFFFF" },
+  em: { fontStyle: "italic" as const, color: "#C4B5D4" },
   heading2: {
     color: "#FFFFFF",
     fontFamily: FONTS.bodyBold,
@@ -359,8 +287,6 @@ const mdStyles = {
     color: "#A78BFA",
     fontFamily: "monospace",
     fontSize: 13,
-    borderRadius: 4,
-    paddingHorizontal: 4,
   },
   fence: {
     backgroundColor: "#0D0B14",

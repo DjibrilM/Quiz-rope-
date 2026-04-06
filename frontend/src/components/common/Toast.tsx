@@ -92,8 +92,6 @@ function ToastItemView({
       <View
         className="bg-card-bg rounded-2xl flex-row items-start py-3 pl-[14px] pr-3"
         style={{
-          borderLeftWidth: 4,
-          borderLeftColor: BORDER_COLOR[toast.type],
           gap: 10,
           shadowColor: "#000000",
           shadowOffset: { width: 0, height: 4 },

@@ -53,52 +53,54 @@ function ChevronRight({ color }: { color: string }) {
 
 interface ChildCardProps {
   displayName: string;
-  age: number;
   grade: string;
   avatarUrl?: string;
   onRemove?: () => void;
   onPress?: () => void;
 }
 
-export function ChildCard({ displayName, age, grade, avatarUrl, onRemove, onPress }: ChildCardProps) {
+export function ChildCard({ displayName, grade, avatarUrl, onRemove, onPress }: ChildCardProps) {
   const { t } = useTranslation("children");
   const colors = AVATAR_COLORS[avatarUrl || ""] || DEFAULT_COLORS;
 
   const content = (
     <View
       style={{
-        backgroundColor: colors.bg,
-        borderRadius: 20,
+        backgroundColor: "#13101C",
+        borderRadius: 24,
         padding: 16,
+        borderWidth: 1,
+        borderColor: colors.ring + "40",
       }}
-      accessibilityLabel={t("ageGradeAccessibility", { name: displayName, age, grade })}
+      accessibilityLabel={t("gradeAccessibility", { name: displayName, grade })}
     >
       {/* Top row: avatar + info + remove button */}
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         {/* Avatar with colored ring */}
         <View
           style={{
-            width: 64,
-            height: 64,
-            borderRadius: 32,
-            borderWidth: 3,
-            borderColor: colors.ring,
+            width: 56,
+            height: 56,
+            borderRadius: 28,
+            borderWidth: 1.5,
+            borderColor: colors.ring + "80",
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: colors.ring + "15",
+            backgroundColor: colors.bg,
           }}
         >
-          <AvatarIcon avatarId={avatarUrl} size={42} />
+          <AvatarIcon avatarId={avatarUrl} size={36} />
         </View>
 
         {/* Name + badges */}
-        <View style={{ flex: 1, marginLeft: 14 }}>
+        <View style={{ flex: 1, marginLeft: 16 }}>
           <Text
             style={{
-              fontSize: 18,
-              fontFamily: FONTS.bodyExtraBold,
+              fontSize: 17,
+              fontFamily: FONTS.bodyBold,
               color: "#FFFFFF",
-              marginBottom: 6,
+              marginBottom: 4,
+              letterSpacing: 0.3,
             }}
             numberOfLines={1}
           >
@@ -106,33 +108,18 @@ export function ChildCard({ displayName, age, grade, avatarUrl, onRemove, onPres
           </Text>
 
           <View style={{ flexDirection: "row", gap: 8 }}>
-            {/* Age badge */}
-            <View
-              style={{
-                backgroundColor: colors.badge,
-                paddingHorizontal: 10,
-                paddingVertical: 3,
-                borderRadius: 10,
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 4,
-              }}
-            >
-              <Text style={{ fontSize: 11, color: colors.ring, fontFamily: FONTS.bodySemiBold }}>
-                {t("ageBadge", { age })}
-              </Text>
-            </View>
-
             {/* Grade badge */}
             <View
               style={{
-                backgroundColor: colors.badge,
+                backgroundColor: colors.badge + "80",
                 paddingHorizontal: 10,
-                paddingVertical: 3,
-                borderRadius: 10,
+                paddingVertical: 4,
+                borderRadius: 8,
+                borderWidth: 1,
+                borderColor: colors.ring + "30",
               }}
             >
-              <Text style={{ fontSize: 11, color: colors.ring, fontFamily: FONTS.bodySemiBold }}>
+              <Text style={{ fontSize: 11, color: colors.ring, fontFamily: FONTS.bodySemiBold, textTransform: "uppercase", letterSpacing: 0.5 }}>
                 {grade}
               </Text>
             </View>
@@ -151,11 +138,13 @@ export function ChildCard({ displayName, age, grade, avatarUrl, onRemove, onPres
             style={{
               width: 36,
               height: 36,
-              borderRadius: 12,
-              backgroundColor: "#E85D7515",
+              borderRadius: 18,
+              borderWidth: 1,
+              borderColor: "#E85D7540",
+              backgroundColor: "#E85D7510",
               alignItems: "center",
               justifyContent: "center",
-              alignSelf: "flex-start",
+              alignSelf: "center",
             }}
             accessibilityRole="button"
             accessibilityLabel={t("removeAccessibility", { name: displayName })}
@@ -166,7 +155,9 @@ export function ChildCard({ displayName, age, grade, avatarUrl, onRemove, onPres
 
         {/* Chevron for navigation */}
         {onPress && !onRemove && (
-          <ChevronRight color={colors.ring} />
+          <View style={{ opacity: 0.5 }}>
+            <ChevronRight color={colors.ring} />
+          </View>
         )}
       </View>
     </View>

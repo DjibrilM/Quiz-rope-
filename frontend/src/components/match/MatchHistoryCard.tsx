@@ -60,9 +60,17 @@ export function MatchHistoryCard({ match, onPress }: MatchHistoryCardProps) {
             <Text style={{
               fontSize: 12,
               fontFamily: FONTS.bodySemiBold,
-              color: match.status === "IN_PROGRESS" ? "#F59E0B" : "#7B6B8A",
+              color: match.status === "IN_PROGRESS"
+                ? "#F59E0B"
+                : match.status === "ABANDONED"
+                  ? "#EF4444"
+                  : "#7B6B8A",
             }}>
-              {match.status === "IN_PROGRESS" ? t("match:history.inProgress") : t("match:history.waiting")}
+              {match.status === "IN_PROGRESS"
+                ? t("match:history.inProgress")
+                : match.status === "ABANDONED"
+                  ? t("match:history.abandoned")
+                  : t("match:history.waiting")}
             </Text>
           )}
           <Text style={{ color: "#7B6B8A", fontSize: 12, fontFamily: FONTS.body, marginTop: 4 }}>{dateStr}</Text>

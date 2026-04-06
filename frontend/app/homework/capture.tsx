@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -11,73 +11,79 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
+import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
+import * as Crypto from "expo-crypto";
 import { apiService } from "../../src/services/api";
+import * as guestDb from "../../src/services/guestDb";
+import { useGameStore } from "../../src/stores/gameStore";
 import { AnimatedLoader, Button } from "../../src/components/common";
 import { FONTS } from "../../src/constants/theme";
+import { useTranslation } from "react-i18next";
 
-const UPLOAD_LIMIT = 3;
-const UPLOAD_KEY = "@hw_daily_uploads";
 
-async function getDailyCount(): Promise<number> {
-  try {
-    const raw = await AsyncStorage.getItem(UPLOAD_KEY);
-    if (!raw) return 0;
-    const { date, count } = JSON.parse(raw);
-    const today = new Date().toDateString();
-    return date === today ? count : 0;
-  } catch {
-    return 0;
-  }
+import { getDailyCount, incrementDailyCount, UPLOAD_LIMIT } from "../../src/hooks/useHomeworkLimit";
+
+// 800px is sufficient for LLM text recognition; quality 0.4 keeps the file small
+const MAX_DIMENSION = 800;
+
+async function compressForAnalysis(uri: string): Promise<{ uri: string; base64: string }> {
+  const imageRef = await ImageManipulator.manipulate(uri)
+    .resize({ width: MAX_DIMENSION })
+    .renderAsync();
+  const result = await imageRef.saveAsync({ compress: 0.4, format: SaveFormat.JPEG, base64: true });
+  return { uri: result.uri, base64: result.base64! };
 }
-
-async function incrementDailyCount(): Promise<void> {
-  try {
-    const count = await getDailyCount();
-    await AsyncStorage.setItem(
-      UPLOAD_KEY,
-      JSON.stringify({ date: new Date().toDateString(), count: count + 1 }),
-    );
-  } catch {}
-}
-
 
 export default function CaptureScreen() {
+  const { t } = useTranslation("homework");
   const { childId } = useLocalSearchParams<{ childId?: string }>();
+
+  const { userRole, parentUser, guestProfile } = useGameStore();
+  const userId = parentUser?._id ?? parentUser?.id ?? guestProfile?.guestId ?? "anonymous";
+
   const [permission, requestPermission] = useCameraPermissions();
-  const cameraRef = useRef<CameraView>(null);
   const [capturedUri, setCapturedUri] = useState<string | null>(null);
   const [capturedBase64, setCapturedBase64] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [compressing, setCompressing] = useState(false);
 
-  const handleCapture = async () => {
+  const processImage = async (uri: string) => {
+    setCompressing(true);
     try {
-      const photo = await cameraRef.current?.takePictureAsync({
-        quality: 0.45,
-        base64: true,
-      });
-      if (photo) {
-        setCapturedUri(photo.uri);
-        setCapturedBase64(photo.base64 ?? null);
-      }
+      const compressed = await compressForAnalysis(uri);
+      setCapturedUri(compressed.uri);
+      setCapturedBase64(compressed.base64);
     } catch {
-      Alert.alert("Error", "Failed to take photo. Try again.");
+      Alert.alert(t("common:errors.error"), t("errors.processFailed"));
+
+    } finally {
+      setCompressing(false);
+    }
+  };
+
+  // Opens system camera without crop UI
+  const handleCapture = async () => {
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ["images"],
+      allowsEditing: false,
+      quality: 1,
+    });
+    if (!result.canceled && result.assets[0]) {
+      await processImage(result.assets[0].uri);
     }
   };
 
   const handlePickFromGallery = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
-      quality: 0.45,
-      base64: true,
       allowsEditing: false,
+      quality: 1,
     });
     if (!result.canceled && result.assets[0]) {
-      const asset = result.assets[0];
-      setCapturedUri(asset.uri);
-      setCapturedBase64(asset.base64 ?? null);
+      await processImage(result.assets[0].uri);
     }
   };
 
@@ -87,56 +93,61 @@ export default function CaptureScreen() {
   };
 
   const handleSubmit = async () => {
-    if (!capturedBase64) return;
+    if (!capturedUri) return;
 
-    const count = await getDailyCount();
-    if (count >= UPLOAD_LIMIT) {
-      Alert.alert(
-        "Daily limit reached",
-        `You can scan up to ${UPLOAD_LIMIT} homework pages per day. Come back tomorrow!`,
-      );
-      return;
+    if (!__DEV__) {
+      const count = await getDailyCount(userId);
+      if (count >= UPLOAD_LIMIT) {
+        Alert.alert(
+          t("errors.limitReached"),
+          t("errors.limitDesc", { limit: UPLOAD_LIMIT }),
+        );
+        return;
+      }
     }
 
     setUploading(true);
     try {
-      const session = await apiService.analyzeHomework(capturedBase64, undefined, childId);
-      await incrementDailyCount();
-      router.replace(`/homework/processing?sessionId=${session._id}` as any);
+      if (userRole === "guest") {
+        // Send compressed file as multipart; save base64 locally for offline display
+        const result = await apiService.analyzeGuestHomework(capturedUri);
+        const sessionId = Crypto.randomUUID();
+        await guestDb.saveHomeworkSession({
+          id: sessionId,
+          title: result.title,
+          subject: result.subject,
+          status: result.status as any,
+          topics: result.topics,
+          answersMarkdown: result.answersMarkdown,
+          imageBase64: capturedBase64 ?? "",
+          imageMimeType: "image/jpeg",
+          quizTaken: false,
+          linkedMatchIds: [],
+          createdAt: Date.now(),
+        });
+        await incrementDailyCount(userId);
+        router.replace(`/homework/session/${sessionId}` as any);
+      } else {
+        const session = await apiService.analyzeHomework(capturedUri, undefined, childId);
+        await incrementDailyCount(userId);
+        router.replace(`/homework/processing?sessionId=${session._id}` as any);
+      }
     } catch (err: any) {
       setUploading(false);
-      Alert.alert("Upload failed", err?.message ?? "Try again.");
+      Alert.alert(t("errors.uploadFailed"), err?.message ?? t("common:buttons.tryAgain"));
+
     }
   };
 
   if (!permission) return <View style={styles.bg} />;
 
-  if (!permission.granted) {
+  if (compressing) {
     return (
-      <>
-        {Platform.OS === "ios" && (
-          <Stack.Screen
-            options={{ headerShown: true, title: "Homework Assist" }}
-          />
-        )}
-        <SafeAreaView style={styles.bg}>
-          <View style={styles.center}>
-            <Text style={styles.permTitle}>Camera access needed</Text>
-            <Text style={styles.permSub}>
-              We need camera access to photograph your homework.
-            </Text>
-            <Button onPress={requestPermission} label="Allow Camera" />
-            <Pressable
-              onPress={handlePickFromGallery}
-              style={styles.galleryFallback}
-            >
-              <Text style={styles.galleryFallbackText}>
-                Or choose from library
-              </Text>
-            </Pressable>
-          </View>
-        </SafeAreaView>
-      </>
+      <SafeAreaView style={[styles.bg, styles.center]}>
+        <AnimatedLoader size="lg" />
+        <Text style={[styles.hint, { marginTop: 16 }]}>{t("capture.preparing")}</Text>
+
+      </SafeAreaView>
     );
   }
 
@@ -145,37 +156,39 @@ export default function CaptureScreen() {
     return (
       <>
         {Platform.OS === "ios" && (
-          <Stack.Screen
-            options={{ headerShown: true, title: "Review Photo" }}
-          />
+          <Stack.Screen options={{ headerShown: true, title: t("session.reviewTitle") }} />
+
         )}
         <SafeAreaView style={styles.bg} edges={["bottom"]}>
+          {Platform.OS === "android" && (
+            <Pressable onPress={handleRetake} style={styles.androidBack} hitSlop={12}>
+              <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+            </Pressable>
+          )}
           <Image
             source={{ uri: capturedUri }}
             style={StyleSheet.absoluteFill}
             resizeMode="contain"
           />
-
-          {/* Bottom sheet panel — floats over preview */}
           <View className="py-5" style={[styles.sheet, styles.sheetAbsolute]}>
             <View style={styles.sheetHandle} />
             <View style={styles.previewActions}>
               <Button
                 variant="outline"
-                label="Retake"
+                label={t("actions.retake")}
+
                 onPress={handleRetake}
                 disabled={uploading}
                 className="flex-1 max-w-none"
               />
               <Button
-                label={uploading ? undefined : "Analyze"}
+                label={uploading ? undefined : t("actions.analyze")}
+
                 onPress={handleSubmit}
                 disabled={uploading}
                 className="flex-1 max-w-none"
               >
-                {uploading ? (
-                  <AnimatedLoader size="sm" color="#fff" />
-                ) : undefined}
+                {uploading ? <AnimatedLoader size="sm" color="#fff" /> : undefined}
               </Button>
             </View>
           </View>
@@ -184,47 +197,56 @@ export default function CaptureScreen() {
     );
   }
 
-  // ── Live camera ───────────────────────────────────────────────────────────
+  // ── Capture screen ─────────────────────────────────────────────────────────
   return (
     <>
       {Platform.OS === "ios" && (
-        <Stack.Screen
-          options={{ headerShown: true, title: "Homework Assist" }}
-        />
+        <Stack.Screen options={{ headerShown: true, title: t("title") }} />
+
       )}
       <SafeAreaView style={styles.bg} edges={["bottom"]}>
-        <CameraView
-          ref={cameraRef}
-          style={StyleSheet.absoluteFill}
-          facing="back"
-        />
+        {/* Live camera viewfinder as background */}
+        {permission.granted && (
+          <CameraView style={StyleSheet.absoluteFill} facing="back" />
+        )}
 
-        {/* Bottom sheet panel — floats over camera */}
-        <View
-          className="m-10 py-10"
-          style={[styles.sheet, styles.sheetAbsolute]}
-        >
+        {Platform.OS === "android" && (
+          <Pressable onPress={() => router.back()} style={styles.androidBack} hitSlop={12}>
+            <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+          </Pressable>
+        )}
+
+        {/* Bottom sheet */}
+        <View className="m-10 py-10" style={[styles.sheet, styles.sheetAbsolute]}>
           <View style={styles.sheetHandle} />
-          <Text style={styles.hint}>Point the camera at your homework</Text>
+          <Text style={styles.hint}>{t("capture.hint")}</Text>
+
           <View style={styles.captureRow}>
             {/* Gallery picker */}
-            <Pressable
-              style={styles.sideBtn}
-              onPress={handlePickFromGallery}
-              hitSlop={12}
-            >
+            <Pressable style={styles.sideBtn} onPress={handlePickFromGallery} hitSlop={12}>
               <Ionicons name="images-outline" size={26} color="#B8A9C9" />
-              <Text style={styles.sideBtnLabel}>Library</Text>
+              <Text style={styles.sideBtnLabel}>{t("actions.library")}</Text>
+
             </Pressable>
 
-            {/* Shutter */}
-            <Pressable style={styles.captureBtn} onPress={handleCapture}>
+            {/* Shutter — opens system camera with crop */}
+            <Pressable
+              style={styles.captureBtn}
+              onPress={permission.granted ? handleCapture : requestPermission}
+            >
               <Ionicons name="camera" size={32} color="#FFFFFF" />
             </Pressable>
 
             {/* Balance spacer */}
             <View style={styles.sideBtn} />
           </View>
+
+          {!permission.granted && (
+            <Text style={[styles.hint, { marginTop: 8, marginBottom: 0 }]}>
+              {t("capture.allowAccess")}
+
+            </Text>
+          )}
         </View>
       </SafeAreaView>
     </>
@@ -239,26 +261,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 32,
   },
-  permTitle: {
-    color: "#FFFFFF",
-    fontSize: 20,
-    fontFamily: "Bungee_400Regular",
-    textAlign: "center",
-    marginBottom: 12,
-  },
-  permSub: {
-    color: "#7B6B8A",
-    fontSize: 14,
-    fontFamily: FONTS.body,
-    textAlign: "center",
-    marginBottom: 28,
-  },
-  galleryFallback: { marginTop: 16, paddingVertical: 8 },
-  galleryFallbackText: {
-    color: "#6C5CE7",
-    fontFamily: FONTS.bodyBold,
-    fontSize: 14,
-  },
 
   sheetAbsolute: {
     position: "absolute",
@@ -266,7 +268,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
   },
-
   sheet: {
     backgroundColor: "#1A1520",
     borderRadius: 28,
@@ -330,5 +331,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 12,
     marginBottom: 8,
+  },
+
+  androidBack: {
+    position: "absolute",
+    top: 48,
+    left: 16,
+    zIndex: 10,
+    padding: 8,
   },
 });

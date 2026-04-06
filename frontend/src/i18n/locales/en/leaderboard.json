@@ -2,9 +2,15 @@
   "title": "Leaderboard",
   "loadingMessage": "Loading rankings...",
   "emptyTitle": "No rankings yet",
-  "emptySubtitle": "Play some games to see who's the top quizzer!",
+  "emptySubtitle": "Have your children play some matches to see who's the top quizzer!",
+  "emptySubtitleChild": "Play some matches to build up your stats!",
   "gamesPlayed_one": "{{count}} game played",
   "gamesPlayed_other": "{{count}} games played",
   "correct": "Correct",
-  "accuracy": "Accuracy"
+  "accuracy": "Accuracy",
+  "yourProfile": "Your Profile",
+  "tapForStats": "Tap to view your full stats",
+  "recentMatches": "Recent Matches",
+  "bySubject": "By Subject"
 }
+

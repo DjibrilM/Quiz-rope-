@@ -1,24 +1,27 @@
 {
   "greeting": "খেলতে প্রস্তুত, {{name}}?",
   "appName": "QuizRope",
+  "welcomeBack": "স্বাগতম ফিরে",
   "activeUntil": "{{date}} পর্যন্ত সক্রিয়",
   "menu": {
     "quickPlay": "দ্রুত খেলা",
     "quickPlayDesc": "সরাসরি একটি পরীক্ষামূলক খেলায় ঢুকুন",
-    "startNewGame": "নতুন খেলা শুরু",
-    "startNewGameDesc": "একটি ম্যাচ তৈরি করুন এবং খেলোয়াড়দের চ্যালেঞ্জ করুন",
+    "startNewGame": "খেলুন",
+    "startNewGameDesc": "একক বা স্প্লিট স্ক্রিন — আপনার মোড বেছে নিন",
     "connectDevice": "ডিভাইস সংযুক্ত করুন",
     "connectDeviceDesc": "QR কোডের মাধ্যমে সন্তানের ট্যাবলেট সংযুক্ত করুন",
     "myChildren": "আমার সন্তানেরা",
     "myChildrenDesc": "খেলোয়াড়দের প্রোফাইল যোগ ও পরিচালনা করুন",
     "matchHistory": "ম্যাচের ইতিহাস",
     "matchHistoryDesc": "আগের খেলা ও পরিসংখ্যান দেখুন",
-    "soloPlay": "একক খেলা",
-    "soloPlayDesc": "নিজের গতিতে একা খেলুন",
+    "soloPlay": "খেলুন",
+    "soloPlayDesc": "একক বা স্প্লিট স্ক্রিন — আপনার মোড বেছে নিন",
     "joinMatch": "ম্যাচে যোগ দিন",
     "joinMatchDesc": "লাইভ ম্যাচে যোগ দিতে কোড দিন",
     "leaderboard": "লিডারবোর্ড",
-    "leaderboardDesc": "দেখুন কে সেরা খেলোয়াড়"
+    "leaderboardDesc": "দেখুন কে সেরা খেলোয়াড়",
+    "homeworkAssist": "হোমওয়ার্ক",
+    "homeworkAssistDesc": "AI-এর মাধ্যমে হোমওয়ার্কের ব্যাখ্যা পান"
   },
   "guest": {
     "linkBannerCta": "আপনার অগ্রগতি অভিভাবকের অ্যাকাউন্টে যুক্ত করতে ট্যাপ করুন",

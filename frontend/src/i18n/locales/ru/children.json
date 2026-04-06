@@ -18,5 +18,17 @@
     "nameMaxLength": "Имя должно быть короче 30 символов",
     "ageRange": "Возраст должен быть от 3 до 18",
     "gradeRequired": "Укажите класс"
+  },
+  "linkCode": {
+    "getCode": "Получить код",
+    "selectChild": "Выберите ребёнка",
+    "title": "Код привязки для {{name}}",
+    "expiresIn": "Истекает через {{minutes}} минут",
+    "expiresMinutes": "Истекает через {{minutes}}м {{seconds}}с",
+    "expiresSeconds": "Истекает через {{seconds}}с",
+    "expired": "Код истёк",
+    "ok": "Понятно",
+    "errorTitle": "Не удалось создать код",
+    "errorBody": "Что-то пошло не так. Пожалуйста, попробуйте ещё раз."
   }
 }

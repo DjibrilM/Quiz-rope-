@@ -1,24 +1,27 @@
 {
   "greeting": "खेलने के लिए तैयार, {{name}}?",
   "appName": "QuizRope",
+  "welcomeBack": "वापसी पर स्वागत है",
   "activeUntil": "{{date}} तक सक्रिय",
   "menu": {
     "quickPlay": "क्विक प्ले",
     "quickPlayDesc": "सीधे एक टेस्ट गेम में कूदें",
-    "startNewGame": "नया गेम शुरू करें",
-    "startNewGameDesc": "एक मैच बनाएं और खिलाड़ियों को चुनौती दें",
+    "startNewGame": "खेलें",
+    "startNewGameDesc": "सोलो या स्प्लिट स्क्रीन — अपना मोड चुनें",
     "connectDevice": "डिवाइस कनेक्ट करें",
     "connectDeviceDesc": "QR कोड से बच्चे का टैबलेट लिंक करें",
     "myChildren": "मेरे बच्चे",
     "myChildrenDesc": "खिलाड़ी प्रोफ़ाइल जोड़ें और प्रबंधित करें",
     "matchHistory": "मैच इतिहास",
     "matchHistoryDesc": "पिछले खेल और आंकड़े देखें",
-    "soloPlay": "सोलो प्ले",
-    "soloPlayDesc": "अपनी गति से अकेले खेलें",
+    "soloPlay": "खेलें",
+    "soloPlayDesc": "सोलो या स्प्लिट स्क्रीन — अपना मोड चुनें",
     "joinMatch": "मैच में शामिल हों",
     "joinMatchDesc": "लाइव मैच में शामिल होने के लिए कोड दर्ज करें",
     "leaderboard": "लीडरबोर्ड",
-    "leaderboardDesc": "देखें कि शीर्ष खिलाड़ी कौन है"
+    "leaderboardDesc": "देखें कि शीर्ष खिलाड़ी कौन है",
+    "homeworkAssist": "होमवर्क",
+    "homeworkAssistDesc": "AI से अपने होमवर्क की व्याख्या पाएं"
   },
   "guest": {
     "linkBannerCta": "अपनी प्रगति को अभिभावक खाते से जोड़ने के लिए टैप करें",

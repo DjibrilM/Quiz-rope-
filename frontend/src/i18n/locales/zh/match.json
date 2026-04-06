@@ -4,7 +4,16 @@
     "subtitle": "今天学什么？选择你的竞技场！",
     "modeLabel": "游戏模式",
     "solo": "单人",
-    "splitScreen": "分屏对战"
+    "splitScreen": "分屏对战",
+    "startButton": "开始 {{subject}}！",
+    "createFailed": "创建比赛失败，请重试。",
+    "subjectHint": {
+      "MATH": "数字与谜题",
+      "SCIENCE": "实验与探索",
+      "ENGLISH": "文字与故事",
+      "HISTORY": "历史冒险",
+      "GEOGRAPHY": "探索世界"
+    }
   },
   "lobby": {
     "codeLabel": "代码",
@@ -12,8 +21,14 @@
     "startMatch": "开始比赛！"
   },
   "solo": {
-    "title": "\u5355\u4eba - {{subject}}",
-    "startButton": "\u5f00\u59cb\u6e38\u620f"
+    "title": "单人 - {{subject}}",
+    "startButton": "开始游戏",
+    "contextLabel": "自定义练习",
+    "contextPlaceholder": "例如：平方根、分母不超过20的分数……",
+    "contextHint": "可选 — 描述你想练习的具体内容",
+    "contextDisabled": "此科目不支持自定义练习。",
+    "contextNotRelated": "此内容与主题无关。",
+    "playingAs": "以身份游戏"
   },
   "selectors": {
     "subject": "科目",
@@ -25,7 +40,12 @@
     "loadingMessage": "正在加载比赛记录...",
     "emptyTitle": "还没有比赛",
     "emptySubtitle": "开始一场游戏，在这里查看你的比赛记录！",
-    "won": "胜利"
+    "won": "胜利",
+    "completed": "已完成",
+    "review": "复习答案",
+    "inProgress": "进行中",
+    "waiting": "未开始",
+    "abandoned": "已放弃"
   },
   "detail": {
     "title": "比赛详情",
@@ -37,6 +57,46 @@
     "playerStatistics": "玩家统计",
     "score": "得分",
     "accuracy": "正确率",
-    "avgTime": "平均时间"
+    "avgTime": "平均时间",
+    "reviewAnswers": "复习答案",
+    "completed": "已完成",
+    "soloMode": "单人练习",
+    "splitMode": "分屏对战",
+    "yourPerformance": "你的表现",
+    "teamScores": "队伍得分",
+    "correct": "正确",
+    "total": "总计",
+    "noStats": "暂无答题记录",
+    "mode": "模式",
+    "players": "玩家",
+    "redWins": "红队获胜！",
+    "blueWins": "蓝队获胜！",
+    "draw": "平局！",
+    "soloComplete": "本次练习完成！"
+  },
+  "join": {
+    "title": "加入比赛",
+    "subtitle": "向主持人索要6位比赛代码",
+    "joinButton": "加入比赛",
+    "codeLengthError": "请输入6位代码",
+    "notFoundError": "未找到比赛，请检查代码后重试。",
+    "matchEndedError": "此比赛已结束。",
+    "networkError": "出了点问题，请重试。"
+  },
+  "split": {
+    "title": "分屏 · {{subject}}",
+    "subtitle": "两名玩家 · 同一设备",
+    "ageGroupLabel": "年龄组",
+    "playersLabel": "玩家",
+    "player1": "玩家1",
+    "player2": "玩家2",
+    "redTeamPlaceholder": "红队",
+    "blueTeamPlaceholder": "蓝队",
+    "startBattle": "开始对战",
+    "ageGroups": {
+      "EASY": { "label": "儿童", "age": "6–12岁" },
+      "MEDIUM": { "label": "青少年", "age": "13–17岁" },
+      "HARD": { "label": "青年", "age": "18岁+" }
+    }
   }
 }

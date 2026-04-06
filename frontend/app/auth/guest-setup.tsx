@@ -14,10 +14,12 @@ import { useTranslation } from "react-i18next";
 import * as Crypto from "expo-crypto";
 import { usePortrait } from "../../src/hooks/useOrientation";
 import { useGameStore } from "../../src/stores/gameStore";
+import { apiService } from "../../src/services/api";
 import { hapticsService } from "../../src/services/haptics";
 import { AVATARS } from "../../src/config/avatars";
 import { AvatarIcon } from "../../src/components/common/AvatarIcons";
 import { FONTS } from "../../src/constants/theme";
+import { Button, ScreenHeader } from "@/components/common";
 
 const RANDOM_AVATAR = AVATARS[Math.floor(Math.random() * AVATARS.length)].id;
 
@@ -25,7 +27,7 @@ export default function GuestSetupScreen() {
   const { t } = useTranslation(["common", "auth"]);
   usePortrait();
 
-  const { setGuestProfile } = useGameStore();
+  const { setGuestProfile, setGhostToken } = useGameStore();
   const [name, setName] = useState("");
   const [selectedAvatar, setSelectedAvatar] = useState(RANDOM_AVATAR);
   const [nameError, setNameError] = useState("");
@@ -48,25 +50,39 @@ export default function GuestSetupScreen() {
       `guest-${Date.now()}-${Math.random()}`,
     ).then((h) => h.slice(0, 16));
 
-    setGuestProfile({ guestId, displayName: trimmed, avatarId: selectedAvatar });
+    setGuestProfile({
+      guestId,
+      displayName: trimmed,
+      avatarId: selectedAvatar,
+    });
+
+    // Register the ghost profile with the backend to get a ghost JWT for API access.
+    // Fire-and-forget — if it fails, ghost mode still works but won't store server-side data.
+    apiService
+      .registerGhost(guestId, trimmed)
+      .then(({ token }) => {
+        setGhostToken(token);
+        apiService.setGhostToken(token);
+      })
+      .catch(() => {});
+
     router.replace("/home");
   };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#0D0B14" }}>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
+      <ScreenHeader title={t("auth:guest.setupTitle")} />
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1,
             alignItems: "center",
-            justifyContent: "center",
-            paddingHorizontal: 28,
-            paddingVertical: 40,
+            paddingHorizontal: 12,
+            paddingTop: 32,
+            paddingBottom: 40,
           }}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
           {/* Title */}
           <Text
@@ -98,9 +114,9 @@ export default function GuestSetupScreen() {
               width: 96,
               height: 96,
               borderRadius: 48,
-              backgroundColor: "#1A1520",
-              borderWidth: 3,
-              borderColor: "#9B59B6",
+              backgroundColor: "rgba(255, 255, 255, 0.04)",
+              borderWidth: 1,
+              borderColor: "rgba(255, 255, 255, 0.08)",
               alignItems: "center",
               justifyContent: "center",
               marginBottom: 28,
@@ -133,10 +149,10 @@ export default function GuestSetupScreen() {
                   alignItems: "center",
                   justifyContent: "center",
                   backgroundColor:
-                    selectedAvatar === avatar.id ? "#9B59B6" : "#1A1520",
-                  borderWidth: 2,
+                    selectedAvatar === avatar.id ? "rgba(255, 255, 255, 0.04)" : "transparent",
+                  borderWidth: 1.5,
                   borderColor:
-                    selectedAvatar === avatar.id ? "#C084FC" : "transparent",
+                    selectedAvatar === avatar.id ? "#A78BFA" : "rgba(255, 255, 255, 0.04)",
                 }}
               >
                 <AvatarIcon avatarId={avatar.id} size={34} />
@@ -164,18 +180,18 @@ export default function GuestSetupScreen() {
                 setNameError("");
               }}
               placeholder={t("auth:guest.namePlaceholder")}
-              placeholderTextColor="#5A4B6B"
+              placeholderTextColor="#9CA3AF"
               maxLength={20}
               style={{
-                backgroundColor: "#1A1520",
+                backgroundColor: "rgba(255, 255, 255, 0.04)",
                 borderRadius: 14,
                 paddingHorizontal: 18,
                 paddingVertical: 14,
                 fontSize: 18,
                 color: "#FFFFFF",
                 fontFamily: FONTS.bodyBold,
-                borderWidth: 1.5,
-                borderColor: nameError ? "#EF4444" : "#3D2E4A",
+                borderWidth: 1,
+                borderColor: nameError ? "#EF4444" : "rgba(255, 255, 255, 0.08)",
               }}
               autoFocus
               returnKeyType="done"
@@ -196,32 +212,20 @@ export default function GuestSetupScreen() {
           </View>
 
           {/* Start button */}
-          <Pressable
-            onPress={handleStart}
-            style={({ pressed }) => ({
-              width: "100%",
-              backgroundColor: pressed ? "#7C3AED" : "#9B59B6",
-              paddingVertical: 18,
-              borderRadius: 20,
-              alignItems: "center",
-              shadowColor: "#9B59B6",
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.5,
-              shadowRadius: 12,
-              elevation: 8,
-            })}
-          >
-            <Text
-              style={{
-                color: "#FFFFFF",
-                fontSize: 20,
-                fontFamily: "LuckiestGuy_400Regular",
-                letterSpacing: 1,
-              }}
-            >
-              {t("auth:guest.startButton")}
-            </Text>
-          </Pressable>
+          <View className="w-full">
+            <Button className="w-full min-w-full" onPress={handleStart}>
+              <Text
+                style={{
+                  color: "#FFFFFF",
+                  fontSize: 20,
+                  fontFamily: "LuckiestGuy_400Regular",
+                  letterSpacing: 1,
+                }}
+              >
+                {t("auth:guest.startButton")}
+              </Text>
+            </Button>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

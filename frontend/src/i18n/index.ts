@@ -14,6 +14,8 @@ import enDevice from './locales/en/device.json';
 import enSubscription from './locales/en/subscription.json';
 import enLeaderboard from './locales/en/leaderboard.json';
 import enAnalytics from './locales/en/analytics.json';
+import enHomework from './locales/en/homework.json';
+
 
 // Chinese
 import zhCommon from './locales/zh/common.json';
@@ -26,6 +28,8 @@ import zhDevice from './locales/zh/device.json';
 import zhSubscription from './locales/zh/subscription.json';
 import zhLeaderboard from './locales/zh/leaderboard.json';
 import zhAnalytics from './locales/zh/analytics.json';
+import zhHomework from './locales/zh/homework.json';
+
 
 // Hindi
 import hiCommon from './locales/hi/common.json';
@@ -38,6 +42,8 @@ import hiDevice from './locales/hi/device.json';
 import hiSubscription from './locales/hi/subscription.json';
 import hiLeaderboard from './locales/hi/leaderboard.json';
 import hiAnalytics from './locales/hi/analytics.json';
+import hiHomework from './locales/hi/homework.json';
+
 
 // Spanish
 import esCommon from './locales/es/common.json';
@@ -50,6 +56,8 @@ import esDevice from './locales/es/device.json';
 import esSubscription from './locales/es/subscription.json';
 import esLeaderboard from './locales/es/leaderboard.json';
 import esAnalytics from './locales/es/analytics.json';
+import esHomework from './locales/es/homework.json';
+
 
 // French
 import frCommon from './locales/fr/common.json';
@@ -62,6 +70,8 @@ import frDevice from './locales/fr/device.json';
 import frSubscription from './locales/fr/subscription.json';
 import frLeaderboard from './locales/fr/leaderboard.json';
 import frAnalytics from './locales/fr/analytics.json';
+import frHomework from './locales/fr/homework.json';
+
 
 // Arabic
 import arCommon from './locales/ar/common.json';
@@ -74,6 +84,8 @@ import arDevice from './locales/ar/device.json';
 import arSubscription from './locales/ar/subscription.json';
 import arLeaderboard from './locales/ar/leaderboard.json';
 import arAnalytics from './locales/ar/analytics.json';
+import arHomework from './locales/ar/homework.json';
+
 
 // Bengali
 import bnCommon from './locales/bn/common.json';
@@ -86,6 +98,8 @@ import bnDevice from './locales/bn/device.json';
 import bnSubscription from './locales/bn/subscription.json';
 import bnLeaderboard from './locales/bn/leaderboard.json';
 import bnAnalytics from './locales/bn/analytics.json';
+import bpHomework from './locales/bn/homework.json';
+
 
 // Portuguese
 import ptCommon from './locales/pt/common.json';
@@ -98,6 +112,8 @@ import ptDevice from './locales/pt/device.json';
 import ptSubscription from './locales/pt/subscription.json';
 import ptLeaderboard from './locales/pt/leaderboard.json';
 import ptAnalytics from './locales/pt/analytics.json';
+import ptHomework from './locales/pt/homework.json';
+
 
 // Russian
 import ruCommon from './locales/ru/common.json';
@@ -110,6 +126,8 @@ import ruDevice from './locales/ru/device.json';
 import ruSubscription from './locales/ru/subscription.json';
 import ruLeaderboard from './locales/ru/leaderboard.json';
 import ruAnalytics from './locales/ru/analytics.json';
+import ruHomework from './locales/ru/homework.json';
+
 
 // Japanese
 import jaCommon from './locales/ja/common.json';
@@ -122,6 +140,8 @@ import jaDevice from './locales/ja/device.json';
 import jaSubscription from './locales/ja/subscription.json';
 import jaLeaderboard from './locales/ja/leaderboard.json';
 import jaAnalytics from './locales/ja/analytics.json';
+import jaHomework from './locales/ja/homework.json';
+
 
 export const SUPPORTED_LANGUAGES = {
   en: { label: 'English', nativeLabel: 'English', rtl: false },
@@ -138,7 +158,8 @@ export const SUPPORTED_LANGUAGES = {
 
 export type SupportedLanguage = keyof typeof SUPPORTED_LANGUAGES;
 
-const NAMESPACES = ['common', 'auth', 'home', 'game', 'match', 'children', 'device', 'subscription', 'leaderboard', 'analytics'] as const;
+const NAMESPACES = ['common', 'auth', 'home', 'game', 'match', 'children', 'device', 'subscription', 'leaderboard', 'analytics', 'homework'] as const;
+
 
 function getDeviceLanguage(): SupportedLanguage {
   try {
@@ -158,16 +179,17 @@ i18n.use(initReactI18next).init({
   ns: NAMESPACES,
   defaultNS: 'common',
   resources: {
-    en: { common: enCommon, auth: enAuth, home: enHome, game: enGame, match: enMatch, children: enChildren, device: enDevice, subscription: enSubscription, leaderboard: enLeaderboard, analytics: enAnalytics },
-    zh: { common: zhCommon, auth: zhAuth, home: zhHome, game: zhGame, match: zhMatch, children: zhChildren, device: zhDevice, subscription: zhSubscription, leaderboard: zhLeaderboard, analytics: zhAnalytics },
-    hi: { common: hiCommon, auth: hiAuth, home: hiHome, game: hiGame, match: hiMatch, children: hiChildren, device: hiDevice, subscription: hiSubscription, leaderboard: hiLeaderboard, analytics: hiAnalytics },
-    es: { common: esCommon, auth: esAuth, home: esHome, game: esGame, match: esMatch, children: esChildren, device: esDevice, subscription: esSubscription, leaderboard: esLeaderboard, analytics: esAnalytics },
-    fr: { common: frCommon, auth: frAuth, home: frHome, game: frGame, match: frMatch, children: frChildren, device: frDevice, subscription: frSubscription, leaderboard: frLeaderboard, analytics: frAnalytics },
-    ar: { common: arCommon, auth: arAuth, home: arHome, game: arGame, match: arMatch, children: arChildren, device: arDevice, subscription: arSubscription, leaderboard: arLeaderboard, analytics: arAnalytics },
-    bn: { common: bnCommon, auth: bnAuth, home: bnHome, game: bnGame, match: bnMatch, children: bnChildren, device: bnDevice, subscription: bnSubscription, leaderboard: bnLeaderboard, analytics: bnAnalytics },
-    pt: { common: ptCommon, auth: ptAuth, home: ptHome, game: ptGame, match: ptMatch, children: ptChildren, device: ptDevice, subscription: ptSubscription, leaderboard: ptLeaderboard, analytics: ptAnalytics },
-    ru: { common: ruCommon, auth: ruAuth, home: ruHome, game: ruGame, match: ruMatch, children: ruChildren, device: ruDevice, subscription: ruSubscription, leaderboard: ruLeaderboard, analytics: ruAnalytics },
-    ja: { common: jaCommon, auth: jaAuth, home: jaHome, game: jaGame, match: jaMatch, children: jaChildren, device: jaDevice, subscription: jaSubscription, leaderboard: jaLeaderboard, analytics: jaAnalytics },
+    en: { common: enCommon, auth: enAuth, home: enHome, game: enGame, match: enMatch, children: enChildren, device: enDevice, subscription: enSubscription, leaderboard: enLeaderboard, analytics: enAnalytics, homework: enHomework },
+    zh: { common: zhCommon, auth: zhAuth, home: zhHome, game: zhGame, match: zhMatch, children: zhChildren, device: zhDevice, subscription: zhSubscription, leaderboard: zhLeaderboard, analytics: zhAnalytics, homework: zhHomework },
+    hi: { common: hiCommon, auth: hiAuth, home: hiHome, game: hiGame, match: hiMatch, children: hiChildren, device: hiDevice, subscription: hiSubscription, leaderboard: hiLeaderboard, analytics: hiAnalytics, homework: hiHomework },
+    es: { common: esCommon, auth: esAuth, home: esHome, game: esGame, match: esMatch, children: esChildren, device: esDevice, subscription: esSubscription, leaderboard: esLeaderboard, analytics: esAnalytics, homework: esHomework },
+    fr: { common: frCommon, auth: frAuth, home: frHome, game: frGame, match: frMatch, children: frChildren, device: frDevice, subscription: frSubscription, leaderboard: frLeaderboard, analytics: frAnalytics, homework: frHomework },
+    ar: { common: arCommon, auth: arAuth, home: arHome, game: arGame, match: arMatch, children: arChildren, device: arDevice, subscription: arSubscription, leaderboard: arLeaderboard, analytics: arAnalytics, homework: arHomework },
+    bn: { common: bnCommon, auth: bnAuth, home: bnHome, game: bnGame, match: bnMatch, children: bnChildren, device: bnDevice, subscription: bnSubscription, leaderboard: bnLeaderboard, analytics: bnAnalytics, homework: bpHomework },
+    pt: { common: ptCommon, auth: ptAuth, home: ptHome, game: ptGame, match: ptMatch, children: ptChildren, device: ptDevice, subscription: ptSubscription, leaderboard: ptLeaderboard, analytics: ptAnalytics, homework: ptHomework },
+    ru: { common: ruCommon, auth: ruAuth, home: ruHome, game: ruGame, match: ruMatch, children: ruChildren, device: ruDevice, subscription: ruSubscription, leaderboard: ruLeaderboard, analytics: ruAnalytics, homework: ruHomework },
+    ja: { common: jaCommon, auth: jaAuth, home: jaHome, game: jaGame, match: jaMatch, children: jaChildren, device: jaDevice, subscription: jaSubscription, leaderboard: jaLeaderboard, analytics: jaAnalytics, homework: jaHomework },
+
   },
   react: {
     useSuspense: false,

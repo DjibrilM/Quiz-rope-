@@ -5,6 +5,7 @@ import {
   Text,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
@@ -18,6 +19,7 @@ import {
   ChildCard,
   EmptyChildrenState,
 } from "../../src/components/children";
+import { QRCodeDisplay, SessionCodeDisplay } from "../../src/components/device";
 import {
   BottomSheetModal,
   BottomSheetScrollView,
@@ -29,7 +31,7 @@ import { useTranslation } from "react-i18next";
 import { FONTS } from "../../src/constants/theme";
 import { apiService } from "../../src/services/api";
 import { hapticsService } from "../../src/services/haptics";
-import { Alert } from "react-native";
+import * as LocalAuthentication from "expo-local-authentication";
 
 export default function ChildrenScreen() {
   usePortrait();
@@ -38,19 +40,27 @@ export default function ChildrenScreen() {
   const queryClient = useQueryClient();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const confirmSheetRef = useRef<BottomSheetModal>(null);
+  const selectChildSheetRef = useRef<BottomSheetModal>(null);
+  const codeSheetRef = useRef<BottomSheetModal>(null);
   const [removingChild, setRemovingChild] = useState<{
     id: string;
     displayName: string;
   } | null>(null);
-  const [selectedChildForCode, setSelectedChildForCode] = useState<{
-    id: string;
-    displayName: string;
+  const [codeResult, setCodeResult] = useState<{
+    code: string;
+    expiresAt: string;
   } | null>(null);
+  const [codeForChildName, setCodeForChildName] = useState("");
+  const [isGeneratingCode, setIsGeneratingCode] = useState(false);
+  const [secondsLeft, setSecondsLeft] = useState(0);
+  const [selectedChildForCode, setSelectedChildForCode] = useState<string | null>(
+    null,
+  );
+  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const {
     data: children = [],
     isLoading,
-    isError,
     error,
   } = useQuery({
     queryKey: ["children"],
@@ -59,23 +69,15 @@ export default function ChildrenScreen() {
       data.filter(Boolean).map((c: any) => ({ ...c, id: c._id || c.id })),
   });
 
-  // Keep zustand store in sync so other screens (leaderboard) can use it
   useEffect(() => {
     if (children.length > 0) {
       setChildren(children);
-      // Auto-select first child for the bottom code button if none selected
-      setSelectedChildForCode((prev) => {
-        if (prev) return prev;
-        const first = children.find((c) => c?.displayName);
-        return first ? { id: first.id, displayName: first.displayName } : null;
-      });
     }
   }, [children]);
 
   const addMutation = useMutation({
     mutationFn: (data: {
       displayName: string;
-      age: number;
       grade: string;
       avatarUrl: string;
     }) => apiService.createChild(data),
@@ -116,7 +118,6 @@ export default function ChildrenScreen() {
 
   const handleAdd = (data: {
     displayName: string;
-    age: number;
     grade: string;
     avatarUrl: string;
   }) => {
@@ -131,8 +132,25 @@ export default function ChildrenScreen() {
     [],
   );
 
-  const handleConfirmRemove = () => {
+  const handleConfirmRemove = async () => {
     if (!removingChild) return;
+
+    // Check if biometric/passcode hardware is available
+    const hasHardware = await LocalAuthentication.hasHardwareAsync();
+    const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+
+    if (hasHardware && isEnrolled) {
+      const result = await LocalAuthentication.authenticateAsync({
+        promptMessage: t("remove.biometricPrompt", "Authenticate to delete profile"),
+        fallbackLabel: t("remove.usePasscode", "Use Passcode"),
+        disableDeviceFallback: false,
+      });
+
+      if (!result.success) {
+        return; // User cancelled or failed auth
+      }
+    }
+
     deleteMutation.mutate(removingChild.id);
   };
 
@@ -141,24 +159,62 @@ export default function ChildrenScreen() {
     setRemovingChild(null);
   }, []);
 
-  const handleGenerateLinkCode = useCallback(
-    async (childId: string, childName: string) => {
+  // Start countdown whenever a new code is generated
+  useEffect(() => {
+    if (!codeResult) return;
+    if (countdownRef.current) clearInterval(countdownRef.current);
+
+    const tick = () => {
+      const remaining = Math.max(
+        0,
+        Math.round((new Date(codeResult.expiresAt).getTime() - Date.now()) / 1000),
+      );
+      setSecondsLeft(remaining);
+      if (remaining === 0 && countdownRef.current) {
+        clearInterval(countdownRef.current);
+      }
+    };
+    tick();
+    countdownRef.current = setInterval(tick, 1000);
+    return () => {
+      if (countdownRef.current) clearInterval(countdownRef.current);
+    };
+  }, [codeResult]);
+
+  const handleSelectChildForCode = useCallback(
+    async (child: { id: string; displayName: string }) => {
+      setSelectedChildForCode(child.id);
+      selectChildSheetRef.current?.dismiss();
+      setIsGeneratingCode(true);
+      setCodeForChildName(child.displayName);
       try {
-        const result = await apiService.generateGuestLinkCode(childId);
-        const expiresIn = Math.round(
-          (new Date(result.expiresAt).getTime() - Date.now()) / 60000,
-        );
-        Alert.alert(
-          t("linkCode.title", { name: childName }),
-          t("linkCode.body", { code: result.code, minutes: expiresIn }),
-          [{ text: t("linkCode.ok"), style: "default" }],
-        );
+        const result = await apiService.generateGuestLinkCode(child.id);
+        setCodeResult(result);
+        hapticsService.success();
+        codeSheetRef.current?.present();
       } catch {
         Alert.alert(t("linkCode.errorTitle"), t("linkCode.errorBody"));
+      } finally {
+        setIsGeneratingCode(false);
       }
     },
     [t],
   );
+
+  const handleRegenerateCode = useCallback(async () => {
+    if (!selectedChildForCode) return;
+    setIsGeneratingCode(true);
+    try {
+      const result =
+        await apiService.generateGuestLinkCode(selectedChildForCode);
+      setCodeResult(result);
+      hapticsService.success();
+    } catch {
+      Alert.alert(t("linkCode.errorTitle"), t("linkCode.errorBody"));
+    } finally {
+      setIsGeneratingCode(false);
+    }
+  }, [selectedChildForCode, t]);
 
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
@@ -172,44 +228,32 @@ export default function ChildrenScreen() {
     [],
   );
 
+  const hasChildren = children.filter((c) => c?.displayName).length > 0;
+
   return (
     <SafeAreaView edges={["bottom"]} className="flex-1 bg-game-bg">
       <ScreenHeader
         title={t("title")}
         rightElement={
-          Platform.OS === "android" ? (
-            <Pressable
-              onPress={handleOpenSheet}
+          <Pressable
+            onPress={handleOpenSheet}
+            style={{
+              backgroundColor: "#6D4C8A",
+              paddingHorizontal: 14,
+              paddingVertical: 7,
+              borderRadius: 10,
+            }}
+          >
+            <Text
               style={{
-                backgroundColor: "#6D4C8A",
-                paddingHorizontal: 14,
-                paddingVertical: 7,
-                borderRadius: 10,
+                color: "#FFFFFF",
+                fontSize: 12,
+                fontFamily: "Bungee_400Regular",
               }}
             >
-              <Text
-                style={{
-                  color: "#FFFFFF",
-                  fontSize: 12,
-                  fontFamily: "Bungee_400Regular",
-                }}
-              >
-                {t("addButton")}
-              </Text>
-            </Pressable>
-          ) : (
-            <Pressable onPress={handleOpenSheet} className="px-3">
-              <Text
-                style={{
-                  color: "#FFFFFF",
-                  fontSize: 12,
-                  fontFamily: "Bungee_400Regular",
-                }}
-              >
-                {t("addButton")}
-              </Text>
-            </Pressable>
-          )
+              {t("addButton")}
+            </Text>
+          </Pressable>
         }
       />
 
@@ -217,7 +261,7 @@ export default function ChildrenScreen() {
         className="flex-1 px-6 pt-6"
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{
-          paddingBottom: selectedChildForCode ? 120 : 40,
+          paddingBottom: hasChildren ? 120 : 40,
         }}
       >
         {errorMessage && (
@@ -243,14 +287,9 @@ export default function ChildrenScreen() {
                 <View key={child.id}>
                   <ChildCard
                     displayName={child.displayName}
-                    age={child.age}
                     grade={child.grade}
                     avatarUrl={child.avatarUrl}
                     onPress={() => {
-                      setSelectedChildForCode({
-                        id: child.id,
-                        displayName: child.displayName,
-                      });
                       router.push({
                         pathname: "/child/stats" as any,
                         params: {
@@ -274,9 +313,8 @@ export default function ChildrenScreen() {
       </ScrollView>
 
       {/* Get Code bottom bar */}
-      {selectedChildForCode && (
+      {hasChildren && (
         <View
-          className="absolute border-t border-white/5 bottom-0 left-0 right-0 px-6"
           style={{
             position: "absolute",
             bottom: 0,
@@ -286,24 +324,16 @@ export default function ChildrenScreen() {
             paddingBottom: 36,
             paddingTop: 16,
             backgroundColor: "#0D0B14E8",
+            borderTopWidth: 1,
+            borderTopColor: "rgba(255,255,255,0.05)",
           }}
         >
           <Button
             className="min-w-full"
-            onPress={() =>
-              handleGenerateLinkCode(
-                selectedChildForCode.id,
-                selectedChildForCode.displayName,
-              )
-            }
+            onPress={() => selectChildSheetRef.current?.present()}
+            loading={isGeneratingCode}
             variant="primary"
-            label={
-              children.filter((c) => c?.displayName).length > 1
-                ? t("linkCode.getCode") +
-                  " — " +
-                  selectedChildForCode.displayName
-                : t("linkCode.getCode")
-            }
+            label={t("linkCode.getCode")}
           />
         </View>
       )}
@@ -472,6 +502,115 @@ export default function ChildrenScreen() {
               </Text>
             </Pressable>
           </View>
+        </BottomSheetView>
+      </BottomSheetModal>
+
+      {/* Select child bottom sheet */}
+      <BottomSheetModal
+        ref={selectChildSheetRef}
+        enablePanDownToClose
+        enableDynamicSizing
+        backdropComponent={renderBackdrop}
+        backgroundStyle={{
+          backgroundColor: "#1A1520",
+          borderTopLeftRadius: 28,
+          borderTopRightRadius: 28,
+        }}
+        handleIndicatorStyle={{
+          backgroundColor: "#5A4B6B",
+          width: 40,
+          height: 4,
+        }}
+      >
+        <BottomSheetView
+          style={{ paddingHorizontal: 24, paddingBottom: 40, paddingTop: 10 }}
+        >
+          <Text
+            className="text-white text-center text-xl mb-5"
+            style={{ fontFamily: "LuckiestGuy_400Regular" }}
+          >
+            {t("linkCode.selectChild")}
+          </Text>
+          <View className="gap-3">
+            {children
+              .filter((c) => c?.displayName)
+              .map((child) => (
+                <ChildCard
+                  key={child.id}
+                  displayName={child.displayName}
+                  grade={child.grade}
+                  avatarUrl={child.avatarUrl}
+                  onPress={() =>
+                    handleSelectChildForCode({
+                      id: child.id,
+                      displayName: child.displayName,
+                    })
+                  }
+                />
+              ))}
+          </View>
+        </BottomSheetView>
+      </BottomSheetModal>
+
+      {/* Code display bottom sheet */}
+      <BottomSheetModal
+        ref={codeSheetRef}
+        enablePanDownToClose
+        enableDynamicSizing
+        backdropComponent={renderBackdrop}
+        backgroundStyle={{
+          backgroundColor: "#1A1520",
+          borderTopLeftRadius: 28,
+          borderTopRightRadius: 28,
+        }}
+        handleIndicatorStyle={{
+          backgroundColor: "#5A4B6B",
+          width: 40,
+          height: 4,
+        }}
+      >
+        <BottomSheetView
+          style={{ paddingHorizontal: 24, paddingBottom: 40, paddingTop: 10 }}
+        >
+          <Text
+            className="text-white text-center text-xl mb-1"
+            style={{ fontFamily: "LuckiestGuy_400Regular" }}
+          >
+            {t("linkCode.title", { name: codeForChildName })}
+          </Text>
+          {codeResult && (
+            <View className="items-center">
+              <Text
+                className="text-center mb-5 font-body text-sm"
+                style={{
+                  color: secondsLeft < 60 ? "#EF4444" : "#7B6B8A",
+                }}
+              >
+                {secondsLeft <= 0
+                  ? t("linkCode.expired")
+                  : secondsLeft < 60
+                    ? t("linkCode.expiresSeconds", { seconds: secondsLeft })
+                    : t("linkCode.expiresMinutes", {
+                        minutes: Math.floor(secondsLeft / 60),
+                        seconds: secondsLeft % 60,
+                      })}
+              </Text>
+              {secondsLeft <= 0 ? (
+                <Button
+                  label={t("linkCode.generateNew")}
+                  onPress={handleRegenerateCode}
+                  loading={isGeneratingCode}
+                  style={{ marginTop: 20, width: "100%" }}
+                />
+              ) : (
+                <QRCodeDisplay
+                  sessionToken={codeResult.code}
+                  status={secondsLeft <= 0 ? "expired" : "waiting"}
+                />
+              )}
+              {secondsLeft > 0 && <SessionCodeDisplay code={codeResult.code} />}
+            </View>
+          )}
         </BottomSheetView>
       </BottomSheetModal>
     </SafeAreaView>
