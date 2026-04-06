@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "1097849103209",
+    "project_id": "quizrope-16033",
+    "storage_bucket": "quizrope-16033.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1097849103209:android:96d72031b935b092add3f8",
+        "android_client_info": {
+          "package_name": "com.quizrope.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1097849103209-70ucflk0p5bu72nqm6sde69r19af8o1s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.quizrope.app",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "1097849103209-gtrfrku4ob7mhmhgeg02qo4gef7ka4ce.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuTcZKbZgB0QK4orLQOrQEN09G6OPTAIE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1097849103209-gtrfrku4ob7mhmhgeg02qo4gef7ka4ce.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1097849103209-mv57ul2vt7musqqsgaaqf6rmp0idkivc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.quizrope.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

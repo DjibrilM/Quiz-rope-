@@ -1,4 +1,6 @@
 #!/bin/sh
+# node-path-patch
+export PATH="/usr/local/bin:$PATH"
 
 #
 # Copyright © 2015-2021 the original authors.
