@@ -200,6 +200,16 @@ export async function getMatch(id: string): Promise<GuestMatch | null> {
   }
 }
 
+export async function getCompletedMatchesCount(): Promise<number> {
+  try {
+    const row = await (await getDbAsync()).getFirstAsync<any>("SELECT COUNT(*) as count FROM guest_matches WHERE status = 'COMPLETED'");
+    return row?.count || 0;
+  } catch (err) {
+    console.error(`${TAG} getCompletedMatchesCount FAILED`, err);
+    return 0;
+  }
+}
+
 function rowToMatch(r: any): GuestMatch {
   return {
     _id: r.id, subject: r.subject, difficulty: r.difficulty,

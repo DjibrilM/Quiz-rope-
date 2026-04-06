@@ -169,6 +169,20 @@ export class NotificationService {
     if (childId) {
       this.scheduleInactivityNotification(childId).catch(() => {});
     }
+
+    // 8. Homework Reminder (Daily at 5:00 PM)
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Homework time! 📚",
+        body: `Don't forget to use your AI Homework Assistant to ace your assignments!`,
+        data: { screen: '/homework' },
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.DAILY,
+        hour: 17,
+        minute: 0,
+      },
+    });
   }
 
   /**
@@ -207,6 +221,34 @@ export class NotificationService {
         title: `Brain Tug-of-War time, ${name || 'Challenger'}! 🧠💥`,
         body: "Get ready to flex those mental muscles! Let's see who wins the ultimate learning battle today! 🏆🚀",
         data: { screen: '/home' },
+      },
+      trigger: null, // Send immediately
+    });
+  }
+
+  /**
+   * Congratulations on the first match
+   */
+  static async sendFirstMatchNotification(name?: string) {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: `Congratulations, ${name || 'Challenger'}! 🏆`,
+        body: "You've successfully completed your first match! Keep going to become a true brain champion! 🌟🚀",
+        data: { screen: '/home' },
+      },
+      trigger: null, // Send immediately
+    });
+  }
+
+  /**
+   * Reminder to use the homework assistant
+   */
+  static async sendHomeworkReminderNotification(name?: string) {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: `Need a hand with homework? 📚`,
+        body: `${name || 'Friend'}, don't forget to use the Homework Assistant to master your school subjects! ✨`,
+        data: { screen: '/homework' },
       },
       trigger: null, // Send immediately
     });

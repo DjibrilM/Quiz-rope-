@@ -25,21 +25,29 @@ const withNodePath = (config) => {
       let nodePath;
       try {
         const candidates = [
+          process.env.NODE_BINARY, // Prioritize binary provided by EAS/Environment
           '/usr/local/bin/node',
           '/opt/homebrew/bin/node',
           '/usr/bin/node',
-        ];
+        ].filter(Boolean);
+
         for (const candidate of candidates) {
           if (fs.existsSync(candidate)) {
             nodePath = candidate;
             break;
           }
         }
+        
         if (!nodePath) {
-          nodePath = execSync('which node', { encoding: 'utf8' }).trim();
+          try {
+            nodePath = execSync('which node', { encoding: 'utf8' }).trim();
+          } catch (e) {
+            // fallback to a guess if 'which' fails
+            nodePath = '/usr/local/bin/node';
+          }
         }
       } catch {
-        return config;
+        nodePath = '/usr/local/bin/node';
       }
 
       if (!nodePath) return config;
@@ -91,7 +99,8 @@ const withNodePath = (config) => {
       const settingsGradlePath = path.join(androidDir, 'settings.gradle');
       if (fs.existsSync(settingsGradlePath)) {
         let content = fs.readFileSync(settingsGradlePath, 'utf8');
-        content = content.replace(/"node"(\s*,)/g, `"${nodePath}"$1`);
+        // Replace standalone "node" or 'node' strings that are likely part of exec calls
+        content = content.replace(/(?:"|')node(?:"|')(\s*[,)])/g, `"${nodePath}"$1`);
         fs.writeFileSync(settingsGradlePath, content);
       }
 

@@ -35,6 +35,7 @@ import {
 } from "../src/components/common";
 import { BrainMascot } from "../src/components/common/Mascots";
 import { FONTS } from "../src/constants/theme";
+import { NotificationService } from "../src/services/NotificationService";
 
 function IconQuickPlay() {
   return (
@@ -303,6 +304,7 @@ export default function HomeScreen() {
     setChildren,
     childSession,
     children,
+    streak,
   } = useGameStore();
 
   const isGuest = userRole === "guest";
@@ -329,7 +331,16 @@ export default function HomeScreen() {
         })
         .catch(() => {});
     }
-  }, [userRole]);
+
+    // Schedule routine notifications (reminders, streaks, etc.)
+    if (isGuest || isChild) {
+      const profile = isGuest ? guestProfile : childProfile;
+      if (profile) {
+        NotificationService.scheduleRoutineNotifications(profile, undefined, streak)
+          .catch(err => console.warn('[Home] scheduleRoutineNotifications failed:', err));
+      }
+    }
+  }, [userRole, isGuest, isChild, guestProfile, childProfile, streak]);
 
   const handleOpenLogout = useCallback(() => {
     logoutSheetRef.current?.present();

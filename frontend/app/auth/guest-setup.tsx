@@ -20,6 +20,7 @@ import { AVATARS } from "../../src/config/avatars";
 import { AvatarIcon } from "../../src/components/common/AvatarIcons";
 import { FONTS } from "../../src/constants/theme";
 import { Button, ScreenHeader } from "@/components/common";
+import { NotificationService } from "../../src/services/NotificationService";
 
 const RANDOM_AVATAR = AVATARS[Math.floor(Math.random() * AVATARS.length)].id;
 
@@ -64,8 +65,7 @@ export default function GuestSetupScreen() {
         setGhostToken(token);
         apiService.setGhostToken(token);
       })
-      .catch(() => {});
-
+    NotificationService.sendSignInNotification(trimmed);
     router.replace("/home");
   };
 

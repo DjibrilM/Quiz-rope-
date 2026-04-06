@@ -17,6 +17,7 @@ import {
 } from "../src/components/common";
 import { FONTS } from "../src/constants/theme";
 import { TERMS_AND_CONDITIONS } from "../src/constants/terms";
+import { NotificationService } from "../src/services/NotificationService";
 
 function ParentIcon({
   size = 26,
@@ -238,6 +239,7 @@ export default function RoleSelectScreen() {
               }
               onPress={() => {
                 if (guestProfile) {
+                  NotificationService.sendSignInNotification(guestProfile.displayName);
                   loginAsGuest();
                   router.replace("/home");
                 } else {

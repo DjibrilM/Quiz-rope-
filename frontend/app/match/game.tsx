@@ -9,6 +9,7 @@ import { soundService } from "../../src/services/sound";
 import { hapticsService } from "../../src/services/haptics";
 import { apiService } from "../../src/services/api";
 import * as guestDb from "../../src/services/guestDb";
+import { NotificationService } from "../../src/services/NotificationService";
 import { SplitscreenLayout } from "../../src/components/game/SplitscreenLayout";
 import { SoloMultiplayerLayout } from "../../src/components/game/SoloMultiplayerLayout";
 import type {
@@ -233,6 +234,21 @@ export default function GameScreen() {
               .completeMatch(matchId as string, { winner, rounds: nextRound - 1 })
               .catch((e) => console.warn("[game] completeMatch failed:", e?.message ?? e));
           }
+
+          // Trigger achievement notifications
+          (async () => {
+             const count = await guestDb.getCompletedMatchesCount();
+             // If this is the FIRST completed match (count is 0 or 1 depending on when we call it, 
+             // but here it's called right after the update/completeMatch above which might not have finished)
+             // We'll check if it's <= 1 to be safe if this is their first ever.
+             const playerName = (p1Name as string) || 'Challenger';
+             if (count <= 1) {
+                NotificationService.sendFirstMatchNotification(playerName);
+             } else if (Math.random() > 0.7) {
+                // Occasionally remind them about homework assistant after a match
+                NotificationService.sendHomeworkReminderNotification(playerName);
+             }
+          })();
         }
 
         const totalRounds = nextRound - 1;
