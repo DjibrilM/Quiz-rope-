@@ -204,8 +204,8 @@ export class NotificationService {
   static async sendSignInNotification(name?: string) {
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: `Welcome back, ${name || 'Explorer'}! 🚀`,
-        body: "We're so glad you're here. Ready for some fun learning?",
+        title: `Brain Tug-of-War time, ${name || 'Challenger'}! 🧠💥`,
+        body: "Get ready to flex those mental muscles! Let's see who wins the ultimate learning battle today! 🏆🚀",
         data: { screen: '/home' },
       },
       trigger: null, // Send immediately

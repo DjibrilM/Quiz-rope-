@@ -235,39 +235,25 @@ export default function ChildrenScreen() {
       <ScreenHeader
         title={t("title")}
         rightElement={
-          Platform.OS === "android" ? (
-            <Pressable
-              onPress={handleOpenSheet}
+          <Pressable
+            onPress={handleOpenSheet}
+            style={{
+              backgroundColor: "#6D4C8A",
+              paddingHorizontal: 14,
+              paddingVertical: 7,
+              borderRadius: 10,
+            }}
+          >
+            <Text
               style={{
-                backgroundColor: "#6D4C8A",
-                paddingHorizontal: 14,
-                paddingVertical: 7,
-                borderRadius: 10,
+                color: "#FFFFFF",
+                fontSize: 12,
+                fontFamily: "Bungee_400Regular",
               }}
             >
-              <Text
-                style={{
-                  color: "#FFFFFF",
-                  fontSize: 12,
-                  fontFamily: "Bungee_400Regular",
-                }}
-              >
-                {t("addButton")}
-              </Text>
-            </Pressable>
-          ) : (
-            <Pressable onPress={handleOpenSheet} className="px-3">
-              <Text
-                style={{
-                  color: "#FFFFFF",
-                  fontSize: 12,
-                  fontFamily: "Bungee_400Regular",
-                }}
-              >
-                {t("addButton")}
-              </Text>
-            </Pressable>
-          )
+              {t("addButton")}
+            </Text>
+          </Pressable>
         }
       />
 

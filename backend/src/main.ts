@@ -19,9 +19,10 @@ async function bootstrap() {
     );
   }
 
-  const app = await NestFactory.create(AppModule);
+  // Disable NestJS built-in body parser (default 100 kb) so our custom limit applies
+  const app = await NestFactory.create(AppModule, { bodyParser: false });
 
-  // Allow large image payloads (base64 homework photos can be ~500 KB)
+  // Re-register body parser with a 10 mb limit for JSON endpoints (images now use multer)
   app.use(require("express").json({ limit: "10mb" }));
   app.use(require("express").urlencoded({ limit: "10mb", extended: true }));
 

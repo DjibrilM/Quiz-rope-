@@ -14,7 +14,11 @@ import { useTranslation } from "react-i18next";
 import { usePortrait } from "../../src/hooks/useOrientation";
 import { firebaseAuthService } from "../../src/services/firebase";
 import { AppTitle } from "../../src/components/auth";
-import { ScreenHeader, AnimatedLoader, Button } from "../../src/components/common";
+import {
+  ScreenHeader,
+  AnimatedLoader,
+  Button,
+} from "../../src/components/common";
 import { FONTS } from "../../src/constants/theme";
 import { useToast } from "../../src/context/ToastContext";
 
@@ -69,7 +73,7 @@ export default function ForgotPasswordScreen() {
             flexGrow: 1,
             alignItems: "center",
             justifyContent: "center",
-            paddingHorizontal: 32,
+            paddingHorizontal: 12,
             paddingVertical: 40,
           }}
         >
@@ -183,7 +187,7 @@ export default function ForgotPasswordScreen() {
             flexGrow: 1,
             alignItems: "center",
             justifyContent: "center",
-            paddingHorizontal: 32,
+            paddingHorizontal: 12,
             paddingVertical: 40,
           }}
           keyboardShouldPersistTaps="handled"

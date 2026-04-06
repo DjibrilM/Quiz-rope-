@@ -401,15 +401,18 @@ class ApiService {
 
   // Homework Assist
   async analyzeHomework(
-    imageBase64: string,
+    imageUri: string,
     mimeType = "image/jpeg",
     childId?: string,
   ): Promise<any> {
-    return this.request("/homework/analyze", {
-      method: "POST",
-      data: { imageBase64, mimeType, ...(childId ? { childId } : {}) },
+    const form = new FormData();
+    form.append("image", { uri: imageUri, type: mimeType, name: "homework.jpg" } as any);
+    if (childId) form.append("childId", childId);
+    const response = await this.client.post("/homework/analyze", form, {
+      headers: { "Content-Type": "multipart/form-data" },
       timeout: 8000,
     });
+    return response.data;
   }
 
   async getHomeworkSession(id: string): Promise<any> {
@@ -583,7 +586,7 @@ class ApiService {
 
   /** Analyze homework synchronously for a guest — no auth, no DB writes. */
   async analyzeGuestHomework(
-    imageBase64: string,
+    imageUri: string,
     mimeType = "image/jpeg",
   ): Promise<{
     title: string;
@@ -592,11 +595,13 @@ class ApiService {
     answersMarkdown: string;
     status: string;
   }> {
-    return this.request("/homework/analyze-guest", {
-      method: "POST",
-      data: { imageBase64, mimeType },
+    const form = new FormData();
+    form.append("image", { uri: imageUri, type: mimeType, name: "homework.jpg" } as any);
+    const response = await this.client.post("/homework/analyze-guest", form, {
+      headers: { "Content-Type": "multipart/form-data" },
       timeout: 90000,
     });
+    return response.data;
   }
 
   /** Single-turn guest chat — no auth, no DB writes. */

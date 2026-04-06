@@ -22,6 +22,8 @@ DerivedData
 *.xcuserstate
 project.xcworkspace
 .xcode.env.local
+build-1774989119886.aab
+build-1774991754118.apk
 
 # Bundle artifacts
 *.jsbundle

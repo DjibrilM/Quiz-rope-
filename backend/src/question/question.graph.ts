@@ -236,9 +236,9 @@ Rules for Options:
 Rules for Content:
 - Question Text: Keep it CONCISE (max 100 characters).
 - Explanation:
-  - Provide a clear, encouraging educational explanation (2-4 sentences).
-  - Use $ ... $ for inline math and $$ ... $$ for block math.
-  - Ensure math is surrounded by sensible human-readable text.
+  - Provide a highly readable, encouraging educational explanation.
+  - USE STRICT MARKDOWN: Use headings (###) for concepts/steps, bullet points (-) for lists, **bold text** for key terms, and keep paragraphs short (1-2 sentences).
+  - MATH RENDERING: ALWAYS use $ for inline math and $$ for block math. Do not mix normal text inside math blocks, strictly isolate them.
   - Target audience: ${ageRange}.`
   );
 

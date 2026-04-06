@@ -4,6 +4,7 @@ import {
   ScrollView,
   ActivityIndicator,
   Linking,
+  Pressable,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -15,25 +16,31 @@ import * as guestDb from "../../src/services/guestDb";
 import { FONTS, FORTNITE_COLORS } from "../../src/constants/theme";
 import type { CorrectionItem } from "../../src/stores/gameStore";
 import { ScreenHeader } from "@/components/common";
-import { EnrichedMarkdownText } from "react-native-enriched-markdown";
+import { MathMarkdown } from "../../src/components/common/MathMarkdown";
+import { Ionicons } from "@expo/vector-icons";
+import * as Clipboard from "expo-clipboard";
 import { useMemo } from "react";
 
 const OPTION_LABELS = ["A", "B", "C", "D"];
 
-/**
- * 🔥 Shared math brightening (same as other screens)
- */
-const brightenMath = (text: string) => {
-  if (!text) return text;
+const getMarkdownStyles = (textColor: string) => ({
+  body: { fontFamily: FONTS.body, fontSize: 13, color: textColor, lineHeight: 22 },
+  paragraph: { color: textColor, marginBottom: 8, fontSize: 13, lineHeight: 22 },
+  heading1: { color: textColor, fontSize: 18, fontFamily: FONTS.bodyBold, marginBottom: 8, marginTop: 12 },
+  heading2: { color: textColor, fontSize: 16, fontFamily: FONTS.bodyBold, marginBottom: 8, marginTop: 10 },
+  heading3: { color: textColor, fontSize: 14, fontFamily: FONTS.bodyBold, marginBottom: 6, marginTop: 8 },
+  strong: { fontFamily: FONTS.bodyBold, color: textColor },
+  em: { fontStyle: "italic" as const, color: textColor },
+  list_item: { marginBottom: 6 },
+  bullet_list: { marginBottom: 12 },
+  ordered_list: { marginBottom: 12 },
+  code_inline: { backgroundColor: "rgba(255, 255, 255, 0.1)", color: "#A78BFA", fontFamily: FONTS.body, borderRadius: 4, paddingHorizontal: 4 },
+  code_block: { backgroundColor: "rgba(255, 255, 255, 0.05)", color: textColor, padding: 12, borderRadius: 8, marginBottom: 12, fontFamily: FONTS.body },
+});
 
-  return text
-    .replace(/\$\$(.*?)\$\$/gs, (_, expr) => {
-      return `$$\\color{#E5E7EB}{${expr}}$$`;
-    })
-    .replace(/\$(.*?)\$/g, (_, expr) => {
-      return `$\\color{#E5E7EB}{${expr}}$`;
-    });
-};
+/**
+ * Removed brightenMath as MathMarkdown natively handles colors
+ */
 
 function CheckIcon() {
   return (
@@ -66,6 +73,17 @@ function XIcon() {
 export default function CorrectionScreen() {
   usePortrait();
   const { t } = useTranslation(["game", "common"]);
+
+  const handleCopy = async (item: CorrectionItem) => {
+    let text = `Question:\n${item.questionText}\n\n`;
+    item.options.forEach((opt, idx) => {
+      text += `${OPTION_LABELS[idx]}. ${opt}${idx === item.correctIndex ? ' (Correct)' : ''}\n`;
+    });
+    if (item.explanation) {
+      text += `\nExplanation:\n${item.explanation}\n`;
+    }
+    await Clipboard.setStringAsync(text);
+  };
   const { sessionId, matchId } = useLocalSearchParams<{
     sessionId?: string;
     matchId?: string;
@@ -175,8 +193,6 @@ export default function CorrectionScreen() {
 
             {/* Cards */}
             {corrections.map((item, index) => {
-              const questionMd = brightenMath(item.questionText);
-
               return (
                 <View
                   key={index}
@@ -194,6 +210,7 @@ export default function CorrectionScreen() {
                     style={{
                       flexDirection: "row",
                       justifyContent: "space-between",
+                      alignItems: "center"
                     }}
                   >
                     <Text
@@ -207,19 +224,22 @@ export default function CorrectionScreen() {
                         number: index + 1,
                       })}
                     </Text>
-                    {item.isCorrect ? <CheckIcon /> : <XIcon />}
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+                      <Pressable 
+                        onPress={() => handleCopy(item)}
+                        hitSlop={8}
+                        style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
+                      >
+                        <Ionicons name="copy-outline" size={16} color={FORTNITE_COLORS.textMuted} />
+                      </Pressable>
+                      {item.isCorrect ? <CheckIcon /> : <XIcon />}
+                    </View>
                   </View>
 
                   {/* Question */}
-                  <EnrichedMarkdownText
-                    flavor="github"
-                    markdown={questionMd}
-                    onLinkPress={({ url }) => Linking.openURL(url)}
-                    markdownStyle={{
-                      paragraph: {
-                        color: FORTNITE_COLORS.textPrimary,
-                      },
-                    }}
+                  <MathMarkdown
+                    content={item.questionText}
+                    style={getMarkdownStyles(FORTNITE_COLORS.textPrimary)}
                   />
 
                   {/* Options */}
@@ -228,8 +248,6 @@ export default function CorrectionScreen() {
                       const isCorrect = i === item.correctIndex;
                       const isUserWrong =
                         i === item.userAnswerIndex && !item.isCorrect;
-
-                      const md = brightenMath(option);
 
                       const textColor = isCorrect
                         ? "#10B981"
@@ -270,15 +288,9 @@ export default function CorrectionScreen() {
                           </Text>
 
                           <View style={{ flex: 1 }}>
-                            <EnrichedMarkdownText
-                              flavor="github"
-                              markdown={md}
-                              onLinkPress={({ url }) => Linking.openURL(url)}
-                              markdownStyle={{
-                                paragraph: {
-                                  color: textColor,
-                                },
-                              }}
+                            <MathMarkdown
+                              content={option}
+                              style={getMarkdownStyles(textColor)}
                             />
                           </View>
 
@@ -309,15 +321,9 @@ export default function CorrectionScreen() {
                         {t("game:correction.explanation")}
                       </Text>
 
-                      <EnrichedMarkdownText
-                        flavor="github"
-                        markdown={brightenMath(item.explanation)}
-                        onLinkPress={({ url }) => Linking.openURL(url)}
-                        markdownStyle={{
-                          paragraph: {
-                            color: FORTNITE_COLORS.textPrimary,
-                          },
-                        }}
+                      <MathMarkdown
+                        content={item.explanation}
+                        style={getMarkdownStyles(FORTNITE_COLORS.textPrimary)}
                       />
                     </View>
                   ) : null}
