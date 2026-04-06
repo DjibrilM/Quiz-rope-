@@ -12,7 +12,7 @@ export function AppTitle() {
       <Text
         style={{
           fontFamily: getHeadingFont(),
-          fontSize: 48,
+          fontSize: 30,
           color: "#FFFFFF",
           letterSpacing: 2,
         }}

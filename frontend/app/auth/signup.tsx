@@ -60,7 +60,9 @@ export default function SignupScreen() {
     setLoading(true);
     try {
       if (!firebaseAuthService.isConfigured()) {
-        throw new Error("Authentication is not configured. Please contact support.");
+        throw new Error(
+          "Authentication is not configured. Please contact support.",
+        );
       }
       await firebaseAuthService.signUpWithEmail(
         email.trim(),
@@ -83,7 +85,9 @@ export default function SignupScreen() {
     setLoading(true);
     try {
       if (!firebaseAuthService.isConfigured()) {
-        throw new Error("Authentication is not configured. Please contact support.");
+        throw new Error(
+          "Authentication is not configured. Please contact support.",
+        );
       }
       const { idToken } = await firebaseAuthService.signInWithGoogle();
       await handleLogin(idToken);
@@ -112,26 +116,17 @@ export default function SignupScreen() {
           }}
           keyboardShouldPersistTaps="handled"
         >
-          <AppTitle />
-
-          <Text
-            className="text-white text-xl mb-6 text-center"
-            style={{ fontFamily: "Bungee_400Regular" }}
-          >
-            {t("auth:signup.title")}
-          </Text>
-
           <View className="w-full max-w-sm">
             <TextInput
               value={email}
               onChangeText={setEmail}
               placeholder={t("auth:login.emailPlaceholder")}
-              placeholderTextColor="#7B6B8A"
+              placeholderTextColor="#9CA3AF"
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
               style={{
-                backgroundColor: "#0D0B14",
+                backgroundColor: "rgba(255, 255, 255, 0.04)",
                 color: "#FFFFFF",
                 fontSize: 16,
                 fontFamily: FONTS.body,
@@ -139,7 +134,7 @@ export default function SignupScreen() {
                 paddingVertical: 16,
                 borderRadius: 16,
                 borderWidth: 1,
-                borderColor: "#3D2E4A",
+                borderColor: "rgba(255, 255, 255, 0.08)",
                 marginBottom: 12,
               }}
             />
@@ -149,10 +144,10 @@ export default function SignupScreen() {
                 value={password}
                 onChangeText={setPassword}
                 placeholder={t("auth:login.passwordPlaceholder")}
-                placeholderTextColor="#7B6B8A"
+                placeholderTextColor="#9CA3AF"
                 secureTextEntry={!showPassword}
                 style={{
-                  backgroundColor: "#0D0B14",
+                  backgroundColor: "rgba(255, 255, 255, 0.04)",
                   color: "#FFFFFF",
                   fontSize: 16,
                   fontFamily: FONTS.body,
@@ -161,7 +156,7 @@ export default function SignupScreen() {
                   paddingRight: 52,
                   borderRadius: 16,
                   borderWidth: 1,
-                  borderColor: "#3D2E4A",
+                  borderColor: "rgba(255, 255, 255, 0.08)",
                 }}
               />
               <Pressable

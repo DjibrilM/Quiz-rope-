@@ -50,7 +50,7 @@ export default function ForgotPasswordScreen() {
   };
 
   const inputStyle = {
-    backgroundColor: "#0D0B14",
+    backgroundColor: "rgba(255, 255, 255, 0.04)",
     color: "#FFFFFF",
     fontSize: 16,
     fontFamily: FONTS.body,
@@ -58,7 +58,7 @@ export default function ForgotPasswordScreen() {
     paddingVertical: 16,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#3D2E4A",
+    borderColor: "rgba(255, 255, 255, 0.08)",
     marginBottom: 12,
   };
 
@@ -102,7 +102,7 @@ export default function ForgotPasswordScreen() {
             </Text>
             <Text
               style={{
-                color: "#9B59B6",
+                color: "#A78BFA",
                 fontSize: 13,
                 fontFamily: FONTS.bodySemiBold,
                 textAlign: "center",
@@ -159,7 +159,7 @@ export default function ForgotPasswordScreen() {
             >
               <Text
                 style={{
-                  color: "#9B59B6",
+                  color: "#A78BFA",
                   fontSize: 14,
                   fontFamily: FONTS.bodyBold,
                 }}
@@ -217,7 +217,7 @@ export default function ForgotPasswordScreen() {
               value={email}
               onChangeText={setEmail}
               placeholder={t("auth:forgotPassword.emailPlaceholder")}
-              placeholderTextColor="#7B6B8A"
+              placeholderTextColor="#9CA3AF"
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
@@ -253,7 +253,7 @@ export default function ForgotPasswordScreen() {
             </Text>
             <Text
               style={{
-                color: "#9B59B6",
+                color: "#A78BFA",
                 fontSize: 14,
                 fontFamily: FONTS.bodyBold,
               }}

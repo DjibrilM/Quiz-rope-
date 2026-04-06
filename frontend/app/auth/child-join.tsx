@@ -26,7 +26,6 @@ import { FONTS } from "../../src/constants/theme";
 import * as guestDb from "../../src/services/guestDb";
 import { NotificationService } from "../../src/services/NotificationService";
 
-
 type Status = "idle" | "scanning" | "loading" | "error";
 
 export default function ChildJoinScreen() {
@@ -95,7 +94,10 @@ export default function ChildJoinScreen() {
         // Migrate guest data to the new child account
         try {
           const payload = await guestDb.getAllDataForMigration();
-          if (payload.matches.length > 0 || payload.homeworkSessions.length > 0) {
+          if (
+            payload.matches.length > 0 ||
+            payload.homeworkSessions.length > 0
+          ) {
             console.log("Migrating guest data...");
             await apiService.migrateLocalGuestData(payload, result.token);
             await guestDb.clearAllGuestData();
@@ -122,7 +124,6 @@ export default function ChildJoinScreen() {
         setError(t("device:childJoin.invalidCode"));
         setStatus("idle");
       }
-
     },
     [setChildSession, t],
   );
@@ -145,7 +146,7 @@ export default function ChildJoinScreen() {
   if (status === "loading") {
     return (
       <SafeAreaView className="flex-1 bg-game-bg">
-        <ScreenHeader title={t("device:childJoin.title")} />
+        <ScreenHeader title={t("device:childJoin.connectAccount", "Connect Account")} />
         <View className="flex-1 items-center justify-center px-8">
           <AnimatedLoader size="lg" />
         </View>
@@ -156,7 +157,7 @@ export default function ChildJoinScreen() {
   if (status === "scanning") {
     return (
       <SafeAreaView className="flex-1 bg-game-bg">
-        <ScreenHeader title={t("device:childJoin.title")} />
+        <ScreenHeader title={t("device:childJoin.connectAccount", "Connect Account")} />
         <View className="flex-1 items-center justify-center px-8">
           <View className="w-72 h-72 rounded-3xl overflow-hidden mb-6">
             <QRScanner onScan={handleScan} enabled={scanEnabled.current} />
@@ -181,12 +182,9 @@ export default function ChildJoinScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-game-bg">
-      <ScreenHeader title={t("device:childJoin.title")} />
+      <ScreenHeader title={t("device:childJoin.connectAccount", "Connect Account")} />
 
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior="padding"
-      >
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1,
@@ -200,8 +198,20 @@ export default function ChildJoinScreen() {
         >
           <Text
             style={{
+              fontSize: 32,
+              color: "#FFFFFF",
+              fontFamily: "LuckiestGuy_400Regular",
+              textAlign: "center",
+              marginBottom: 12,
+            }}
+          >
+            {t("device:childJoin.connectAccount", "Connect Account")}
+          </Text>
+
+          <Text
+            style={{
               fontSize: 16,
-              color: "#B8A9C9",
+              color: "#9CA3AF",
               marginBottom: 32,
               textAlign: "center",
               fontFamily: FONTS.body,
@@ -210,28 +220,37 @@ export default function ChildJoinScreen() {
             {t("device:childJoin.instruction")}
           </Text>
 
-          <View className="flex-row w-full max-w-md mb-4">
+          <View className="w-full max-w-sm mb-4">
             <TextInput
               value={code}
               onChangeText={setCode}
               placeholder={t("device:childJoin.codeInputPlaceholder")}
-              placeholderTextColor="#7B6B8A"
-              className="flex-1 bg-card-bg text-white text-xl px-6 py-4 rounded-l-2xl border border-[#3D2E4A]"
+              placeholderTextColor="#9CA3AF"
+              className="w-full text-white text-md px-4 rounded-2xl mb-4 h-20"
+              style={{
+                backgroundColor: "rgba(255, 255, 255, 0.04)",
+                borderWidth: 1,
+                borderColor: "rgba(255, 255, 255, 0.08)",
+                textAlign: "center",
+                letterSpacing: 6,
+                fontFamily: "Bungee_400Regular",
+              }}
               autoCapitalize="characters"
               autoCorrect={false}
               onSubmitEditing={handleSubmitCode}
             />
-            <Pressable
+            <BouncePress
               onPress={handleSubmitCode}
-              className="bg-game-purple active:bg-violet-700 px-8 py-4 rounded-r-2xl items-center justify-center"
+              className="w-full py-4 rounded-2xl items-center justify-center mb-2"
+              style={{ backgroundColor: "#6C5CE7" }}
             >
               <Text
-                className="text-white text-base"
-                style={{ fontFamily: "Bungee_400Regular" }}
+                className="text-white text-lg"
+                style={{ fontFamily: "Bungee_400Regular", letterSpacing: 0.5 }}
               >
                 {t("common:buttons.link")}
               </Text>
-            </Pressable>
+            </BouncePress>
           </View>
 
           {isLookingUp && (
@@ -242,17 +261,43 @@ export default function ChildJoinScreen() {
 
           {!isLookingUp && linkInfo && (
             <View
-              className="bg-card-bg border border-game-purple/50 rounded-2xl px-6 py-4 mb-6 w-full max-w-md flex-row items-center gap-4"
-              style={{ shadowColor: "#9B59B6", shadowOpacity: 0.1, shadowRadius: 10, elevation: 4 }}
+              className="rounded-2xl px-6 py-4 mb-6 w-full max-w-md flex-row items-center gap-4"
+              style={{
+                backgroundColor: "rgba(255, 255, 255, 0.04)",
+                borderWidth: 1,
+                borderColor: "rgba(167, 139, 250, 0.3)",
+                shadowColor: "#9B59B6",
+                shadowOpacity: 0.1,
+                shadowRadius: 10,
+                elevation: 4,
+              }}
             >
-              <View className="w-12 h-12 bg-game-purple/20 rounded-full items-center justify-center border border-game-purple/30">
+              <View
+                className="w-12 h-12 rounded-full items-center justify-center border"
+                style={{
+                  backgroundColor: "rgba(167, 139, 250, 0.1)",
+                  borderColor: "rgba(167, 139, 250, 0.2)",
+                }}
+              >
                 <AvatarIcon avatarId={linkInfo.avatarUrl} size={32} />
               </View>
               <View className="flex-1">
-                <Text style={{ color: "#B8A9C9", fontSize: 12, fontFamily: FONTS.body }}>
+                <Text
+                  style={{
+                    color: "#9CA3AF",
+                    fontSize: 12,
+                    fontFamily: FONTS.body,
+                  }}
+                >
                   Linking to:
                 </Text>
-                <Text style={{ color: "#FFFFFF", fontSize: 18, fontFamily: "LuckiestGuy_400Regular" }}>
+                <Text
+                  style={{
+                    color: "#FFFFFF",
+                    fontSize: 18,
+                    fontFamily: "LuckiestGuy_400Regular",
+                  }}
+                >
                   {linkInfo.displayName}
                 </Text>
               </View>
@@ -278,11 +323,16 @@ export default function ChildJoinScreen() {
               scanEnabled.current = true;
               setStatus("scanning");
             }}
-            className="mt-4 bg-card-bg border border-[#3D2E4A] px-8 py-4 rounded-2xl"
+            className="w-full max-w-sm py-4 rounded-2xl mt-4"
+            style={{
+              backgroundColor: "rgba(255, 255, 255, 0.04)",
+              borderWidth: 1,
+              borderColor: "rgba(255, 255, 255, 0.08)",
+            }}
           >
             <Text
-              className="text-white text-base"
-              style={{ fontFamily: "Bungee_400Regular" }}
+              className="text-white text-base text-center"
+              style={{ fontFamily: "Bungee_400Regular", letterSpacing: 0.5 }}
             >
               {t("device:childJoin.scanQR")}
             </Text>
