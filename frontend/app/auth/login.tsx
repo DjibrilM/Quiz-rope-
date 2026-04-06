@@ -65,41 +65,8 @@ export default function LoginScreen() {
 
     // Subscription disabled — app is free for now
 
-
     NotificationService.sendSignInNotification(result.user.displayName);
     router.replace("/home");
-  };
-
-  const handleMockLogin = async () => {
-    try {
-      const result = await apiService.login("mock-token");
-      apiService.setToken(result.token || "mock-token");
-      const user = (result.user || result) as unknown as Record<
-        string,
-        unknown
-      >;
-      setAuth(
-        { ...result.user, ...user } as any,
-        true,
-        result.token || "mock-token",
-      );
-      NotificationService.sendSignInNotification((result.user || result).displayName);
-      router.replace("/home");
-    } catch {
-      setAuth(
-        {
-          id: "mock-parent",
-          email: "parent@test.com",
-          displayName: "Test Parent",
-          children: [],
-          createdAt: new Date(),
-        },
-        true,
-        "mock-token",
-      );
-      NotificationService.sendSignInNotification("Test Parent");
-      router.replace("/home");
-    }
   };
 
   const handleEmailSignIn = async () => {
@@ -107,8 +74,9 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       if (!firebaseAuthService.isConfigured()) {
-        await handleMockLogin();
-        return;
+        throw new Error(
+          "Authentication is not configured. Please contact support.",
+        );
       }
       const { idToken } = await firebaseAuthService.signInWithEmail(
         email.trim(),
@@ -134,8 +102,9 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       if (!firebaseAuthService.isConfigured()) {
-        await handleMockLogin();
-        return;
+        throw new Error(
+          "Authentication is not configured. Please contact support.",
+        );
       }
       const { idToken } = await firebaseAuthService.signInWithGoogle();
       await handleLogin(idToken);
@@ -163,7 +132,7 @@ export default function LoginScreen() {
             flexGrow: 1,
             alignItems: "center",
             justifyContent: "center",
-            paddingHorizontal: 32,
+            paddingHorizontal: 12,
             paddingVertical: 40,
           }}
           keyboardShouldPersistTaps="handled"

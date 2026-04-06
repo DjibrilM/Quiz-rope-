@@ -8,11 +8,26 @@ import {
   Res,
   Query,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
   BadRequestException,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 import { HomeworkService } from './homework.service';
 import { FirebaseAuthGuard } from '../auth/guards/firebase-auth.guard';
 import { GhostAuthGuard } from '../auth/guards/ghost-auth.guard';
+
+const imageUpload = {
+  storage: memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB max
+  fileFilter: (_req: any, file: Express.Multer.File, cb: any) => {
+    if (!file.mimetype.startsWith('image/')) {
+      return cb(new BadRequestException('Only image files are allowed'), false);
+    }
+    cb(null, true);
+  },
+};
 
 @Controller('homework')
 export class HomeworkController {
@@ -20,32 +35,34 @@ export class HomeworkController {
 
   @Post('analyze')
   @UseGuards(FirebaseAuthGuard)
+  @UseInterceptors(FileInterceptor('image', imageUpload))
   async analyze(
-    @Body() body: { imageBase64: string; mimeType?: string; childId?: string },
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: { childId?: string },
     @Req() req,
   ) {
-    if (!body.imageBase64) {
-      throw new BadRequestException('imageBase64 is required');
-    }
+    if (!file) throw new BadRequestException('image file is required');
+    const imageBase64 = file.buffer.toString('base64');
+    const mimeType = file.mimetype || 'image/jpeg';
     return this.homeworkService.analyze(
       req.user.role === 'child' ? req.user.parentId : req.user._id,
-      body.imageBase64,
-      body.mimeType || 'image/jpeg',
+      imageBase64,
+      mimeType,
       req.user.role === 'child' ? req.user._id : body.childId,
     );
-
   }
 
   /** Stateless: analyze homework synchronously — no DB writes, no auth. For guest mode. */
   @Post('analyze-guest')
+  @UseInterceptors(FileInterceptor('image', imageUpload))
   async analyzeGuest(
-    @Body() body: { imageBase64: string; mimeType?: string },
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: { mimeType?: string },
   ) {
-    if (!body.imageBase64) throw new BadRequestException('imageBase64 is required');
-    return this.homeworkService.analyzeGuestStateless(
-      body.imageBase64,
-      body.mimeType || 'image/jpeg',
-    );
+    if (!file) throw new BadRequestException('image file is required');
+    const imageBase64 = file.buffer.toString('base64');
+    const mimeType = file.mimetype || body.mimeType || 'image/jpeg';
+    return this.homeworkService.analyzeGuestStateless(imageBase64, mimeType);
   }
 
   /** Stateless: single-turn chat — no DB writes, no auth. For guest mode. */

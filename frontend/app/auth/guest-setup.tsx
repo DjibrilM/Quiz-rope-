@@ -72,19 +72,17 @@ export default function GuestSetupScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#0D0B14" }}>
       <ScreenHeader title={t("auth:guest.setupTitle")} />
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1,
             alignItems: "center",
-            justifyContent: "center",
-            paddingHorizontal: 28,
-            paddingVertical: 40,
+            paddingHorizontal: 12,
+            paddingTop: 32,
+            paddingBottom: 40,
           }}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
           {/* Title */}
           <Text
@@ -214,18 +212,20 @@ export default function GuestSetupScreen() {
           </View>
 
           {/* Start button */}
-          <Button onPress={handleStart}>
-            <Text
-              style={{
-                color: "#FFFFFF",
-                fontSize: 20,
-                fontFamily: "LuckiestGuy_400Regular",
-                letterSpacing: 1,
-              }}
-            >
-              {t("auth:guest.startButton")}
-            </Text>
-          </Button>
+          <View className="w-full">
+            <Button className="w-full min-w-full" onPress={handleStart}>
+              <Text
+                style={{
+                  color: "#FFFFFF",
+                  fontSize: 20,
+                  fontFamily: "LuckiestGuy_400Regular",
+                  letterSpacing: 1,
+                }}
+              >
+                {t("auth:guest.startButton")}
+              </Text>
+            </Button>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

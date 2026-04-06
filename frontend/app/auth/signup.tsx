@@ -55,43 +55,12 @@ export default function SignupScreen() {
     router.replace("/home");
   };
 
-  const handleMockSignUp = async () => {
-    try {
-      const result = await apiService.login("mock-token");
-      apiService.setToken(result.token || "mock-token");
-      const user = (result.user || result) as unknown as Record<
-        string,
-        unknown
-      >;
-      setAuth(
-        { ...result.user, ...user } as any,
-        true,
-        result.token || "mock-token",
-      );
-      router.replace("/home");
-    } catch {
-      setAuth(
-        {
-          id: "mock-parent",
-          email: "parent@test.com",
-          displayName: "Test Parent",
-          children: [],
-          createdAt: new Date(),
-        },
-        true,
-        "mock-token",
-      );
-      router.replace("/home");
-    }
-  };
-
   const handleEmailSignUp = async () => {
     if (!validate()) return;
     setLoading(true);
     try {
       if (!firebaseAuthService.isConfigured()) {
-        await handleMockSignUp();
-        return;
+        throw new Error("Authentication is not configured. Please contact support.");
       }
       await firebaseAuthService.signUpWithEmail(
         email.trim(),
@@ -114,8 +83,7 @@ export default function SignupScreen() {
     setLoading(true);
     try {
       if (!firebaseAuthService.isConfigured()) {
-        await handleMockSignUp();
-        return;
+        throw new Error("Authentication is not configured. Please contact support.");
       }
       const { idToken } = await firebaseAuthService.signInWithGoogle();
       await handleLogin(idToken);
@@ -139,7 +107,7 @@ export default function SignupScreen() {
             flexGrow: 1,
             alignItems: "center",
             justifyContent: "center",
-            paddingHorizontal: 32,
+            paddingHorizontal: 12,
             paddingVertical: 40,
           }}
           keyboardShouldPersistTaps="handled"

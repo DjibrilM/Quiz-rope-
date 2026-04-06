@@ -26,13 +26,14 @@ import { useTranslation } from "react-i18next";
 
 import { getDailyCount, incrementDailyCount, UPLOAD_LIMIT } from "../../src/hooks/useHomeworkLimit";
 
-const MAX_DIMENSION = 1280;
+// 800px is sufficient for LLM text recognition; quality 0.4 keeps the file small
+const MAX_DIMENSION = 800;
 
 async function compressForAnalysis(uri: string): Promise<{ uri: string; base64: string }> {
   const imageRef = await ImageManipulator.manipulate(uri)
     .resize({ width: MAX_DIMENSION })
     .renderAsync();
-  const result = await imageRef.saveAsync({ compress: 0.8, format: SaveFormat.JPEG, base64: true });
+  const result = await imageRef.saveAsync({ compress: 0.4, format: SaveFormat.JPEG, base64: true });
   return { uri: result.uri, base64: result.base64! };
 }
 
@@ -92,7 +93,7 @@ export default function CaptureScreen() {
   };
 
   const handleSubmit = async () => {
-    if (!capturedBase64) return;
+    if (!capturedUri) return;
 
     if (!__DEV__) {
       const count = await getDailyCount(userId);
@@ -108,7 +109,8 @@ export default function CaptureScreen() {
     setUploading(true);
     try {
       if (userRole === "guest") {
-        const result = await apiService.analyzeGuestHomework(capturedBase64);
+        // Send compressed file as multipart; save base64 locally for offline display
+        const result = await apiService.analyzeGuestHomework(capturedUri);
         const sessionId = Crypto.randomUUID();
         await guestDb.saveHomeworkSession({
           id: sessionId,
@@ -117,7 +119,7 @@ export default function CaptureScreen() {
           status: result.status as any,
           topics: result.topics,
           answersMarkdown: result.answersMarkdown,
-          imageBase64: capturedBase64,
+          imageBase64: capturedBase64 ?? "",
           imageMimeType: "image/jpeg",
           quizTaken: false,
           linkedMatchIds: [],
@@ -126,7 +128,7 @@ export default function CaptureScreen() {
         await incrementDailyCount(userId);
         router.replace(`/homework/session/${sessionId}` as any);
       } else {
-        const session = await apiService.analyzeHomework(capturedBase64, undefined, childId);
+        const session = await apiService.analyzeHomework(capturedUri, undefined, childId);
         await incrementDailyCount(userId);
         router.replace(`/homework/processing?sessionId=${session._id}` as any);
       }

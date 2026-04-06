@@ -4,6 +4,7 @@ import {
   Pressable,
   TextInput,
   KeyboardAvoidingView,
+  ScrollView,
   Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -184,9 +185,19 @@ export default function ChildJoinScreen() {
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior="padding"
       >
-        <View className="flex-1 items-center justify-center px-8">
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+            alignItems: "center",
+            justifyContent: "center",
+            paddingHorizontal: 12,
+            paddingVertical: 24,
+          }}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
           <Text
             style={{
               fontSize: 16,
@@ -276,7 +287,7 @@ export default function ChildJoinScreen() {
               {t("device:childJoin.scanQR")}
             </Text>
           </BouncePress>
-        </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

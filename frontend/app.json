@@ -76,11 +76,7 @@
           "ios": {
             "useFrameworks": "static",
             "buildReactNativeFromSource": true,
-            "forceStaticLinking": [
-              "RNFBApp",
-              "RNFBAuth",
-              "RNFBFirestore"
-            ]
+            "forceStaticLinking": ["RNFBApp", "RNFBAuth", "RNFBFirestore"]
           }
         }
       ],

@@ -155,7 +155,7 @@ export default function VerifyEmailScreen() {
           flex: 1,
           alignItems: "center",
           justifyContent: "center",
-          paddingHorizontal: 32,
+          paddingHorizontal: 12,
         }}
       >
         <View className="border-2 mb-4 items-center bg-purple-500/10 justify-center border-purple-500 rounded-full p-6">

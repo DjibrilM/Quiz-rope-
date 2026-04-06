@@ -50,8 +50,8 @@ export class AuthService {
 
   async validateFirebaseToken(token: string): Promise<any> {
     if (!isFirebaseConfigured) {
-      this.logger.warn('Firebase not configured — returning mock user');
-      return this.getMockUser();
+      this.logger.error('Firebase is not configured! Refusing to authenticate.');
+      throw new BadRequestException('Authentication disabled: Firebase is not configured.');
     }
 
     try {
@@ -98,14 +98,6 @@ export class AuthService {
     return this.childModel.findById(id);
   }
 
-
-  getMockUser() {
-    return {
-      uid: 'mock-uid-001',
-      email: 'parent@test.com',
-      name: 'Test Parent',
-    };
-  }
 
   isFirebaseReady(): boolean {
     return isFirebaseConfigured;
