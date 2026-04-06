@@ -11,7 +11,9 @@
       "Bash(echo \"=== $f ===\")",
       "Bash(for f in home children)",
       "Bash(pip3 install:*)",
-      "Bash(find /Users/jibm/Desktop/projects/tug-of-war-for-your-brain/frontend/android/app/src/main/res/mipmap-* -type f)"
+      "Bash(find /Users/jibm/Desktop/projects/tug-of-war-for-your-brain/frontend/android/app/src/main/res/mipmap-* -type f)",
+      "Bash(node --version)",
+      "Bash(/usr/local/bin/node --version)"
     ]
   }
 }

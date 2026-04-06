@@ -6,12 +6,12 @@ dist/
 
 # Firebase
 GoogleService-Info.plist
-google-services.json
 firebase-config.json
 
 # Expo
 .expo/
 *.jks
+local.properties
 *.p8
 *.p12
 *.key
@@ -22,6 +22,7 @@ web-build/
 # OS
 .DS_Store
 Thumbs.db
+.claude
 
 # IDE
 .idea/

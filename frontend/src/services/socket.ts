@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 
-const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL || 'http://localhost:3000';
+const SERVER_URL = 'https://quiz-rope.onrender.com';
 
 class SocketService {
   private socket: Socket | null = null;
