@@ -8,6 +8,7 @@ import { apiService } from "../../src/services/api";
 import { AnimatedLoader, ScreenHeader } from "../../src/components/common";
 import { getSubjectTheme } from "../../src/config/subjectThemes";
 import { FONTS, FORTNITE_COLORS } from "../../src/constants/theme";
+import { MathMarkdown } from "../../src/components/common/MathMarkdown";
 import Svg, { Path } from "react-native-svg";
 import type { AnswerDetail } from "@shared/types/analytics.types";
 
@@ -40,6 +41,32 @@ function XIcon() {
     </Svg>
   );
 }
+
+const getMarkdownStyles = (textColor: string) => ({
+  body: {
+    fontFamily: FONTS.body,
+    fontSize: 13,
+    color: textColor,
+    lineHeight: 22,
+  },
+  paragraph: {
+    color: textColor,
+    marginBottom: 8,
+    fontSize: 13,
+    lineHeight: 22,
+  },
+  strong: { fontFamily: FONTS.bodyBold, color: textColor },
+  em: { fontStyle: "italic" as const, color: textColor },
+  list: { marginBottom: 12, color: textColor },
+  listItem: { marginBottom: 6, color: textColor },
+  code_inline: {
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    color: "#A78BFA",
+    fontFamily: FONTS.body,
+    borderRadius: 4,
+    paddingHorizontal: 4,
+  },
+});
 
 function QuestionReviewCard({
   answer,
@@ -107,16 +134,10 @@ function QuestionReviewCard({
       </View>
 
       {/* Question text */}
-      <Text
-        style={{
-          fontSize: 14,
-          fontFamily: FONTS.bodySemiBold,
-          color: FORTNITE_COLORS.textPrimary,
-          lineHeight: 20,
-        }}
-      >
-        {answer.questionText}
-      </Text>
+      <MathMarkdown
+        content={answer.questionText}
+        style={getMarkdownStyles(FORTNITE_COLORS.textPrimary)}
+      />
 
       {/* Options */}
       <View style={{ gap: 6 }}>
@@ -178,20 +199,18 @@ function QuestionReviewCard({
                   {OPTION_LABELS[i]}
                 </Text>
               </View>
-              <Text
-                style={{
-                  flex: 1,
-                  fontSize: 13,
-                  fontFamily: FONTS.body,
-                  color: isCorrect
-                    ? "#10B981"
-                    : isWrongAnswer
-                      ? "#EF4444"
-                      : FORTNITE_COLORS.textSecondary,
-                }}
-              >
-                {option}
-              </Text>
+              <View style={{ flex: 1 }}>
+                <MathMarkdown
+                  content={option}
+                  style={getMarkdownStyles(
+                    isCorrect
+                      ? "#10B981"
+                      : isWrongAnswer
+                        ? "#EF4444"
+                        : FORTNITE_COLORS.textSecondary,
+                  )}
+                />
+              </View>
               {isCorrect && <CheckIcon />}
               {isWrongAnswer && <XIcon />}
             </View>
@@ -218,16 +237,10 @@ function QuestionReviewCard({
           >
             {t("analytics:review.explanation")}
           </Text>
-          <Text
-            style={{
-              fontSize: 13,
-              fontFamily: FONTS.body,
-              color: FORTNITE_COLORS.textSecondary,
-              lineHeight: 18,
-            }}
-          >
-            {answer.explanation}
-          </Text>
+          <MathMarkdown
+            content={answer.explanation}
+            style={getMarkdownStyles(FORTNITE_COLORS.textSecondary)}
+          />
         </View>
       ) : null}
     </View>

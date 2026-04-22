@@ -5,6 +5,7 @@ let configured = false;
 
 class FirebaseAuthService {
   configure(webClientId?: string) {
+    console.log('[FirebaseAuthService] Configuring with webClientId:', webClientId);
     if (!webClientId) {
       console.warn('No Google Web Client ID provided — Firebase auth disabled');
       return;
@@ -13,6 +14,7 @@ class FirebaseAuthService {
     try {
       GoogleSignin.configure({ webClientId });
       configured = true;
+      console.log('[FirebaseAuthService] Configuration successful');
     } catch (error) {
       console.warn('Google Sign-In configuration failed:', error);
       configured = false;
@@ -106,10 +108,10 @@ class FirebaseAuthService {
     return auth().currentUser?.emailVerified ?? false;
   }
 
-  async getIdToken(): Promise<string> {
+  async getFirebaseIdToken(): Promise<string> {
     const user = auth().currentUser;
     if (!user) throw new Error("No user signed in");
-    return user.getIdToken(true);
+    return await user.getIdToken(true);
   }
 
   async signOut(): Promise<void> {

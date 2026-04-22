@@ -1,5 +1,18 @@
 import { useState } from "react";
-import { View, Text, ScrollView, TextInput, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TextInput,
+  Pressable,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
+import {
+  KeyboardAwareScrollView,
+  KeyboardToolbar,
+} from "react-native-keyboard-controller";
+
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import Svg, { Path } from "react-native-svg";
@@ -164,7 +177,7 @@ export default function SoloMatchScreen() {
     >
       <ScreenHeader title={t("match:solo.title", { subject: subjectLabel })} />
 
-      <ScrollView
+      <KeyboardAwareScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
           paddingBottom: 120,
@@ -231,69 +244,78 @@ export default function SoloMatchScreen() {
         )}
 
         {/* Context input */}
-        <View style={{ marginTop: 24 }}>
-          <Text
-            style={{
-              color: "#B8A9C9",
-              fontSize: 11,
-              fontFamily: FONTS.bodySemiBold,
-              letterSpacing: 1.5,
-              textTransform: "uppercase",
-              marginBottom: 8,
-            }}
-          >
-            {t("match:solo.contextLabel")}
-          </Text>
-          <TextInput
-            value={context}
-            onChangeText={(v) => {
-              setContext(v);
-              if (contextError) setContextError("");
-            }}
-            placeholder={t("match:solo.contextPlaceholder")}
-            placeholderTextColor="#4A3D5A"
-            multiline
-            numberOfLines={3}
-            style={{
-              backgroundColor: "#1A1520",
-              borderWidth: 1.5,
-              borderColor: contextError ? "#EF4444" : "#3D2E4A",
-              borderRadius: 14,
-              paddingHorizontal: 16,
-              paddingVertical: 12,
-              color: "#FFFFFF",
-              fontSize: 14,
-              fontFamily: FONTS.body,
-              lineHeight: 20,
-              minHeight: 80,
-              textAlignVertical: "top",
-            }}
-          />
-          {contextError ? (
+
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "position"}
+          keyboardVerticalOffset={150}
+          style={{ flex: 1 }}
+        >
+          <View className="bg-game-bg py-2" style={{ marginTop: 24 }}>
             <Text
               style={{
-                color: "#EF4444",
-                fontSize: 13,
-                fontFamily: FONTS.body,
-                marginTop: 6,
+                color: "#B8A9C9",
+                fontSize: 11,
+                fontFamily: FONTS.bodySemiBold,
+                letterSpacing: 1.5,
+                textTransform: "uppercase",
+                marginBottom: 8,
               }}
             >
-              {contextError}
+              {t("match:solo.contextLabel")}
             </Text>
-          ) : (
-            <Text
+
+            <TextInput
+              value={context}
+              onChangeText={(v) => {
+                setContext(v);
+                if (contextError) setContextError("");
+              }}
+              placeholder={t("match:solo.contextPlaceholder")}
+              placeholderTextColor="#4A3D5A"
+              multiline
+              numberOfLines={3}
               style={{
-                color: "#4A3D5A",
-                fontSize: 12,
+                backgroundColor: "#1A1520",
+                borderWidth: 1.5,
+                borderColor: contextError ? "#EF4444" : "#3D2E4A",
+                borderRadius: 14,
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                color: "#FFFFFF",
+                fontSize: 14,
                 fontFamily: FONTS.body,
-                marginTop: 6,
+                lineHeight: 20,
+                minHeight: 80,
+                textAlignVertical: "top",
               }}
-            >
-              {t("match:solo.contextHint")}
-            </Text>
-          )}
-        </View>
-      </ScrollView>
+            />
+
+            {contextError ? (
+              <Text
+                style={{
+                  color: "#EF4444",
+                  fontSize: 13,
+                  fontFamily: FONTS.body,
+                  marginTop: 6,
+                }}
+              >
+                {contextError}
+              </Text>
+            ) : (
+              <Text
+                style={{
+                  color: "#4A3D5A",
+                  fontSize: 12,
+                  fontFamily: FONTS.body,
+                  marginTop: 6,
+                }}
+              >
+                {t("match:solo.contextHint")}
+              </Text>
+            )}
+          </View>
+        </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
 
       {/* Start Game button */}
       <View

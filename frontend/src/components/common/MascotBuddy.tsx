@@ -90,8 +90,8 @@ export function MascotBuddy({
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    bottom: 40,
-    right: 20,
+    bottom: 10,
+    right: -10,
     alignItems: "flex-end",
     zIndex: 9999, // Floating on top of everything
     transform: [{ scale: 0.55 }],

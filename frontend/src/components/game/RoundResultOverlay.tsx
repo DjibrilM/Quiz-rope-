@@ -149,14 +149,19 @@ export function RoundResultOverlay({ result }: RoundResultOverlayProps) {
   const opacity = useSharedValue(0);
   const shakeX = useSharedValue(0);
 
-  const encouragements = t("result.encouragement", { returnObjects: true }) as string[];
+  const encouragements = t("result.encouragement", {
+    returnObjects: true,
+  }) as string[];
   const encourageMsg = useMemo(
     () => encouragements[Math.floor(Math.random() * encouragements.length)],
     [],
   );
 
   useEffect(() => {
-    translateY.value = withTiming(0, { duration: 60, easing: Easing.out(Easing.cubic) });
+    translateY.value = withTiming(0, {
+      duration: 60,
+      easing: Easing.out(Easing.cubic),
+    });
     opacity.value = withTiming(1, { duration: 50 });
 
     if (!result.isCorrect) {

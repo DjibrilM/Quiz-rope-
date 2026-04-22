@@ -86,11 +86,11 @@ export function MathMarkdown({
         color: baseColor,
       },
       list: {
-        color: "#FFFFFF",
+        color: baseColor,
         marginBottom: 10,
       },
       listItem: {
-        color: "#FFFFFF",
+        color: baseColor,
         marginBottom: 4,
       },
       code: {

@@ -65,7 +65,7 @@ export default function VerifyEmailScreen() {
           setVerifying(false);
           return;
         }
-        const idToken = await firebaseAuthService.getIdToken();
+        const idToken = await firebaseAuthService.getFirebaseIdToken();
         const result = await apiService.login(idToken);
         navigatedRef.current = true;
         apiService.setToken(result.token);
@@ -116,7 +116,7 @@ export default function VerifyEmailScreen() {
       // backend's verifyIdToken will then see email_verified: true from the
       // token claims, which is more reliable than the SDK's cached property.
       await firebaseAuthService.reloadUser();
-      const idToken = await firebaseAuthService.getIdToken();
+      const idToken = await firebaseAuthService.getFirebaseIdToken();
       const result = await apiService.login(idToken);
       apiService.setToken(result.token);
       const user = result.user as unknown as Record<string, unknown>;
@@ -126,7 +126,14 @@ export default function VerifyEmailScreen() {
         result.token,
       );
       router.replace("/home");
-    } catch {
+    } catch (err: any) {
+      console.error("[VerifyEmail] Verification Error:", err);
+      apiService.reportError({
+        context: "auth_verify_email",
+        message: err.message || "Email verification check failed",
+        stack: err.stack,
+        metadata: { email },
+      });
       showError(t("verifyEmail.notVerifiedError"), "Not Verified");
     } finally {
       setLoading(false);
@@ -138,7 +145,14 @@ export default function VerifyEmailScreen() {
     try {
       await firebaseAuthService.sendEmailVerification();
       showSuccess(t("verifyEmail.resendSuccess"), "Email Sent");
-    } catch {
+    } catch (err: any) {
+      console.error("[VerifyEmail] Resend Error:", err);
+      apiService.reportError({
+        context: "auth_resend_verification",
+        message: err.message || "Failed to resend verification email",
+        stack: err.stack,
+        metadata: { email },
+      });
       showError(t("verifyEmail.resendError"), "Failed");
     } finally {
       setResendLoading(false);

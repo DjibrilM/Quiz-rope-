@@ -34,6 +34,7 @@ import { AnimatedLoader } from "../src/components/common/AnimatedLoader";
 import { AppTitle } from "../src/components/auth/AppTitle";
 import { NotificationService } from "../src/services/NotificationService";
 import * as Notifications from 'expo-notifications';
+import { KeyboardProvider } from "react-native-keyboard-controller";
 
 const queryClient = new QueryClient();
 
@@ -333,11 +334,13 @@ export default function RootLayout() {
 
   useEffect(() => {
     try {
-      firebaseAuthService.configure(
-        process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-      );
+      const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
+      if (!webClientId) {
+        console.warn("EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID is missing from environment variables.");
+      }
+      firebaseAuthService.configure(webClientId);
     } catch (error) {
-      console.warn("Firebase configuration skipped:", error);
+      console.warn("Firebase configuration failed:", error);
     }
 
     soundService.loadAll();
@@ -368,8 +371,10 @@ export default function RootLayout() {
       <ErrorBoundary>
         <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
           <SafeAreaProvider>
-            <StatusBar style="light" />
-            <ProfileSplash />
+            <KeyboardProvider>
+              <StatusBar style="light" />
+              <ProfileSplash />
+            </KeyboardProvider>
           </SafeAreaProvider>
         </GestureHandlerRootView>
       </ErrorBoundary>
@@ -386,21 +391,23 @@ export default function RootLayout() {
               <ChildSessionWatcher />
               <NotificationWatcher />
               <BottomSheetModalProvider>
-                <StatusBar style="light" />
-                <Stack
-                  screenOptions={{
-                    headerShown: false,
-                    headerStyle: { backgroundColor: FORTNITE_COLORS.bgDark },
-                    headerTitleStyle: {
-                      fontFamily: FONTS.heading,
-                      fontSize: 20,
-                      color: FORTNITE_COLORS.textPrimary,
-                    },
-                    headerTintColor: FORTNITE_COLORS.textPrimary,
-                    headerShadowVisible: false,
-                    contentStyle: { backgroundColor: FORTNITE_COLORS.bgDark },
-                  }}
-                />
+                <KeyboardProvider>
+                  <StatusBar style="light" />
+                  <Stack
+                    screenOptions={{
+                      headerShown: false,
+                      headerStyle: { backgroundColor: FORTNITE_COLORS.bgDark },
+                      headerTitleStyle: {
+                        fontFamily: FONTS.heading,
+                        fontSize: 20,
+                        color: FORTNITE_COLORS.textPrimary,
+                      },
+                      headerTintColor: FORTNITE_COLORS.textPrimary,
+                      headerShadowVisible: false,
+                      contentStyle: { backgroundColor: FORTNITE_COLORS.bgDark },
+                    }}
+                  />
+                </KeyboardProvider>
               </BottomSheetModalProvider>
             </ToastProvider>
           </SafeAreaProvider>

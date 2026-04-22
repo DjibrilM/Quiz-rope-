@@ -13,6 +13,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { usePortrait } from "../../src/hooks/useOrientation";
 import { firebaseAuthService } from "../../src/services/firebase";
+import { apiService } from "../../src/services/api";
 import { AppTitle } from "../../src/components/auth";
 import {
   ScreenHeader,
@@ -43,6 +44,13 @@ export default function ForgotPasswordScreen() {
       await firebaseAuthService.sendPasswordResetEmail(trimmedEmail);
       setStep("check-email");
     } catch (err: any) {
+      console.error("[ForgotPassword] Reset Error:", err);
+      apiService.reportError({
+        context: "auth_forgot_password",
+        message: err.message || "Unknown forgot password error",
+        stack: err.stack,
+        metadata: { email: trimmedEmail },
+      });
       showApiError(err);
     } finally {
       setLoading(false);

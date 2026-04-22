@@ -235,18 +235,19 @@ export default function GameScreen() {
               .catch((e) => console.warn("[game] completeMatch failed:", e?.message ?? e));
           }
 
-          // Trigger achievement notifications
+          // Trigger strategic milestone notifications
           (async () => {
              const count = await guestDb.getCompletedMatchesCount();
-             // If this is the FIRST completed match (count is 0 or 1 depending on when we call it, 
-             // but here it's called right after the update/completeMatch above which might not have finished)
-             // We'll check if it's <= 1 to be safe if this is their first ever.
              const playerName = (p1Name as string) || 'Challenger';
-             if (count <= 1) {
-                NotificationService.sendFirstMatchNotification(playerName);
-             } else if (Math.random() > 0.7) {
-                // Occasionally remind them about homework assistant after a match
-                NotificationService.sendHomeworkReminderNotification(playerName);
+             
+             // Strategic Milestone System: 1, 5, 10, 25, 50, 100...
+             const milestones = [1, 5, 10, 25, 50, 100, 250, 500];
+             if (milestones.includes(count)) {
+               if (count === 1) {
+                 NotificationService.sendFirstMatchNotification(playerName);
+               } else {
+                 NotificationService.sendMilestoneNotification(playerName, count);
+               }
              }
           })();
         }

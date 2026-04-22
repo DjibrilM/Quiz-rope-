@@ -8,6 +8,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 import { AnimatedOption } from "./AnimatedOption";
+import { MathMarkdown } from "../common/MathMarkdown";
 import { FONTS } from "../../constants/theme";
 
 interface QuestionCardProps {
@@ -32,24 +33,8 @@ interface QuestionCardProps {
 
 const OPTION_LABELS = ["A", "B", "C", "D"];
 
-/**
- * 🔥 Fix dim math by forcing LaTeX color
- */
-const brightenMath = (text: string) => {
-  if (!text) return text;
+// brightenMath removed as it is now handled by MathMarkdown component
 
-  return (
-    text
-      // block math $$...$$ (handle first to avoid conflicts)
-      .replace(/\$\$(.*?)\$\$/gs, (_, expr) => {
-        return `$$\\color{#fab143}{${expr}}$$`;
-      })
-      // inline math $...$
-      .replace(/\$(.*?)\$/g, (_, expr) => {
-        return `$\\color{#fab143}{${expr}}$`;
-      })
-  );
-};
 
 export function QuestionCard({
   question,
@@ -81,9 +66,8 @@ export function QuestionCard({
     opacity: questionOpacity.value,
   }));
 
-  const processedMarkdown = useMemo(() => {
-    return question ? brightenMath(question.text) : "";
-  }, [question?.text]);
+// processedMarkdown removed as MathMarkdown handles it internally
+
 
   if (!question) return null;
 
@@ -150,65 +134,26 @@ export function QuestionCard({
             justifyContent: "center",
           }}
         >
-          <EnrichedMarkdownText
-            flavor="github"
-            markdown={processedMarkdown}
-            onLinkPress={({ url }) => Linking.openURL(url)}
-            markdownStyle={{
-              // Base text
-
+          <MathMarkdown
+            content={question.text}
+            isFitted
+            style={{
               paragraph: {
                 color: "#D1D5DB",
-                marginBottom: 10,
+                fontSize: compact ? 15 : 18,
+                fontFamily: FONTS.bodySemiBold,
                 textAlign: "center",
-              },
-
-              // Headings
-              h1: {
-                fontSize: 24,
-                fontWeight: "700",
-                color: "#FFFFFF",
-                marginBottom: 8,
-                marginTop: 16,
-                textAlign: "center",
-              },
-              h2: {
-                fontSize: 20,
-                fontWeight: "700",
-                color: "#F3F4F6",
-                marginBottom: 6,
-                marginTop: 14,
-                textAlign: "center",
-              },
-              h3: {
-                fontSize: 18,
-                fontWeight: "600",
-                color: "#E5E7EB",
-                marginBottom: 4,
-                marginTop: 12,
-                textAlign: "center",
-              },
-
-              // Links
-              link: {
-                color: "#60A5FA",
-              },
-
-              // Lists
-              list: {
                 marginBottom: 10,
               },
-
-              // Inline code
+              h1: { textAlign: "center", color: "#FFFFFF" },
+              h2: { textAlign: "center", color: "#F3F4F6" },
+              h3: { textAlign: "center", color: "#E5E7EB" },
               code: {
                 backgroundColor: "#1F2937",
                 color: "#F9FAFB",
-
                 fontFamily: "Menlo",
                 fontSize: 14,
               },
-
-              // Code blocks
               codeBlock: {
                 backgroundColor: "#020617",
                 color: "#E2E8F0",
@@ -216,17 +161,6 @@ export function QuestionCard({
                 borderRadius: 8,
                 fontFamily: "Menlo",
                 fontSize: 14,
-              },
-
-              // Blockquote
-              blockquote: {
-                color: "#9CA3AF",
-              },
-
-              // Tables
-              table: {
-                borderColor: "#374151",
-                borderRadius: 8,
               },
             }}
           />
@@ -239,8 +173,6 @@ export function QuestionCard({
           paddingHorizontal: compact ? 12 : 20,
           paddingBottom: compact ? 12 : 20,
           gap: compact ? 8 : 12,
-          flexDirection: "row",
-          flexWrap: "wrap",
           justifyContent: "space-between",
         }}
       >
@@ -251,7 +183,7 @@ export function QuestionCard({
             <View
               key={i}
               style={{
-                width: isLong ? "100%" : "48%",
+                width: "100%",
               }}
             >
               <AnimatedOption

@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo } from "react";
-import { View, Text, Pressable, Linking } from "react-native";
+import React, { useEffect } from "react";
+import { View, Text, Pressable } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -9,7 +9,7 @@ import Animated, {
   Easing,
 } from "react-native-reanimated";
 import Svg, { Path, Circle } from "react-native-svg";
-import { EnrichedMarkdownText } from "react-native-enriched-markdown";
+import { MathMarkdown } from "../common/MathMarkdown";
 import { soundService } from "../../services/sound";
 import { hapticsService } from "../../services/haptics";
 import { FONTS } from "../../constants/theme";
@@ -29,20 +29,7 @@ interface AnimatedOptionProps {
   compact?: boolean;
 }
 
-/**
- * 🔥 SAME math brightening logic (shared with QuestionCard)
- */
-const brightenMath = (text: string) => {
-  if (!text) return text;
-
-  return text
-    .replace(/\$\$(.*?)\$\$/gs, (_, expr) => {
-      return `$$\\color{#E5E7EB}{${expr}}$$`;
-    })
-    .replace(/\$(.*?)\$/g, (_, expr) => {
-      return `$\\color{#E5E7EB}{${expr}}$`;
-    });
-};
+// brightenMath removed as it is now handled by MathMarkdown component
 
 function CheckIcon() {
   return (
@@ -136,9 +123,7 @@ export function AnimatedOption({
     opacity: opacity.value * dimOpacity.value,
   }));
 
-  const processedMarkdown = useMemo(() => {
-    return brightenMath(optionText);
-  }, [optionText]);
+  // processedMarkdown removed as MathMarkdown handles it internally
 
   const handlePress = () => {
     onPress();
@@ -223,13 +208,15 @@ export function AnimatedOption({
 
       {/* Markdown content */}
       <View style={{ flex: 1 }}>
-        <EnrichedMarkdownText
-          flavor="github"
-          markdown={processedMarkdown}
-          onLinkPress={({ url }) => Linking.openURL(url)}
-          markdownStyle={{
+        <MathMarkdown
+          content={optionText}
+          isOption
+          style={{
             paragraph: {
               color: textC,
+              fontSize: compact ? 13 : 14,
+              fontFamily: FONTS.bodySemiBold,
+              marginBottom: 0,
             },
             code: {
               backgroundColor: "rgba(255,255,255,0.1)",

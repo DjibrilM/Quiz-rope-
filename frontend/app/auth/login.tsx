@@ -26,6 +26,7 @@ import {
 import { FONTS } from "../../src/constants/theme";
 import { useToast } from "../../src/context/ToastContext";
 import { NotificationService } from "../../src/services/NotificationService";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 export default function LoginScreen() {
   const { t } = useTranslation(["auth", "common"]);
@@ -92,6 +93,13 @@ export default function LoginScreen() {
       }
       await handleLogin(idToken);
     } catch (err: any) {
+      console.error("[Login] Email Sign-In Error:", err);
+      apiService.reportError({
+        context: "auth_email_login",
+        message: err.message || "Unknown email login error",
+        stack: err.stack,
+        metadata: { email: email.trim() },
+      });
       showApiError(err);
     } finally {
       setLoading(false);
@@ -101,6 +109,7 @@ export default function LoginScreen() {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
+      console.log('[Login] isConfigured:', firebaseAuthService.isConfigured());
       if (!firebaseAuthService.isConfigured()) {
         throw new Error(
           "Authentication is not configured. Please contact support.",
@@ -109,6 +118,12 @@ export default function LoginScreen() {
       const { idToken } = await firebaseAuthService.signInWithGoogle();
       await handleLogin(idToken);
     } catch (err: any) {
+      console.error("[Login] Google Sign-In Error:", err);
+      apiService.reportError({
+        context: "auth_google_login",
+        message: err.message || "Unknown google login error",
+        stack: err.stack,
+      });
       showApiError(err);
     } finally {
       setLoading(false);
@@ -123,31 +138,48 @@ export default function LoginScreen() {
     <SafeAreaView className="flex-1 bg-game-bg">
       <ScreenHeader title={t("auth:login.signIn")} />
 
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      <KeyboardAwareScrollView
+        bottomOffset={62}
+        contentContainerStyle={{
+          flexGrow: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          paddingHorizontal: 12,
+          paddingVertical: 40,
+        }}
       >
-        <ScrollView
-          contentContainerStyle={{
-            flexGrow: 1,
-            alignItems: "center",
-            justifyContent: "center",
-            paddingHorizontal: 12,
-            paddingVertical: 40,
-          }}
-          keyboardShouldPersistTaps="handled"
-        >
-          <View className="w-full max-w-sm">
+        <View className="w-full max-w-sm">
+          <TextInput
+            value={email}
+            onChangeText={(v) => {
+              setEmail(v);
+            }}
+            placeholder={t("auth:login.emailPlaceholder")}
+            placeholderTextColor="#9CA3AF"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
+            style={{
+              backgroundColor: "rgba(255, 255, 255, 0.04)",
+              color: "#FFFFFF",
+              fontSize: 16,
+              fontFamily: FONTS.body,
+              paddingHorizontal: 20,
+              paddingVertical: 16,
+              borderRadius: 16,
+              borderWidth: 1,
+              borderColor: "rgba(255, 255, 255, 0.08)",
+              marginBottom: 12,
+            }}
+          />
+
+          <View style={{ position: "relative", marginBottom: 4 }}>
             <TextInput
-              value={email}
-              onChangeText={(v) => {
-                setEmail(v);
-              }}
-              placeholder={t("auth:login.emailPlaceholder")}
+              value={password}
+              onChangeText={setPassword}
+              placeholder={t("auth:login.passwordPlaceholder")}
               placeholderTextColor="#9CA3AF"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
+              secureTextEntry={!showPassword}
               style={{
                 backgroundColor: "rgba(255, 255, 255, 0.04)",
                 color: "#FFFFFF",
@@ -155,146 +187,124 @@ export default function LoginScreen() {
                 fontFamily: FONTS.body,
                 paddingHorizontal: 20,
                 paddingVertical: 16,
+                paddingRight: 52,
                 borderRadius: 16,
                 borderWidth: 1,
                 borderColor: "rgba(255, 255, 255, 0.08)",
-                marginBottom: 12,
               }}
             />
-
-            <View style={{ position: "relative", marginBottom: 4 }}>
-              <TextInput
-                value={password}
-                onChangeText={setPassword}
-                placeholder={t("auth:login.passwordPlaceholder")}
-                placeholderTextColor="#9CA3AF"
-                secureTextEntry={!showPassword}
-                style={{
-                  backgroundColor: "rgba(255, 255, 255, 0.04)",
-                  color: "#FFFFFF",
-                  fontSize: 16,
-                  fontFamily: FONTS.body,
-                  paddingHorizontal: 20,
-                  paddingVertical: 16,
-                  paddingRight: 52,
-                  borderRadius: 16,
-                  borderWidth: 1,
-                  borderColor: "rgba(255, 255, 255, 0.08)",
-                }}
-              />
-              <Pressable
-                onPress={() => setShowPassword((v) => !v)}
-                style={{
-                  position: "absolute",
-                  right: 16,
-                  top: 0,
-                  bottom: 0,
-                  justifyContent: "center",
-                }}
-                hitSlop={8}
-              >
-                {showPassword ? (
-                  <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
-                    <Path
-                      d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"
-                      stroke="#7B6B8A"
-                      strokeWidth={1.8}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <Path
-                      d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"
-                      stroke="#7B6B8A"
-                      strokeWidth={1.8}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <Path
-                      d="M10.73 10.73a3 3 0 104.54 4.54"
-                      stroke="#7B6B8A"
-                      strokeWidth={1.8}
-                      strokeLinecap="round"
-                    />
-                    <Line
-                      x1="1"
-                      y1="1"
-                      x2="23"
-                      y2="23"
-                      stroke="#7B6B8A"
-                      strokeWidth={1.8}
-                      strokeLinecap="round"
-                    />
-                  </Svg>
-                ) : (
-                  <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
-                    <Path
-                      d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
-                      stroke="#7B6B8A"
-                      strokeWidth={1.8}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <Path
-                      d="M12 9a3 3 0 100 6 3 3 0 000-6z"
-                      stroke="#7B6B8A"
-                      strokeWidth={1.8}
-                    />
-                  </Svg>
-                )}
-              </Pressable>
-            </View>
-
-            <Pressable onPress={handleForgotPassword} className="self-end my-5">
-              <Text
-                style={{
-                  color: "#A78BFA",
-                  fontSize: 12,
-                  fontFamily: FONTS.body,
-                }}
-              >
-                {t("auth:login.forgotPassword")}
-              </Text>
+            <Pressable
+              onPress={() => setShowPassword((v) => !v)}
+              style={{
+                position: "absolute",
+                right: 16,
+                top: 0,
+                bottom: 0,
+                justifyContent: "center",
+              }}
+              hitSlop={8}
+            >
+              {showPassword ? (
+                <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
+                  <Path
+                    d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"
+                    stroke="#7B6B8A"
+                    strokeWidth={1.8}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <Path
+                    d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"
+                    stroke="#7B6B8A"
+                    strokeWidth={1.8}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <Path
+                    d="M10.73 10.73a3 3 0 104.54 4.54"
+                    stroke="#7B6B8A"
+                    strokeWidth={1.8}
+                    strokeLinecap="round"
+                  />
+                  <Line
+                    x1="1"
+                    y1="1"
+                    x2="23"
+                    y2="23"
+                    stroke="#7B6B8A"
+                    strokeWidth={1.8}
+                    strokeLinecap="round"
+                  />
+                </Svg>
+              ) : (
+                <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
+                  <Path
+                    d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                    stroke="#7B6B8A"
+                    strokeWidth={1.8}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <Path
+                    d="M12 9a3 3 0 100 6 3 3 0 000-6z"
+                    stroke="#7B6B8A"
+                    strokeWidth={1.8}
+                  />
+                </Svg>
+              )}
             </Pressable>
-
-            <Button
-              loading={loading}
-              label={t("auth:login.signIn")}
-              variant="primary"
-              className="bg-game-indigo! w-full mb-2"
-              onPress={handleEmailSignIn}
-            />
-
-            <Divider />
-
-            <View className="items-center">
-              <LoginButton
-                onPress={handleGoogleSignIn}
-                loading={loading}
-                label={t("auth:login.continueWithGoogle")}
-                variant="google"
-              />
-            </View>
           </View>
 
-          <View className="mt-6 flex-row items-center">
-            <Text
-              style={{ color: "#7B6B8A", fontSize: 14, fontFamily: FONTS.body }}
-            >
-              {t("auth:login.noAccount")}{" "}
-            </Text>
+          <Pressable onPress={handleForgotPassword} className="self-end my-5">
             <Text
               style={{
-                color: "#9B59B6",
-                fontSize: 14,
-                fontFamily: FONTS.bodyBold,
+                color: "#A78BFA",
+                fontSize: 12,
+                fontFamily: FONTS.body,
               }}
-              onPress={() => router.push("/auth/signup" as any)}
             >
-              {t("auth:login.signUpLink")}
+              {t("auth:login.forgotPassword")}
             </Text>
+          </Pressable>
+
+          <Button
+            loading={loading}
+            label={t("auth:login.signIn")}
+            variant="primary"
+            className="bg-game-indigo! w-full mb-2"
+            onPress={handleEmailSignIn}
+          />
+
+          <Divider />
+
+          <View className="items-center">
+            <LoginButton
+              onPress={handleGoogleSignIn}
+              loading={loading}
+              label={t("auth:login.continueWithGoogle")}
+              variant="google"
+            />
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+        </View>
+
+        <View className="mt-6 flex-row items-center">
+          <Text
+            style={{ color: "#7B6B8A", fontSize: 14, fontFamily: FONTS.body }}
+          >
+            {t("auth:login.noAccount")}{" "}
+          </Text>
+          <Text
+            style={{
+              color: "#9B59B6",
+              fontSize: 14,
+              fontFamily: FONTS.bodyBold,
+            }}
+            onPress={() => router.push("/auth/signup" as any)}
+          >
+            {t("auth:login.signUpLink")}
+          </Text>
+        </View>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }

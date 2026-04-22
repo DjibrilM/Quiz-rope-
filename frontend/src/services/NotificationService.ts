@@ -1,8 +1,10 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
-import type { ChildProfile } from '../stores/gameStore';
-import type { ChildPerformance } from '@shared/types/analytics.types';
+import { ChildPerformance } from '@shared/types/analytics.types';
 import { apiService } from './api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const NOTIFICATION_HISTORY_KEY = 'quizrope_notification_history';
 
 // Configure how notifications are handled when the app is in the foreground
 Notifications.setNotificationHandler({
@@ -230,14 +232,83 @@ export class NotificationService {
    * Congratulations on the first match
    */
   static async sendFirstMatchNotification(name?: string) {
+    const key = "milestone_1";
+    if (await this.hasNotified(key)) return;
+
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: `Congratulations, ${name || 'Challenger'}! 🏆`,
+        title: `Congratulations, ${name || "Challenger"}! 🏆`,
         body: "You've successfully completed your first match! Keep going to become a true brain champion! 🌟🚀",
-        data: { screen: '/home' },
+        data: { screen: "/home" },
       },
       trigger: null, // Send immediately
     });
+
+    await this.markNotified(key);
+  }
+
+  /**
+   * Congratulations on reaching a milestone
+   */
+  static async sendMilestoneNotification(name: string, count: number) {
+    const key = `milestone_${count}`;
+    if (await this.hasNotified(key)) return;
+
+    const titles = [
+      `High Five, ${name}! ✋`,
+      `Decathlon Master! 🏅`,
+      `Quarter Century Club! 🎊`,
+      `Half-Century Hero! 🎖️`,
+      `Century Scholar! 💯`,
+    ];
+    const bodies = [
+      `You've completed 5 matches! You're on a roll! 🔥`,
+      `10 matches done! Your brain is getting stronger every day! 💪`,
+      `25 matches completed! That's incredible dedication! 🚀`,
+      `50 matches! You're becoming a subject expert! 🎓`,
+      `100 matches! You've reached the ultimate champion status! 👑`,
+    ];
+
+    let index = 0;
+    if (count >= 100) index = 4;
+    else if (count >= 50) index = 3;
+    else if (count >= 25) index = 2;
+    else if (count >= 10) index = 1;
+    else if (count >= 5) index = 0;
+
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: titles[index],
+        body: bodies[index],
+        data: { screen: "/profile" },
+      },
+      trigger: null, // Send immediately
+    });
+
+    await this.markNotified(key);
+  }
+
+  // Helper to prevent duplicate notifications
+  private static async hasNotified(key: string): Promise<boolean> {
+    try {
+      const history = await AsyncStorage.getItem(NOTIFICATION_HISTORY_KEY);
+      if (!history) return false;
+      const parsed = JSON.parse(history);
+      return !!parsed[key];
+    } catch {
+      return false;
+    }
+  }
+
+  private static async markNotified(key: string): Promise<void> {
+    try {
+      const history = await AsyncStorage.getItem(NOTIFICATION_HISTORY_KEY);
+      const parsed = history ? JSON.parse(history) : {};
+      parsed[key] = true;
+      await AsyncStorage.setItem(NOTIFICATION_HISTORY_KEY, JSON.stringify(parsed));
+    } catch {
+      // ignore
+    }
   }
 
   /**

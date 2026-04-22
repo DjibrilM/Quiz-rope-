@@ -374,12 +374,14 @@ export function SoloMultiplayerLayout({
         />
       )}
 
-      <MascotBuddy
-        message={buddyMessage}
-        visible={buddyVisible}
-        onHide={onHideBuddy}
-        displayDurationMs={2500}
-      />
+      <View className="scale-75">
+        <MascotBuddy
+          message={buddyMessage}
+          visible={buddyVisible}
+          onHide={onHideBuddy}
+          displayDurationMs={2500}
+        />
+      </View>
     </SafeAreaView>
   );
 }

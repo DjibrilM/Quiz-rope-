@@ -58,14 +58,26 @@ export default function JoinMatchScreen() {
 
       // Set a minimal match object so the game/lobby screen has context
       setCurrentMatch({
-        id: result.matchId,
+        _id: result.matchId,
         hostParentId: "",
         subject: result.subject || "MATH",
         difficulty: result.difficulty || "EASY",
         gameMode: "splitscreen",
         teams: [
-          { id: "team-red", name: "Red Team", color: "#EF4444", side: "LEFT", players: [] },
-          { id: "team-blue", name: "Blue Team", color: "#3B82F6", side: "RIGHT", players: [] },
+          {
+            id: "team-red",
+            name: "Red Team",
+            color: "#EF4444",
+            side: "LEFT",
+            players: [],
+          },
+          {
+            id: "team-blue",
+            name: "Blue Team",
+            color: "#3B82F6",
+            side: "RIGHT",
+            players: [],
+          },
         ],
         ropePosition: 0,
         currentQuestionIndex: 0,
@@ -78,9 +90,15 @@ export default function JoinMatchScreen() {
       socketService.connect();
 
       if (result.status === "WAITING") {
-        router.replace({ pathname: "/match/lobby", params: { matchId: result.matchId } });
+        router.replace({
+          pathname: "/match/lobby",
+          params: { matchId: result.matchId },
+        });
       } else {
-        router.replace({ pathname: "/match/game", params: { matchId: result.matchId } });
+        router.replace({
+          pathname: "/match/game",
+          params: { matchId: result.matchId },
+        });
       }
     } catch {
       hapticsService.error();
@@ -151,7 +169,12 @@ export default function JoinMatchScreen() {
           <TextInput
             value={code}
             onChangeText={(v) => {
-              setCode(v.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6));
+              setCode(
+                v
+                  .toUpperCase()
+                  .replace(/[^A-Z0-9]/g, "")
+                  .slice(0, 6),
+              );
               setError("");
             }}
             placeholder="ABC123"
@@ -172,7 +195,11 @@ export default function JoinMatchScreen() {
               width: "100%",
               marginBottom: 12,
               borderWidth: 2,
-              borderColor: error ? "#EF4444" : code.length === 6 ? "#E85D75" : "#3D2E4A",
+              borderColor: error
+                ? "#EF4444"
+                : code.length === 6
+                  ? "#E85D75"
+                  : "#3D2E4A",
             }}
             autoFocus
             returnKeyType="done"

@@ -77,6 +77,13 @@ export default function SignupScreen() {
         params: { email: email.trim() },
       });
     } catch (err: any) {
+      console.error("[Signup] Email Sign-Up Error:", err);
+      apiService.reportError({
+        context: "auth_email_signup",
+        message: err.message || "Unknown email signup error",
+        stack: err.stack,
+        metadata: { email: email.trim() },
+      });
       showApiError(err);
     } finally {
       setLoading(false);
@@ -94,6 +101,12 @@ export default function SignupScreen() {
       const { idToken } = await firebaseAuthService.signInWithGoogle();
       await handleLogin(idToken);
     } catch (err: any) {
+      console.error("[Signup] Google Sign-Up Error:", err);
+      apiService.reportError({
+        context: "auth_google_signup",
+        message: err.message || "Unknown google signup error",
+        stack: err.stack,
+      });
       showApiError(err);
     } finally {
       setLoading(false);

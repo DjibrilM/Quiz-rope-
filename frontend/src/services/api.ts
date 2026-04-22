@@ -5,12 +5,12 @@ import type { GameEndResult, PlayerStats } from "@shared/types/game.types";
 import * as guestDb from "./guestDb";
 import type {
   ChildPerformance,
-
   ChildMatchSummary,
   AnswerDetail,
 } from "@shared/types/analytics.types";
 
-const API_URL = "https://quiz-rope.onrender.com";
+const API_URL =
+  process.env.EXPO_PUBLIC_SERVER_URL || "http://192.168.100.171:3000";
 
 console.log(API_URL);
 
@@ -136,6 +136,26 @@ class ApiService {
       timeout: options.timeout,
     });
     return response.data;
+  }
+
+  // Error Logging
+  async reportError(data: {
+    context: string;
+    message: string;
+    stack?: string;
+    metadata?: Record<string, unknown>;
+    userId?: string;
+  }): Promise<void> {
+    try {
+      // Use fetch directly to avoid the global interceptor and secondary errors
+      await fetch(`${API_URL}/error-logs`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+    } catch {
+      // Fail silently to avoid interrupting the user's flow
+    }
   }
 
   // Auth
@@ -405,7 +425,11 @@ class ApiService {
     childId?: string,
   ): Promise<any> {
     const form = new FormData();
-    form.append("image", { uri: imageUri, type: mimeType, name: "homework.jpg" } as any);
+    form.append("image", {
+      uri: imageUri,
+      type: mimeType,
+      name: "homework.jpg",
+    } as any);
     if (childId) form.append("childId", childId);
     const response = await this.client.post("/homework/analyze", form, {
       headers: { "Content-Type": "multipart/form-data" },
@@ -595,7 +619,11 @@ class ApiService {
     status: string;
   }> {
     const form = new FormData();
-    form.append("image", { uri: imageUri, type: mimeType, name: "homework.jpg" } as any);
+    form.append("image", {
+      uri: imageUri,
+      type: mimeType,
+      name: "homework.jpg",
+    } as any);
     const response = await this.client.post("/homework/analyze-guest", form, {
       headers: { "Content-Type": "multipart/form-data" },
       timeout: 90000,
@@ -731,6 +759,5 @@ class ApiService {
     await guestDb.syncFromBackend({ matches, homeworkSessions, profile });
   }
 }
-
 
 export const apiService = new ApiService();
