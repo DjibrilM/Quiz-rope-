@@ -8,6 +8,7 @@ import { QuestionModule } from './question/question.module';
 import { RealtimeModule } from './realtime/realtime.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { HomeworkModule } from './homework/homework.module';
+import { ErrorLogsModule } from './error-logs/error-logs.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -46,6 +47,7 @@ import configuration from './config/configuration';
     RealtimeModule,
     SubscriptionModule,
     HomeworkModule,
+    ErrorLogsModule,
   ],
 })
 export class AppModule {}
