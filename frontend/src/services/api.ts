@@ -9,8 +9,7 @@ import type {
   AnswerDetail,
 } from "@shared/types/analytics.types";
 
-const API_URL =
-  process.env.EXPO_PUBLIC_SERVER_URL || "https://quiz-rope.onrender.com";
+const API_URL = "https://quiz-rope.onrender.com";
 
 console.log(API_URL);
 
