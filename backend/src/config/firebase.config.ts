@@ -10,6 +10,8 @@ export function initializeFirebase() {
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
   const privateKey = process.env.FIREBASE_PRIVATE_KEY;
 
+  console.log({ projectId, clientEmail, privateKey });
+
   if (!projectId || !clientEmail || !privateKey) {
     logger.warn(
       "Missing Firebase configuration — auth will use mock mode. " +
