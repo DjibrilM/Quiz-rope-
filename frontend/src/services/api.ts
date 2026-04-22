@@ -10,7 +10,7 @@ import type {
 } from "@shared/types/analytics.types";
 
 const API_URL =
-  process.env.EXPO_PUBLIC_SERVER_URL || "http://192.168.100.171:3000";
+  process.env.EXPO_PUBLIC_SERVER_URL || "https://quiz-rope.onrender.com";
 
 console.log(API_URL);
 
