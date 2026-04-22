@@ -112,7 +112,35 @@ export const HomeworkChatSheet = forwardRef<ChatSheetRef, Props>(
             <>
               <MathMarkdown
                 content={item.content}
-                style={mdStyles}
+                style={{
+                  paragraph: {
+                    color: "#D1D5DB",
+                    fontFamily: FONTS.bodySemiBold,
+                    marginBottom: 10,
+                  },
+                  h1: { color: "#FFFFFF" },
+                  h2: { color: "#F3F4F6" },
+                  h3: { color: "#E5E7EB" },
+                  code: {
+                    backgroundColor: "#1F2937",
+                    color: "#F9FAFB",
+                    fontFamily: "Menlo",
+                    fontSize: 14,
+                  },
+                  listItem: {
+                    color: "red",
+                    fontFamily: FONTS.bodySemiBold,
+                    marginBottom: 10,
+                  },
+                  codeBlock: {
+                    backgroundColor: "#020617",
+                    color: "#E2E8F0",
+                    padding: 12,
+                    borderRadius: 8,
+                    fontFamily: "Menlo",
+                    fontSize: 14,
+                  },
+                }}
                 bgColor="#1E1828"
               />
               {item.isStreaming && <BlinkingCursor />}

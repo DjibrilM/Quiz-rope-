@@ -1,5 +1,6 @@
 import { Logger } from "@nestjs/common";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import { GEMINI_MODEL } from "../constants";
 
 const logger = new Logger("GeminiConfig");
 
@@ -19,10 +20,10 @@ export function initializeGemini() {
 
   try {
     langchainModel = new ChatGoogleGenerativeAI({
-      model: "gemini-3.1-flash-lite-preview",
+      model: GEMINI_MODEL,
       apiKey,
       temperature: 0.7,
-      maxOutputTokens: 8192,
+      maxOutputTokens: 2048,
     });
     isGeminiConfigured = true;
     logger.log("Gemini AI initialized via LangChain");

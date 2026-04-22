@@ -30,7 +30,7 @@ interface MascotProps {
   speed?: number;
 }
 
-export function BrainMascot({ size = 150, variant = "floatUp", speed = 1 }: MascotProps) {
+function BrainMascotBase({ size = 150, variant = "floatUp", speed = 1 }: MascotProps) {
   // headSideBounce starts at the left edge so the ping-pong is symmetric
   const bounceX = useSharedValue(variant === "headSideBounce" ? -8 : 0);
   const bounceY = useSharedValue(0);
@@ -38,10 +38,6 @@ export function BrainMascot({ size = 150, variant = "floatUp", speed = 1 }: Masc
   const blink = useSharedValue(1);
 
   React.useEffect(() => {
-    cancelAnimation(bounceX);
-    cancelAnimation(bounceY);
-    cancelAnimation(rotation);
-
     const s = Math.max(speed, 0.01);
     if (variant === "headSideBounce") {
       bounceX.value = -8;
@@ -91,6 +87,13 @@ export function BrainMascot({ size = 150, variant = "floatUp", speed = 1 }: Masc
       -1,
       false,
     );
+
+    return () => {
+      cancelAnimation(bounceX);
+      cancelAnimation(bounceY);
+      cancelAnimation(rotation);
+      cancelAnimation(blink);
+    };
   }, [variant, speed]);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -197,6 +200,8 @@ export function BrainMascot({ size = 150, variant = "floatUp", speed = 1 }: Masc
     </Animated.View>
   );
 }
+
+export const BrainMascot = React.memo(BrainMascotBase);
 
 export function SadBrainMascot({ size = 150 }: { size?: number }) {
   return (

@@ -13,7 +13,11 @@ import { useRef, useCallback, useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { usePortrait } from "../../src/hooks/useOrientation";
 import { useGameStore } from "../../src/stores/gameStore";
-import { AnimatedLoader, Button, ScreenHeader } from "../../src/components/common";
+import {
+  AnimatedLoader,
+  Button,
+  ScreenHeader,
+} from "../../src/components/common";
 import {
   AddChildForm,
   ChildCard,
@@ -53,9 +57,9 @@ export default function ChildrenScreen() {
   const [codeForChildName, setCodeForChildName] = useState("");
   const [isGeneratingCode, setIsGeneratingCode] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(0);
-  const [selectedChildForCode, setSelectedChildForCode] = useState<string | null>(
-    null,
-  );
+  const [selectedChildForCode, setSelectedChildForCode] = useState<
+    string | null
+  >(null);
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const {
@@ -141,7 +145,10 @@ export default function ChildrenScreen() {
 
     if (hasHardware && isEnrolled) {
       const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: t("remove.biometricPrompt", "Authenticate to delete profile"),
+        promptMessage: t(
+          "remove.biometricPrompt",
+          "Authenticate to delete profile",
+        ),
         fallbackLabel: t("remove.usePasscode", "Use Passcode"),
         disableDeviceFallback: false,
       });
@@ -167,7 +174,9 @@ export default function ChildrenScreen() {
     const tick = () => {
       const remaining = Math.max(
         0,
-        Math.round((new Date(codeResult.expiresAt).getTime() - Date.now()) / 1000),
+        Math.round(
+          (new Date(codeResult.expiresAt).getTime() - Date.now()) / 1000,
+        ),
       );
       setSecondsLeft(remaining);
       if (remaining === 0 && countdownRef.current) {
@@ -235,15 +244,7 @@ export default function ChildrenScreen() {
       <ScreenHeader
         title={t("title")}
         rightElement={
-          <Pressable
-            onPress={handleOpenSheet}
-            style={{
-              backgroundColor: "#6D4C8A",
-              paddingHorizontal: 14,
-              paddingVertical: 7,
-              borderRadius: 10,
-            }}
-          >
+          <Button className="h-11" onPress={handleOpenSheet}>
             <Text
               style={{
                 color: "#FFFFFF",
@@ -253,7 +254,7 @@ export default function ChildrenScreen() {
             >
               {t("addButton")}
             </Text>
-          </Pressable>
+          </Button>
         }
       />
 
@@ -316,12 +317,11 @@ export default function ChildrenScreen() {
       {hasChildren && (
         <View
           style={{
-            position: "absolute",
             bottom: 0,
             left: 0,
             right: 0,
             paddingHorizontal: 24,
-            paddingBottom: 36,
+            paddingBottom: 20,
             paddingTop: 16,
             backgroundColor: "#0D0B14E8",
             borderTopWidth: 1,

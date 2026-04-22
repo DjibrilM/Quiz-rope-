@@ -1,6 +1,6 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
-import { ChildPerformance } from '@shared/types/analytics.types';
+import { ChildPerformance } from '../../../../shared/src/types/analytics.types';
 import { apiService } from './api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -49,6 +49,9 @@ export class NotificationService {
     return finalStatus;
   }
 
+  private static lastScheduleInfo: string = '';
+  private static lastScheduleTime: number = 0;
+
   /**
    * Schedule 5+ routine notifications for the child
    */
@@ -57,6 +60,21 @@ export class NotificationService {
     performance?: ChildPerformance,
     streak: number = 0
   ) {
+    const info = JSON.stringify({
+      id: childProfile?.id || childProfile?._id,
+      name: childProfile?.displayName,
+      streak,
+      weakest: performance?.weakestSubject,
+    });
+
+    // Only re-schedule if data changed or 12 hours passed
+    if (this.lastScheduleInfo === info && Date.now() - this.lastScheduleTime < 12 * 60 * 60 * 1000) {
+      return;
+    }
+
+    this.lastScheduleInfo = info;
+    this.lastScheduleTime = Date.now();
+
     // Clear all existing notifications to avoid duplicates
     await Notifications.cancelAllScheduledNotificationsAsync();
 

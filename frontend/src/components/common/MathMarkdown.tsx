@@ -38,11 +38,11 @@ export function MathMarkdown({
   isOption = false,
   bgColor = "transparent",
 }: MathMarkdownProps) {
+  if (!content) return null;
+
   const processedMarkdown = useMemo(() => {
     return brightenMath(content);
   }, [content]);
-
-  if (!content) return null;
 
   // Map the incoming style object to EnrichedMarkdownText's markdownStyle
   // We prioritize the properties passed in 'style' while providing sensible defaults

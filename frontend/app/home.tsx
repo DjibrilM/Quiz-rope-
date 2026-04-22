@@ -293,19 +293,15 @@ export default function HomeScreen() {
   usePortrait();
   const queryClient = useQueryClient();
   const { t } = useTranslation(["home", "auth", "common"]);
-  const {
-    parentUser,
-    isMockMode,
-    userRole,
-    guestProfile,
-    childProfile,
-    logout,
-    setCurrentMatch,
-    setChildren,
-    childSession,
-    children,
-    streak,
-  } = useGameStore();
+  const parentUser = useGameStore((s) => s.parentUser);
+  const isMockMode = useGameStore((s) => s.isMockMode);
+  const userRole = useGameStore((s) => s.userRole);
+  const guestProfile = useGameStore((s) => s.guestProfile);
+  const childProfile = useGameStore((s) => s.childProfile);
+  const logout = useGameStore((s) => s.logout);
+  const setCurrentMatch = useGameStore((s) => s.setCurrentMatch);
+  const setChildren = useGameStore((s) => s.setChildren);
+  const streak = useGameStore((s) => s.streak);
 
   const isGuest = userRole === "guest";
   const isChild = userRole === "child";
