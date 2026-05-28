@@ -3,6 +3,7 @@
  * and splitting content into blocks of text vs. math for specialized rendering.
  */
 
+
 /**
  * Converts common LaTeX document commands to their Markdown equivalents.
  */
