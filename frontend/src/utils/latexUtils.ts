@@ -4,6 +4,7 @@
  */
 
 
+
 /**
  * Converts common LaTeX document commands to their Markdown equivalents.
  */
