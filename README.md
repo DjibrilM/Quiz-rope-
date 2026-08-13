@@ -382,3 +382,5 @@ Difficulty maps to age-appropriate Gemini prompting parameters, ensuring questio
 | Android Package | `com.quizrope.app` |
 | Deep link scheme | `quizrope://` |
 | Expo slug | `quizrope` |
+
+
